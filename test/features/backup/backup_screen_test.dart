@@ -113,7 +113,9 @@ void main() {
     await settleIo(tester);
     expect(find.text('Replace all your data?'), findsOneWidget);
     expect(
-      find.textContaining('1 mission, 0 projects, 0 habits, 0 check-ins, 0 events and 0 routines'),
+      find.textContaining(
+        '1 mission, 0 projects, 0 habits, 0 check-ins, 0 events, 0 routines and 0 water logs',
+      ),
       findsOneWidget,
     );
     await tester.tap(find.text('Cancel'));

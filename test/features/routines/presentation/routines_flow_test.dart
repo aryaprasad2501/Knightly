@@ -31,6 +31,8 @@ Future<void> tapVisible(WidgetTester tester, Finder finder) async {
 /// Taps something that opens the run screen, then lets it load its run
 /// (the screen reads the database once it is built).
 Future<void> openRun(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
   await tester.tap(finder);
   await tester.pump();
   await tester.pump();

@@ -21,7 +21,7 @@ enum AppModule {
   calendar('Calendar', 'Day, week and month views of events, missions and habits', built: true),
   routines('Routines', 'Step-by-step morning and evening routines', built: true),
   sleep('Sleep', 'Bedtime, wake time and sleep history'),
-  water('Water', 'Glasses of water against a daily goal'),
+  water('Water', 'Glasses of water against a daily goal', built: true),
   workouts('Workouts', 'Exercises, sets, reps and weights'),
   nutrition('Nutrition', 'Meals and calories'),
   homeCare('Home, garden & pets', 'Chores, plant care and pet care with reminders');

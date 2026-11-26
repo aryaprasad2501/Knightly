@@ -5,6 +5,16 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 5 — 2026-11-26 — Water
+
+### Added
+- **Water** on the Track tab: today's total against your daily goal (ring and "to go"), one-tap
+  +250 ml and +500 ml, other amounts, today's entries (remove with Undo), the last 7 days, and the
+  goal (1–4 L).
+- Home: the overview shows today's water, and **Log water** adds a glass in one tap (with Undo).
+- Water logs are included in backups (older backups still restore) and can be switched off in
+  Settings › Modules.
+
 ## Phase 2 · step 4 — 2026-11-26 — Notifications
 
 ### Added

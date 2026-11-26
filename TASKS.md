@@ -112,7 +112,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 ## Later stages (one module per stage, in this order unless re-prioritised)
 
 - [x] Calendar (local events + scheduled tasks/routines)
-- [ ] Water
+- [x] Water (2026-11-26)
 - [ ] Sleep
 - [ ] Workouts
 - [ ] Nutrition

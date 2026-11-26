@@ -9,6 +9,8 @@ import '../../../../core/modules/app_module.dart';
 import '../../../../core/time/clock.dart';
 import '../../../routines/presentation/start_routine_sheet.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
+import '../../../water/domain/water.dart';
+import '../../../water/presentation/water_section.dart';
 
 /// One-tap capture shortcuts for the modules that are on. Actions whose
 /// module does not exist yet are shown disabled and labelled "Soon".
@@ -33,7 +35,12 @@ class QuickActionsGrid extends ConsumerWidget {
           label: 'New mission',
           onTap: () => showTaskEditor(context, initialDue: today),
         ),
-      if (on.contains(AppModule.water)) const _ActionTile(glyph: KGlyphs.drop, label: 'Log water'),
+      if (on.contains(AppModule.water))
+        _ActionTile(
+          glyph: KGlyphs.drop,
+          label: 'Log water · ${formatMl(WaterAmounts.glass)}',
+          onTap: () => logWaterWithUndo(context, ref, WaterAmounts.glass),
+        ),
       if (on.contains(AppModule.routines))
         _ActionTile(
           glyph: KGlyphs.routine,

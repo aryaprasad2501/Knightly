@@ -9,9 +9,11 @@ import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../../habits/application/habits_providers.dart';
 import '../../../tasks/application/tasks_providers.dart';
+import '../../../water/application/water_providers.dart';
+import '../../../water/domain/water.dart';
 
 /// The day's headline figures, one per module that is on (missions, habits,
-/// water). Modules that do not exist yet show "—"; nothing is ever invented.
+/// water). Nothing is ever invented: no data yet shows "—".
 /// [hasContent] says whether the card has anything to show at all.
 class OverviewCard extends ConsumerWidget {
   const OverviewCard({super.key});
@@ -21,10 +23,10 @@ class OverviewCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = context.palette;
     final on = ref.watch(enabledModulesProvider);
     final summary = ref.watch(missionSummaryProvider).valueOrNull;
     final habits = ref.watch(habitSummaryProvider).valueOrNull;
+    final water = on.contains(AppModule.water) ? ref.watch(waterTodayProvider).valueOrNull : null;
 
     final metrics = <Widget>[
       if (on.contains(AppModule.missions))
@@ -41,7 +43,15 @@ class OverviewCard extends ConsumerWidget {
           value: _ratio(habits?.doneToday, habits?.dueToday),
           semanticValue: _spoken(habits?.doneToday, habits?.dueToday),
         ),
-      if (on.contains(AppModule.water)) const _Metric(glyph: KGlyphs.drop, label: 'Water'),
+      if (on.contains(AppModule.water))
+        _Metric(
+          glyph: KGlyphs.drop,
+          label: water == null ? 'Water' : 'Water of ${formatMl(water.goalMl)}',
+          value: water == null ? null : formatMl(water.totalMl),
+          semanticValue: water == null
+              ? null
+              : '${formatMl(water.totalMl)} of ${formatMl(water.goalMl)} today',
+        ),
     ];
 
     return KSurface(
@@ -59,13 +69,6 @@ class OverviewCard extends ConsumerWidget {
               ],
             ),
           ),
-          if (on.contains(AppModule.water)) ...[
-            const SizedBox(height: KSpacing.lg),
-            Text(
-              'Water appears when its module comes online.',
-              style: context.textStyles.bodySmall?.copyWith(color: p.textMuted),
-            ),
-          ],
         ],
       ),
     );

@@ -5,6 +5,7 @@ import '../../features/calendar/data/calendar_tables.dart';
 import '../../features/habits/data/habits_tables.dart';
 import '../../features/routines/data/routines_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
+import '../../features/water/data/water_tables.dart';
 import 'ids.dart';
 import 'app_database.steps.dart';
 
@@ -31,7 +32,7 @@ class AppSettings extends Table {
 /// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
-/// routine_runs.
+/// routine_runs · v7 water_logs.
 @DriftDatabase(
   tables: [
     AppSettings,
@@ -44,13 +45,14 @@ class AppSettings extends Table {
     Routines,
     RoutineSteps,
     RoutineRuns,
+    WaterLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -125,6 +127,11 @@ class AppDatabase extends _$AppDatabase {
       await m.createTable(schema.routineRuns);
       await m.createIndex(schema.routineStepsRoutine);
       await m.createIndex(schema.routineRunsDate);
+    },
+    // Water: one new table; nothing existing changes.
+    from6To7: (m, schema) async {
+      await m.createTable(schema.waterLogs);
+      await m.createIndex(schema.waterLogsDate);
     },
   );
 

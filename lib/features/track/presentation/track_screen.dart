@@ -17,6 +17,7 @@ import '../../habits/domain/habit_stats.dart';
 import '../../habits/presentation/habits_section.dart';
 import '../../routines/presentation/routines_section.dart';
 import '../../tasks/application/tasks_providers.dart';
+import '../../water/presentation/water_section.dart';
 
 /// The Track tab — a personal performance console: today's rings, then
 /// habits, with the other trackers announced honestly.
@@ -40,7 +41,8 @@ class TrackScreen extends ConsumerWidget {
         const _PerformancePanel(),
       if (habitsOn) const HabitsSection(),
       if (on.contains(AppModule.routines)) const RoutinesSection(),
-      if (on.any(AppModule.trackers.contains)) const _MoreTrackers(),
+      if (on.contains(AppModule.water)) const WaterSection(),
+      if (on.any((m) => AppModule.trackers.contains(m) && !m.built)) const _MoreTrackers(),
     ];
 
     return KPage(
@@ -85,7 +87,6 @@ class _MoreTrackers extends ConsumerWidget {
                 runSpacing: KSpacing.sm,
                 children: [
                   if (on.contains(AppModule.sleep)) const KChip(label: 'Sleep', glyph: KGlyphs.moon),
-                  if (on.contains(AppModule.water)) const KChip(label: 'Water', glyph: KGlyphs.drop),
                   if (on.contains(AppModule.workouts)) const KChip(label: 'Workouts', glyph: KGlyphs.bolt),
                   if (on.contains(AppModule.nutrition)) const KChip(label: 'Nutrition', glyph: KGlyphs.spark),
                 ],

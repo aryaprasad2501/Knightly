@@ -1,8 +1,16 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-26 · Phase 2 step 4 (Notifications) complete_
+_Last updated: 2026-11-26 · Phase 2 step 5 (Water) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 5 — Water, 2026-11-26):** schema v7 (`features/water/data/water_tables.dart`,
+migration v6→v7 + test), `domain/water.dart` (`WaterDay.range`, `formatMl`), `water_repository.dart`
+(add, remove → putBack for Undo), `water_providers.dart` (goal setting `water.goal_ml`, week/today),
+`presentation/water_section.dart` (Track; `logWaterWithUndo` for Home). Home overview + quick action wired,
+backup (since 7), module built; Track's "More trackers" lists only unbuilt ones. 281 tests. Verified on the
+Pixel 8 AVD (real v6→v7 upgrade, log from Home and Track). **Next:** Sleep.
+
 
 **Latest (Phase 2 step 4 — Notifications, 2026-11-26):** `flutter_local_notifications` 20.1.0 + `timezone`
 (approved; only two tiny Linux/Windows helper packages were downloaded, the rest was cached). Android:

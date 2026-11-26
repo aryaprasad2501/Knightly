@@ -19,6 +19,7 @@ import 'package:knightly/features/settings/data/settings_repository.dart';
 import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/recurrence.dart';
 import 'package:knightly/features/tasks/domain/task.dart';
+import 'package:knightly/features/water/data/water_repository.dart';
 
 void main() {
   final now = DateTime(2026, 11, 26, 18, 30);
@@ -420,5 +421,29 @@ void main() {
       doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
       expect(() => serviceFor(openDb()).validate(jsonEncode(doc)), throwsA(isA<BackupException>()));
     });
+  });
+
+  test('water logs are backed up and restored; older backups restore with none', () async {
+    final source = openDb();
+    final water = WaterRepository(source, clock: () => now);
+    await water.add(250);
+    await water.add(500);
+    final json = await serviceFor(source).exportJson();
+    expect(serviceFor(source).validate(json).waterLogs, 2);
+
+    final target = openDb();
+    await serviceFor(target).restore(json);
+    final logs = await WaterRepository(target, clock: () => now).watchLogs(since: today).first;
+    expect([for (final l in logs) (l.amountMl, l.date, l.loggedAt)], [(250, today, now), (500, today, now)]);
+
+    final doc = jsonDecode(json) as Map<String, Object?>;
+    final data = doc['data']! as Map<String, Object?>;
+    data.remove('waterLogs');
+    (doc['counts']! as Map).remove('waterLogs');
+    doc['schemaVersion'] = 6;
+    doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
+    final summary = await serviceFor(target).restore(jsonEncode(doc));
+    expect(summary.waterLogs, 0);
+    expect(await target.select(target.waterLogs).get(), isEmpty);
   });
 }

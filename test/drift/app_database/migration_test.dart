@@ -12,6 +12,7 @@ import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
 import 'generated/schema_v6.dart' as v6;
+import 'generated/schema_v7.dart' as v7;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -390,6 +391,44 @@ void main() {
           expect(await newDb.select(newDb.routines).get(), isEmpty);
           expect(await newDb.select(newDb.routineSteps).get(), isEmpty);
           expect(await newDb.select(newDb.routineRuns).get(), isEmpty);
+        },
+      );
+    },
+  );
+
+  // v7 only adds the water log: v6 data (including routines) is untouched.
+  test(
+    'migration from v6 to v7 keeps everything and adds an empty water log',
+    () async {
+      const at = '2026-11-26T09:00:00.000Z';
+      const uuid = '9b2c1a3e-1b0d-4c2e-9a7f-1d2e3c4b5a02';
+      await verifier.testWithDataIntegrity(
+        oldVersion: 6,
+        newVersion: 7,
+        createOld: v6.DatabaseAtV6.new,
+        createNew: v7.DatabaseAtV7.new,
+        openTestedDatabase: AppDatabase.new,
+        createItems: (batch, oldDb) {
+          batch.insertAll(oldDb.routines, const [
+            v6.RoutinesData(
+              id: 1,
+              uuid: uuid,
+              name: 'Morning',
+              timeOfDay: 1,
+              schedule: 'daily',
+              startMinute: 390,
+              createdAt: at,
+              updatedAt: at,
+            ),
+          ]);
+        },
+        validateItems: (newDb) async {
+          final routine = (await newDb.select(newDb.routines).get()).single;
+          expect(
+            (routine.id, routine.uuid, routine.name, routine.startMinute),
+            (1, uuid, 'Morning', 390),
+          );
+          expect(await newDb.select(newDb.waterLogs).get(), isEmpty);
         },
       );
     },

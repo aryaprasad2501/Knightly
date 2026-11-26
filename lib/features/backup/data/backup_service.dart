@@ -60,6 +60,7 @@ class BackupService {
       final routines = await (_db.select(_db.routines)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final steps = await (_db.select(_db.routineSteps)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final runs = await (_db.select(_db.routineRuns)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final water = await (_db.select(_db.waterLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -187,6 +188,17 @@ class BackupService {
               'updatedAt': _time(r.updatedAt),
             },
         ],
+        'waterLogs': [
+          for (final w in water)
+            {
+              'id': w.id,
+              'uuid': w.uuid,
+              'date': w.date,
+              'loggedAt': _time(w.loggedAt),
+              'amountMl': w.amountMl,
+              'updatedAt': _time(w.updatedAt),
+            },
+        ],
       };
     });
 
@@ -280,6 +292,7 @@ class BackupService {
       routines: [for (final r in tables['routines']!) _routineRow(r)],
       steps: [for (final r in tables['routineSteps']!) _stepRow(r)],
       runs: [for (final r in tables['routineRuns']!) _runRow(r)],
+      water: [for (final r in tables['waterLogs']!) _waterRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -336,6 +349,8 @@ class BackupService {
     for (final r in p.runs) {
       if (!routineIds.contains(r.routineId.value)) throw _damaged;
     }
+    unique(p.water.map((r) => r.id.value));
+    unique(p.water.map((r) => r.uuid.value));
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -347,6 +362,7 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.waterLogs).go();
       await _db.delete(_db.routineRuns).go();
       await _db.delete(_db.routineSteps).go();
       await _db.delete(_db.routines).go();
@@ -368,6 +384,7 @@ class BackupService {
         b.insertAll(_db.routines, parsed.routines);
         b.insertAll(_db.routineSteps, parsed.steps);
         b.insertAll(_db.routineRuns, parsed.runs);
+        b.insertAll(_db.waterLogs, parsed.water);
       });
     });
     return parsed.summary;
@@ -518,6 +535,19 @@ class BackupService {
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
   );
 
+  WaterLogsCompanion _waterRow(Map<String, Object?> r) {
+    final amount = _int(r, 'amountMl');
+    if (amount < 1 || amount > 5000) throw _damaged;
+    return WaterLogsCompanion.insert(
+      id: Value(_int(r, 'id')),
+      uuid: Value(_uuid(r)),
+      date: _date(r, 'date'),
+      loggedAt: _requiredTime(r, 'loggedAt'),
+      amountMl: amount,
+      updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    );
+  }
+
   static int _int(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is int) return v;
@@ -580,6 +610,7 @@ class _Parsed {
     required this.routines,
     required this.steps,
     required this.runs,
+    required this.water,
   });
 
   final BackupSummary summary;
@@ -593,6 +624,7 @@ class _Parsed {
   final List<RoutinesCompanion> routines;
   final List<RoutineStepsCompanion> steps;
   final List<RoutineRunsCompanion> runs;
+  final List<WaterLogsCompanion> water;
 }
 
 final backupServiceProvider = Provider<BackupService>(

@@ -5,26 +5,36 @@ import '../../../../core/design/icons/k_glyph.dart';
 import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
+import '../../../../core/modules/app_module.dart';
 import '../../../../core/time/clock.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
 
-/// One-tap capture shortcuts. Actions whose module does not exist yet are
-/// shown disabled and labelled "Soon".
+/// One-tap capture shortcuts for the modules that are on. Actions whose
+/// module does not exist yet are shown disabled and labelled "Soon".
+/// [hasContent] says whether any shortcut is left to show.
 class QuickActionsGrid extends ConsumerWidget {
   const QuickActionsGrid({super.key});
+
+  static bool hasContent(Set<AppModule> on) =>
+      on.contains(AppModule.missions) ||
+      on.contains(AppModule.water) ||
+      on.contains(AppModule.routines) ||
+      on.contains(AppModule.sleep);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final today = ref.watch(todayProvider);
+    final on = ref.watch(enabledModulesProvider);
     final tiles = [
-      _ActionTile(
-        glyph: KGlyphs.plus,
-        label: 'New mission',
-        onTap: () => showTaskEditor(context, initialDue: today),
-      ),
-      const _ActionTile(glyph: KGlyphs.drop, label: 'Log water'),
-      const _ActionTile(glyph: KGlyphs.bolt, label: 'Start routine'),
-      const _ActionTile(glyph: KGlyphs.moon, label: 'Log sleep'),
+      if (on.contains(AppModule.missions))
+        _ActionTile(
+          glyph: KGlyphs.plus,
+          label: 'New mission',
+          onTap: () => showTaskEditor(context, initialDue: today),
+        ),
+      if (on.contains(AppModule.water)) const _ActionTile(glyph: KGlyphs.drop, label: 'Log water'),
+      if (on.contains(AppModule.routines)) const _ActionTile(glyph: KGlyphs.bolt, label: 'Start routine'),
+      if (on.contains(AppModule.sleep)) const _ActionTile(glyph: KGlyphs.moon, label: 'Log sleep'),
     ];
 
     return Column(
@@ -35,7 +45,8 @@ class QuickActionsGrid extends ConsumerWidget {
             children: [
               Expanded(child: tiles[row]),
               const SizedBox(width: KSpacing.md),
-              Expanded(child: tiles[row + 1]),
+              // An odd last tile keeps its half width.
+              Expanded(child: row + 1 < tiles.length ? tiles[row + 1] : const SizedBox.shrink()),
             ],
           ),
         ],

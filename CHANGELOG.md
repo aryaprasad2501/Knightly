@@ -5,6 +5,15 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 1 — 2026-11-26 — Modules
+
+### Added
+- **Settings › Modules**: switch off the parts of Knightly you don't use — Missions, Habits, Streaks,
+  Performance, and the upcoming Calendar, Routines, Sleep, Water, Workouts, Nutrition and Home,
+  garden & pets. A module that is off disappears from the tabs, Home, Track and the dock. Its data
+  stays on the device and comes back when you switch it on again; backups and the Recycle Bin still
+  include it. The choice is remembered.
+
 ## Phase 1 — 2026-11-26 — Foundation and data safety
 
 ### Added

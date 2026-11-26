@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/design/ambient/k_backdrop.dart';
+import '../../core/modules/app_module.dart';
 import '../../core/design/components/k_navigation_bar.dart';
 import '../../core/design/icons/k_glyphs.dart';
 import '../../core/design/theme/theme_context.dart';
@@ -32,6 +33,19 @@ class AppShell extends ConsumerWidget {
   final StatefulNavigationShell navigationShell;
   final List<Widget> children;
 
+  /// Whether branch [index] (in [shellDestinations] order) is shown, given
+  /// the modules that are on. Home and Settings are always there; Track stays
+  /// while anything it shows is on.
+  static bool isBranchVisible(int index, Set<AppModule> on) => switch (index) {
+    1 => on.contains(AppModule.calendar),
+    2 => on.contains(AppModule.missions),
+    3 =>
+      on.contains(AppModule.habits) ||
+          on.contains(AppModule.analytics) ||
+          on.any(AppModule.trackers.contains),
+    _ => true,
+  };
+
   void _onSelected(int index) {
     // Re-selecting the current tab returns it to its root.
     navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
@@ -40,7 +54,7 @@ class AppShell extends ConsumerWidget {
   /// The command each screen puts on the dock, in [shellDestinations] order.
   KDockAction? _actionFor(int index, BuildContext context, WidgetRef ref) => switch (index) {
     // From Home a new mission is for today; from Tasks it follows the board's view.
-    0 => KDockAction(
+    0 when _on(ref, AppModule.missions) => KDockAction(
       glyph: KGlyphs.plus,
       label: 'New mission',
       onPressed: () => showTaskEditor(context, initialDue: ref.read(todayProvider)),
@@ -50,13 +64,29 @@ class AppShell extends ConsumerWidget {
       label: 'New mission',
       onPressed: () => composeMission(context, ref),
     ),
-    3 => KDockAction(glyph: KGlyphs.plus, label: 'New habit', onPressed: () => showHabitEditor(context)),
+    3 when _on(ref, AppModule.habits) => KDockAction(
+      glyph: KGlyphs.plus,
+      label: 'New habit',
+      onPressed: () => showHabitEditor(context),
+    ),
     _ => null,
   };
+
+  static bool _on(WidgetRef ref, AppModule module) => ref.read(enabledModulesProvider).contains(module);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final canvas = context.palette.canvas;
+    final modules = ref.watch(enabledModulesProvider);
+    final visible = [
+      for (var i = 0; i < shellDestinations.length; i++)
+        if (isBranchVisible(i, modules)) i,
+    ];
+    final current = navigationShell.currentIndex;
+    if (!visible.contains(current)) {
+      // The open tab's module was just switched off: go Home.
+      WidgetsBinding.instance.addPostFrameCallback((_) => navigationShell.goBranch(0));
+    }
     // Decode the theme's page backdrops up front so every tab opens on its
     // picture, not on the drawn fallback. Cached, so repeat calls are free.
     final family = context.style.family;
@@ -105,10 +135,10 @@ class AppShell extends ConsumerWidget {
           ],
         ),
         bottomNavigationBar: KNavigationBar(
-          destinations: shellDestinations,
-          selectedIndex: navigationShell.currentIndex,
-          onSelected: _onSelected,
-          action: _actionFor(navigationShell.currentIndex, context, ref),
+          destinations: [for (final i in visible) shellDestinations[i]],
+          selectedIndex: visible.contains(current) ? visible.indexOf(current) : 0,
+          onSelected: (i) => _onSelected(visible[i]),
+          action: _actionFor(current, context, ref),
         ),
       ),
     );

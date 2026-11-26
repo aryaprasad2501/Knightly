@@ -4,6 +4,16 @@ _Last updated: 2026-11-26 · Living worlds visual pass complete_
 
 ## Where things stand
 
+**Latest (Phase 2 step 1 — module registry, 2026-11-26):** `core/modules/app_module.dart`
+(`AppModule`, `ModuleSettings`, `enabledModulesProvider`), Settings › Modules
+(`settings/presentation/modules_screen.dart`, route `/modules`). Gated: tabs in `AppShell`, Home
+sections (`today_screen.dart` + `hasContent` on each card), Track (`track_screen.dart`), dock
+commands, streak displays. 182 tests (new: `test/core/modules/`, `modules_flow_test.dart`).
+**Next in Phase 2:** notifications (needs the `flutter_local_notifications` package — ask the user
+before downloading), then Calendar with a shared occurrence model, then Routines. New modules must
+follow the D60 contract.
+
+
 **Latest (Phase 1 — foundation & data safety, 2026-11-26):** Git initialised (baseline commit
 `08087c7`; Phase 1 changes are uncommitted until the user asks). Schema **v4** (uuid / updated_at /
 deleted_at; migration + data-integrity test). Recycle Bin (`features/recycle_bin/`), soft delete

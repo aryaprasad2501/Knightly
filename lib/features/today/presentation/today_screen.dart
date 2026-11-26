@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design/ambient/k_backdrop.dart';
 import '../../../core/design/components/k_section_header.dart';
 import '../../../core/design/layout/k_page.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import '../../../core/modules/app_module.dart';
 import 'widgets/command_header.dart';
 import 'widgets/daily_progress_card.dart';
 import 'widgets/overview_card.dart';
@@ -15,14 +17,23 @@ import 'widgets/upcoming_mission_card.dart';
 ///
 /// Until modules ship, every section shows an honest empty state — no
 /// invented numbers. Each section will be wired to its module's providers.
-class TodayScreen extends StatelessWidget {
+class TodayScreen extends ConsumerWidget {
   const TodayScreen({super.key, this.clock = DateTime.now});
 
   /// Injectable for tests.
   final DateTime Function() clock;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Each section appears only while a module it shows is on.
+    final on = ref.watch(enabledModulesProvider);
+    final sections = <List<Widget>>[
+      if (on.contains(AppModule.missions)) const [UpcomingMissionHeader(), UpcomingMissionCard()],
+      if (OverviewCard.hasContent(on)) const [KSectionHeader("Today's overview"), OverviewCard()],
+      if (DailyProgressCard.hasContent(on)) const [KSectionHeader('Daily progress'), DailyProgressCard()],
+      if (QuickActionsGrid.hasContent(on)) const [KSectionHeader('Quick actions'), QuickActionsGrid()],
+    ];
+
     // A taller, cinematic scene: the city (or the rooftops) stays in view
     // behind the greeting, and the primary objective sits just below it.
     return KPage(
@@ -31,17 +42,10 @@ class TodayScreen extends StatelessWidget {
       backdrop: KBackdrop.today,
       children: [
         const SizedBox(height: KSpacing.lg),
-        const UpcomingMissionHeader(),
-        const UpcomingMissionCard(),
-        const SizedBox(height: KSpacing.xxl),
-        const KSectionHeader("Today's overview"),
-        const OverviewCard(),
-        const SizedBox(height: KSpacing.xxl),
-        const KSectionHeader('Daily progress'),
-        const DailyProgressCard(),
-        const SizedBox(height: KSpacing.xxl),
-        const KSectionHeader('Quick actions'),
-        const QuickActionsGrid(),
+        for (final (i, section) in sections.indexed) ...[
+          if (i > 0) const SizedBox(height: KSpacing.xxl),
+          ...section,
+        ],
       ],
     );
   }

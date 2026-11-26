@@ -6,19 +6,43 @@ import '../../../../core/design/icons/k_glyph.dart';
 import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
+import '../../../../core/modules/app_module.dart';
 import '../../../habits/application/habits_providers.dart';
 import '../../../tasks/application/tasks_providers.dart';
 
-/// Three headline figures for the day. Modules that do not exist yet show
-/// "—"; nothing is ever invented.
+/// The day's headline figures, one per module that is on (missions, habits,
+/// water). Modules that do not exist yet show "—"; nothing is ever invented.
+/// [hasContent] says whether the card has anything to show at all.
 class OverviewCard extends ConsumerWidget {
   const OverviewCard({super.key});
+
+  static bool hasContent(Set<AppModule> on) =>
+      on.contains(AppModule.missions) || on.contains(AppModule.habits) || on.contains(AppModule.water);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
+    final on = ref.watch(enabledModulesProvider);
     final summary = ref.watch(missionSummaryProvider).valueOrNull;
     final habits = ref.watch(habitSummaryProvider).valueOrNull;
+
+    final metrics = <Widget>[
+      if (on.contains(AppModule.missions))
+        _Metric(
+          glyph: KGlyphs.flag,
+          label: 'Missions done',
+          value: _ratio(summary?.completedToday, summary?.totalToday),
+          semanticValue: _spoken(summary?.completedToday, summary?.totalToday),
+        ),
+      if (on.contains(AppModule.habits))
+        _Metric(
+          glyph: KGlyphs.spark,
+          label: 'Habits done',
+          value: _ratio(habits?.doneToday, habits?.dueToday),
+          semanticValue: _spoken(habits?.doneToday, habits?.dueToday),
+        ),
+      if (on.contains(AppModule.water)) const _Metric(glyph: KGlyphs.drop, label: 'Water'),
+    ];
 
     return KSurface(
       child: Column(
@@ -28,35 +52,20 @@ class OverviewCard extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: _Metric(
-                    glyph: KGlyphs.flag,
-                    label: 'Missions done',
-                    value: _ratio(summary?.completedToday, summary?.totalToday),
-                    semanticValue: _spoken(summary?.completedToday, summary?.totalToday),
-                  ),
-                ),
-                const _VerticalRule(),
-                Expanded(
-                  child: _Metric(
-                    glyph: KGlyphs.spark,
-                    label: 'Habits done',
-                    value: _ratio(habits?.doneToday, habits?.dueToday),
-                    semanticValue: _spoken(habits?.doneToday, habits?.dueToday),
-                  ),
-                ),
-                const _VerticalRule(),
-                const Expanded(
-                  child: _Metric(glyph: KGlyphs.drop, label: 'Water'),
-                ),
+                for (final (i, metric) in metrics.indexed) ...[
+                  if (i > 0) const _VerticalRule(),
+                  Expanded(child: metric),
+                ],
               ],
             ),
           ),
-          const SizedBox(height: KSpacing.lg),
-          Text(
-            'Water appears when its module comes online.',
-            style: context.textStyles.bodySmall?.copyWith(color: p.textMuted),
-          ),
+          if (on.contains(AppModule.water)) ...[
+            const SizedBox(height: KSpacing.lg),
+            Text(
+              'Water appears when its module comes online.',
+              style: context.textStyles.bodySmall?.copyWith(color: p.textMuted),
+            ),
+          ],
         ],
       ),
     );

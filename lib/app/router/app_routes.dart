@@ -10,6 +10,7 @@ abstract final class AppRoutes {
   // Pushed pages (cover the dock).
   static const recycleBin = '/recycle-bin';
   static const backup = '/backup';
+  static const modules = '/modules';
 
   // Development tools. Registered only in debug builds.
   static const devBuildStatus = '/dev/build-status';

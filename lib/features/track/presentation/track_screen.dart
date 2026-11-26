@@ -11,6 +11,7 @@ import '../../../core/design/layout/k_page.dart';
 import '../../../core/design/theme/k_tone.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import '../../../core/modules/app_module.dart';
 import '../../habits/application/habits_providers.dart';
 import '../../habits/domain/habit_stats.dart';
 import '../../habits/presentation/habits_section.dart';
@@ -23,31 +24,44 @@ class TrackScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final summary = ref.watch(habitSummaryProvider).valueOrNull;
-    final eyebrow = summary == null || summary.dueToday == 0
+    final on = ref.watch(enabledModulesProvider);
+    final habitsOn = on.contains(AppModule.habits);
+    final summary = habitsOn ? ref.watch(habitSummaryProvider).valueOrNull : null;
+    final eyebrow = !habitsOn
+        ? 'Performance'
+        : summary == null || summary.dueToday == 0
         ? 'Habits'
         : '${summary.doneToday} of ${summary.dueToday} habits done';
+
+    // Each part appears only while its module is on.
+    final sections = <Widget>[
+      if (on.contains(AppModule.analytics) && (habitsOn || on.contains(AppModule.missions)))
+        const _PerformancePanel(),
+      if (habitsOn) const HabitsSection(),
+      if (on.any(AppModule.trackers.contains)) const _MoreTrackers(),
+    ];
 
     return KPage(
       eyebrow: eyebrow,
       title: context.byStyle('Console', 'Instincts'),
       backdrop: KBackdrop.track,
-      children: const [
-        _PerformancePanel(),
-        SizedBox(height: KSpacing.xl),
-        HabitsSection(),
-        SizedBox(height: KSpacing.lg),
-        _MoreTrackers(),
+      children: [
+        for (final (i, section) in sections.indexed) ...[
+          if (i > 0) const SizedBox(height: KSpacing.xl),
+          section,
+        ],
       ],
     );
   }
 }
 
-class _MoreTrackers extends StatelessWidget {
+/// The trackers that are on but not built yet, announced honestly.
+class _MoreTrackers extends ConsumerWidget {
   const _MoreTrackers();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final on = ref.watch(enabledModulesProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -59,18 +73,19 @@ class _MoreTrackers extends StatelessWidget {
               Text('In development', style: context.textStyles.titleSmall),
               const SizedBox(height: KSpacing.xs),
               Text(
-                'Sleep, water, workouts and nutrition will join habits here, one module at a time.',
+                'These trackers will join here, one module at a time. Switch off any you won\'t use '
+                'in Settings › Modules.',
                 style: context.textStyles.bodyMedium,
               ),
               const SizedBox(height: KSpacing.md),
-              const Wrap(
+              Wrap(
                 spacing: KSpacing.sm,
                 runSpacing: KSpacing.sm,
                 children: [
-                  KChip(label: 'Sleep', glyph: KGlyphs.moon),
-                  KChip(label: 'Water', glyph: KGlyphs.drop),
-                  KChip(label: 'Workouts', glyph: KGlyphs.bolt),
-                  KChip(label: 'Nutrition', glyph: KGlyphs.spark),
+                  if (on.contains(AppModule.sleep)) const KChip(label: 'Sleep', glyph: KGlyphs.moon),
+                  if (on.contains(AppModule.water)) const KChip(label: 'Water', glyph: KGlyphs.drop),
+                  if (on.contains(AppModule.workouts)) const KChip(label: 'Workouts', glyph: KGlyphs.bolt),
+                  if (on.contains(AppModule.nutrition)) const KChip(label: 'Nutrition', glyph: KGlyphs.spark),
                 ],
               ),
             ],
@@ -88,7 +103,12 @@ class _PerformancePanel extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final stats = ref.watch(habitStatsProvider).valueOrNull ?? const <HabitStats>[];
+    final on = ref.watch(enabledModulesProvider);
+    final habitsOn = on.contains(AppModule.habits);
+    final missionsOn = on.contains(AppModule.missions);
+    final stats = habitsOn
+        ? ref.watch(habitStatsProvider).valueOrNull ?? const <HabitStats>[]
+        : const <HabitStats>[];
     final habits = HabitSummary.of(stats);
     final missions = ref.watch(missionSummaryProvider).valueOrNull;
     final weekDone = stats.fold(0, (sum, s) => sum + s.weekDone);
@@ -96,24 +116,27 @@ class _PerformancePanel extends ConsumerWidget {
     final alive = stats.where((s) => s.currentStreak > 0).length;
 
     final rows = [
-      (
-        ring: KRing(label: 'Habits today', value: habits.completion),
-        figure: habits.dueToday == 0 ? '—' : '${habits.doneToday}/${habits.dueToday}',
-      ),
-      (
-        ring: KRing(label: 'Missions today', value: missions?.completion, tone: KTone.success),
-        figure: missions == null || missions.totalToday == 0
-            ? '—'
-            : '${missions.completedToday}/${missions.totalToday}',
-      ),
-      (
-        ring: KRing(
-          label: 'This week',
-          value: weekTarget == 0 ? null : weekDone / weekTarget,
-          tone: KTone.warning,
+      if (habitsOn)
+        (
+          ring: KRing(label: 'Habits today', value: habits.completion),
+          figure: habits.dueToday == 0 ? '—' : '${habits.doneToday}/${habits.dueToday}',
         ),
-        figure: weekTarget == 0 ? '—' : '$weekDone/$weekTarget',
-      ),
+      if (missionsOn)
+        (
+          ring: KRing(label: 'Missions today', value: missions?.completion, tone: KTone.success),
+          figure: missions == null || missions.totalToday == 0
+              ? '—'
+              : '${missions.completedToday}/${missions.totalToday}',
+        ),
+      if (habitsOn)
+        (
+          ring: KRing(
+            label: 'This week',
+            value: weekTarget == 0 ? null : weekDone / weekTarget,
+            tone: KTone.warning,
+          ),
+          figure: weekTarget == 0 ? '—' : '$weekDone/$weekTarget',
+        ),
     ];
 
     final p = context.palette;
@@ -152,13 +175,15 @@ class _PerformancePanel extends ConsumerWidget {
                             ],
                           ),
                         ),
-                      const SizedBox(height: KSpacing.xs),
-                      Text(
-                        alive == 0
-                            ? 'No streaks running yet'
-                            : '$alive ${alive == 1 ? 'streak' : 'streaks'} alive',
-                        style: text.labelSmall?.copyWith(color: p.accentStrong),
-                      ),
+                      if (habitsOn && on.contains(AppModule.streaks)) ...[
+                        const SizedBox(height: KSpacing.xs),
+                        Text(
+                          alive == 0
+                              ? 'No streaks running yet'
+                              : '$alive ${alive == 1 ? 'streak' : 'streaks'} alive',
+                          style: text.labelSmall?.copyWith(color: p.accentStrong),
+                        ),
+                      ],
                     ],
                   ),
                 ),

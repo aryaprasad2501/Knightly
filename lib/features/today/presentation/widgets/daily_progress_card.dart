@@ -6,19 +6,25 @@ import '../../../../core/design/components/k_progress_ring.dart';
 import '../../../../core/design/components/k_surface.dart';
 import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
+import '../../../../core/modules/app_module.dart';
 import '../../../habits/application/habits_providers.dart';
 import '../../../tasks/application/tasks_providers.dart';
 
-/// Completion of today's commitments: the ring combines missions and habits;
-/// routines stay "no data" until that module ships.
+/// Completion of today's commitments for the modules that are on: the ring
+/// combines missions and habits; routines stay "no data" until that module
+/// ships. [hasContent] says whether the card has anything to show at all.
 class DailyProgressCard extends ConsumerWidget {
   const DailyProgressCard({super.key});
+
+  static bool hasContent(Set<AppModule> on) =>
+      on.contains(AppModule.missions) || on.contains(AppModule.habits) || on.contains(AppModule.routines);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
-    final missions = ref.watch(missionSummaryProvider).valueOrNull;
-    final habits = ref.watch(habitSummaryProvider).valueOrNull;
+    final on = ref.watch(enabledModulesProvider);
+    final missions = on.contains(AppModule.missions) ? ref.watch(missionSummaryProvider).valueOrNull : null;
+    final habits = on.contains(AppModule.habits) ? ref.watch(habitSummaryProvider).valueOrNull : null;
 
     final total = (missions?.totalToday ?? 0) + (habits?.dueToday ?? 0);
     final done = (missions?.completedToday ?? 0) + (habits?.doneToday ?? 0);
@@ -46,19 +52,22 @@ class DailyProgressCard extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                KProgressBar(
-                  value: missions?.completion,
-                  label: 'Missions',
-                  valueLabel: figure(missions?.completedToday ?? 0, missions?.totalToday ?? 0),
-                ),
-                const SizedBox(height: KSpacing.md),
-                KProgressBar(
-                  value: habits?.completion,
-                  label: 'Habits',
-                  valueLabel: figure(habits?.doneToday ?? 0, habits?.dueToday ?? 0),
-                ),
-                const SizedBox(height: KSpacing.md),
-                const KProgressBar(value: null, label: 'Routines', valueLabel: '—'),
+                for (final (i, bar) in [
+                  if (on.contains(AppModule.missions))
+                    KProgressBar(
+                      value: missions?.completion,
+                      label: 'Missions',
+                      valueLabel: figure(missions?.completedToday ?? 0, missions?.totalToday ?? 0),
+                    ),
+                  if (on.contains(AppModule.habits))
+                    KProgressBar(
+                      value: habits?.completion,
+                      label: 'Habits',
+                      valueLabel: figure(habits?.doneToday ?? 0, habits?.dueToday ?? 0),
+                    ),
+                  if (on.contains(AppModule.routines))
+                    const KProgressBar(value: null, label: 'Routines', valueLabel: '—'),
+                ].indexed) ...[if (i > 0) const SizedBox(height: KSpacing.md), bar],
               ],
             ),
           ),

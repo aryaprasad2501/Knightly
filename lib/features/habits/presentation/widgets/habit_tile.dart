@@ -9,6 +9,7 @@ import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/theme/k_tone.dart';
 import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
+import '../../../../core/modules/app_module.dart';
 import '../../application/habits_providers.dart';
 import '../../domain/habit.dart';
 import '../../domain/habit_stats.dart';
@@ -82,7 +83,9 @@ class HabitTile extends ConsumerWidget {
                               habit.schedule.countsWeeks ? 'Done for the week' : 'Rest day',
                               style: text.bodySmall?.copyWith(color: p.success),
                             ),
-                          if (stats.currentStreak > 0) _Streak(stats: stats),
+                          if (stats.currentStreak > 0 &&
+                              ref.watch(enabledModulesProvider).contains(AppModule.streaks))
+                            _Streak(stats: stats),
                         ],
                       ),
                       const SizedBox(height: KSpacing.sm),

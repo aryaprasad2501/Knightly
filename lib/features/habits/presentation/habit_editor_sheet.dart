@@ -10,6 +10,7 @@ import '../../../core/design/components/k_text_field.dart';
 import '../../../core/design/icons/k_glyphs.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import '../../../core/modules/app_module.dart';
 import '../application/habits_providers.dart';
 import '../data/habit_repository.dart';
 import '../domain/habit.dart';
@@ -159,7 +160,10 @@ class _HabitEditorState extends ConsumerState<_HabitEditor> {
               children: [
                 if (widget.stats != null) ...[
                   // Live, so corrections to past days update the figures at once.
-                  _StatsRow(stats: _liveStats ?? widget.stats!),
+                  _StatsRow(
+                    stats: _liveStats ?? widget.stats!,
+                    showStreaks: ref.watch(enabledModulesProvider).contains(AppModule.streaks),
+                  ),
                   const SizedBox(height: KSpacing.lg),
                 ],
                 if (widget.habit != null) ...[
@@ -306,9 +310,12 @@ class _HabitEditorState extends ConsumerState<_HabitEditor> {
 }
 
 class _StatsRow extends StatelessWidget {
-  const _StatsRow({required this.stats});
+  const _StatsRow({required this.stats, required this.showStreaks});
 
   final HabitStats stats;
+
+  /// False when the Streaks module is off: only the 30-day rate is shown.
+  final bool showStreaks;
 
   @override
   Widget build(BuildContext context) {
@@ -318,12 +325,14 @@ class _StatsRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: KSpacing.md, horizontal: KSpacing.sm),
       child: Row(
         children: [
-          Expanded(
-            child: _Stat(value: '${stats.currentStreak}', label: 'Streak ($unit)'),
-          ),
-          Expanded(
-            child: _Stat(value: '${stats.bestStreak}', label: 'Best ($unit)'),
-          ),
+          if (showStreaks) ...[
+            Expanded(
+              child: _Stat(value: '${stats.currentStreak}', label: 'Streak ($unit)'),
+            ),
+            Expanded(
+              child: _Stat(value: '${stats.bestStreak}', label: 'Best ($unit)'),
+            ),
+          ],
           Expanded(
             child: _Stat(value: rate == null ? '—' : '${(rate * 100).round()}%', label: 'Last 30 days'),
           ),

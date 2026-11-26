@@ -20,7 +20,7 @@ Finder inWater(Finder f) => find.descendant(of: find.byType(WaterSection), match
 Future<void> openWater(WidgetTester tester) async {
   await goToTab(tester, 'Track');
   await scrollTo(tester, find.byType(WaterSection));
-  await scrollTo(tester, inWater(find.text('Daily goal')));
+  await scrollTo(tester, inWater(find.text('Last 7 days')));
 }
 
 void main() {
@@ -30,9 +30,9 @@ void main() {
     await openWater(tester);
     expect(inWater(find.text('0 ml')), findsOneWidget);
 
-    await tester.tap(inWater(find.widgetWithText(KButton, '+ 250 ml')));
+    await tester.tap(inWater(find.widgetWithText(KButton, '+250 ml')));
     await settleWithDatabase(tester);
-    await tester.tap(inWater(find.widgetWithText(KButton, '+ 500 ml')));
+    await tester.tap(inWater(find.widgetWithText(KButton, '+500 ml')));
     await settleWithDatabase(tester);
     expect(inWater(find.text('750 ml')), findsOneWidget);
     expect(inWater(find.text('1.25 L to go')), findsOneWidget);
@@ -50,13 +50,16 @@ void main() {
     await pumpKnightlyApp(tester, now: now);
     await openWater(tester);
 
-    await tester.tap(find.byTooltip('Other amount'));
+    await tester.tap(inWater(find.widgetWithText(KButton, 'Other')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('1 L').hitTestable());
     await settleWithDatabase(tester);
     expect(inWater(find.text('1 L')), findsWidgets);
 
-    await tester.tap(inWater(find.text('2 L')));
+    final goal = inWater(find.text('Goal · 2 L'));
+    await tester.ensureVisible(goal);
+    await tester.pumpAndSettle();
+    await tester.tap(goal);
     await tester.pumpAndSettle();
     await tester.tap(find.text('1 L').hitTestable().last);
     await settleWithDatabase(tester);

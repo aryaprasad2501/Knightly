@@ -1,0 +1,65 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Release signing — never commit keys or their passwords (see docs/RELEASE_SIGNING.md)
+**/key.properties
+*.jks
+*.keystore
+*.p12
+*.pem
+
+# Local machine settings and secrets
+**/local.properties
+.env
+.env.*
+
+# Generated Drift code (*.g.dart) and drift_schemas/ ARE committed on purpose:
+# the project then builds without running build_runner first.
+
+# Original third-party wallpapers and icons from the user's asset zip. Several
+# show franchise logos, so they stay local; the app uses the cleaned copies in
+# assets/backdrops/ (made by tool/backdrops/prepare_backdrops.py).
+/KNIGHTLY_THEME_PACK/user_supplied/

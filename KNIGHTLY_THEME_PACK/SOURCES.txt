@@ -1,0 +1,31 @@
+KNIGHTLY THEME PACK — SOURCES
+=============================
+
+Batches 1–2 (#1–39, #55–108 except planned items)
+  Origin:   Original artwork painted procedurally in code for Knightly
+            (tool/theme_pack/generate_batch1.py, generate_batch2.py, kp_lib.py;
+            numpy + Pillow). Icons #55–79 are rendered by Flutter from the app's
+            own glyph set (tool/theme_pack/render_icons_test.dart).
+  Inputs:   None downloaded. Wordmarks use the bundled fonts Sora and Inter
+            (SIL Open Font License 1.1, assets/fonts/*/OFL.txt).
+  AI:       No AI image generation was used.
+  Licence:  Owned by the Knightly project. Regenerate with:
+            python tool/theme_pack/generate_batch1.py [asset numbers]
+            python tool/theme_pack/generate_batch2.py [asset numbers]
+            flutter test tool/theme_pack/render_icons_test.dart
+  Brand:    Bat, batarang-style blade, cat, claw and crest shapes are original
+            geometry. No DC Comics / Warner Bros. logos, insignia, artwork,
+            likenesses, fonts or names (including "Gotham") are used.
+
+User-supplied (2026-11-26)
+  user_supplied/wallpapers/  10 wallpapers from the user's zip
+            (KNIGHTLY_COMPLETE_FINAL_ASSET_PACK.zip), kept unchanged. The app's
+            assets/backdrops/*.webp are crops of them made by
+            tool/backdrops/prepare_backdrops.py (logos kept out of frame; one small
+            banner emblem in DK-06 patched over). Provenance as stated by the user's
+            pack: AI-generated concept art.
+
+External assets
+  None downloaded yet. Downloads (fonts, sounds, optional photo wallpapers) happen only
+  after approval of an exact file list; each will be recorded here with URL,
+  licence, author and date.

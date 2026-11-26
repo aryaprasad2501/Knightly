@@ -1,0 +1,26 @@
+KNIGHTLY — ANIMATION BRIEFS (#40–54, batch 3)
+=============================================
+
+Format: Lottie JSON (vector shapes only, no embedded images, no masks with
+feathering, no blur effects), 30 or 60 fps, under 150 KB each, or the same
+motion coded in Flutter. All must respect "reduce motion" (show the end frame).
+
+#40 Dark Knight emblem reveal (1.8 s): gold line scans up the frame, the bat
+    emblem is revealed behind it, a glint crosses the gold, settle.
+#41 Shadow Cat emblem reveal (1.8 s): two almond eyes open (green glint),
+    the cat-eared mask fades up around them, rose-to-violet sheen passes once.
+#42 Cape-sweep transition (0.8 s): a dark diagonal sweep covers the screen
+    left-to-right, the bat emblem holds for 0.15 s, the sweep exits.
+#43 Claw-slash transition (0.8 s): three slashes draw on, the screen splits
+    along them and reveals the new theme.
+#44 Batarang loader (loop 1.2 s): batarang spins on its axis, motion trail of
+    two fading copies.
+#45 Cat-eye loader (loop 1.6 s): almond eyes glow up and down, slow blink.
+#46/47 Startup sequences (≤ 2 s): crest + wordmark + tagline per theme.
+#48 Screen entry: sections arrive 45 ms apart (already coded: KReveal).
+#49 Mission complete (0.6 s): tick draws, ring burst of 8 short gold rays / rose petals.
+#50 Habit streak (0.8 s): flame grows, number ticks up, small spark.
+#51 Progress ring (0.65 s): segments light in sequence (already coded).
+#52 Navigation transition: emblem glides to the tab (already coded).
+#53 Button press (0.12 s): press-in scale 0.97 and edge highlight (already coded).
+#54 Achievement unlock (1.2 s): crest drops in, gold/rose shimmer line, label slides up.

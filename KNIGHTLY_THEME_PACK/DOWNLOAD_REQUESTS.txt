@@ -1,0 +1,29 @@
+KNIGHTLY THEME PACK — DOWNLOADS AWAITING APPROVAL (batch 4)
+==========================================================
+
+Nothing below has been downloaded. Reply "approve D1–D4" (or a subset) and
+each file is fetched, its licence saved next to it and recorded in SOURCES.txt.
+Sizes are approximate and will be confirmed at download time.
+
+FONTS (#118–121) — SIL Open Font License 1.1 (free, embeddable in apps)
+  D1  Chakra Petch SemiBold + Bold (.ttf)        Dark Knight display  ~2 × 140 KB
+      github.com/google/fonts — ofl/chakrapetch/ (+ OFL.txt)
+  D2  Cormorant Garamond SemiBold + SemiBold Italic (.ttf)
+                                                 Shadow Cat display   ~2 × 300–450 KB
+      github.com/google/fonts — ofl/cormorantgaramond/ (+ OFL.txt)
+  D3  JetBrains Mono Medium (.ttf)                technical numbers   ~250–300 KB
+      github.com/google/fonts — ofl/jetbrainsmono/ (+ OFL.txt)
+      Body font: Inter — already bundled, nothing to download.
+
+SOUNDS (#109–117) — CC0 (public domain)
+  D4  Kenney "Interface Sounds" pack (.zip of .ogg files)              ~1–3 MB
+      kenney.nl/assets/interface-sounds
+      From it: click, confirm, toggle, notification and switch sounds,
+      renamed per theme (DK = metallic/mechanical picks, SC = soft/airy picks).
+      Ambient sound (#117) is optional; none chosen yet.
+
+PHOTO WALLPAPERS (optional alternative to #12–25)
+  D5  Free-licence night-city / rooftop / moon photos (Pexels or Unsplash
+      licence), graded to the theme palettes with the bat/cat elements drawn
+      on top. If you want these, say so and I will search and send an exact
+      list (photo URL, author, licence, size) for approval first.

@@ -1,0 +1,348 @@
+KNIGHTLY THEME PACK — ASSET INDEX
+=================================
+
+Status: READY FOR REVIEW = generated, awaiting your approval; PLANNED = not produced yet.
+
+#1    READY FOR REVIEW   Dark Knight primary emblem
+        dark_knight/branding/01_dk_emblem_primary.png
+#2    READY FOR REVIEW   Shadow Cat primary emblem
+        shadow_cat/branding/02_sc_emblem_primary.png
+#3    READY FOR REVIEW   Dark Knight secondary crest
+        dark_knight/branding/03_dk_crest_secondary.png
+#4    READY FOR REVIEW   Shadow Cat secondary crest
+        shadow_cat/branding/04_sc_crest_secondary.png
+#5    READY FOR REVIEW   Batarang-inspired navigation symbol
+        dark_knight/branding/05_dk_batarang_symbol.png
+#6    READY FOR REVIEW   Cat claw symbol
+        shadow_cat/branding/06_sc_claw_symbol.png
+#7    READY FOR REVIEW   Knightly wordmark
+        shared/UI/07_knightly_wordmark.png
+#8    READY FOR REVIEW   Dark Knight wordmark
+        dark_knight/branding/08_dk_wordmark.png
+#9    READY FOR REVIEW   Shadow Cat wordmark
+        shadow_cat/branding/09_sc_wordmark.png
+#10   READY FOR REVIEW   Dark Knight launcher icon
+        dark_knight/launcher/10_dk_launcher_icon.png
+#11   READY FOR REVIEW   Shadow Cat launcher icon
+        shadow_cat/launcher/11_sc_launcher_icon.png
+#12   READY FOR REVIEW   City skyline with bat signal
+        dark_knight/wallpapers/12_dk_wall_city_signal.webp
+#13   READY FOR REVIEW   Rainy city skyline
+        dark_knight/wallpapers/13_dk_wall_rain_city.webp
+#14   READY FOR REVIEW   Cave command centre
+        dark_knight/wallpapers/14_dk_wall_command_cave.webp
+#15   READY FOR REVIEW   Rooftop overlooking the city
+        dark_knight/wallpapers/15_dk_wall_rooftop_overlook.webp
+#16   READY FOR REVIEW   Atmospheric city street
+        dark_knight/wallpapers/16_dk_wall_street.webp
+#17   READY FOR REVIEW   Skyline at sunset-to-night
+        dark_knight/wallpapers/17_dk_wall_dusk_city.webp
+#18   READY FOR REVIEW   Abstract tactical environment
+        dark_knight/wallpapers/18_dk_wall_abstract_tactical.webp
+#19   READY FOR REVIEW   Moonlit rooftop with feline silhouette
+        shadow_cat/wallpapers/19_sc_wall_moonlit_rooftop_cat.webp
+#20   READY FOR REVIEW   Purple moon over a gothic city
+        shadow_cat/wallpapers/20_sc_wall_purple_moon_gothic.webp
+#21   READY FOR REVIEW   Rainy rooftop skyline
+        shadow_cat/wallpapers/21_sc_wall_rain_rooftops.webp
+#22   READY FOR REVIEW   Cat overlooking the city
+        shadow_cat/wallpapers/22_sc_wall_cat_overlook.webp
+#23   READY FOR REVIEW   Mysterious violet city atmosphere
+        shadow_cat/wallpapers/23_sc_wall_violet_atmosphere.webp
+#24   READY FOR REVIEW   Elegant dark rooftop
+        shadow_cat/wallpapers/24_sc_wall_elegant_rooftop.webp
+#25   READY FOR REVIEW   Abstract stealth environment
+        shadow_cat/wallpapers/25_sc_wall_abstract_stealth.webp
+#26   READY FOR REVIEW   Moving spotlight beam
+        dark_knight/backgrounds/26_dk_layer_spotlight_beam.webp
+#27   READY FOR REVIEW   Drifting fog
+        dark_knight/backgrounds/27_dk_layer_fog_drift.webp
+#28   READY FOR REVIEW   Moving clouds
+        dark_knight/backgrounds/28_dk_layer_clouds.webp
+#29   READY FOR REVIEW   Floating golden particles
+        dark_knight/backgrounds/29_dk_layer_gold_particles.webp
+#30   READY FOR REVIEW   Rain overlay
+        dark_knight/backgrounds/30_dk_layer_rain.webp
+#31   READY FOR REVIEW   Ambient golden glow
+        dark_knight/backgrounds/31_dk_layer_gold_glow.webp
+#32   READY FOR REVIEW   Subtle atmospheric light leaks
+        dark_knight/backgrounds/32_dk_layer_light_leaks.webp
+#33   READY FOR REVIEW   Moon glow
+        shadow_cat/backgrounds/33_sc_layer_moon_glow.webp
+#34   READY FOR REVIEW   Drifting purple mist
+        shadow_cat/backgrounds/34_sc_layer_purple_mist.webp
+#35   READY FOR REVIEW   Floating particles
+        shadow_cat/backgrounds/35_sc_layer_particles.webp
+#36   READY FOR REVIEW   Subtle rain overlay
+        shadow_cat/backgrounds/36_sc_layer_rain_subtle.webp
+#37   READY FOR REVIEW   Moving shadow layer
+        shadow_cat/backgrounds/37_sc_layer_moving_shadow.webp
+#38   READY FOR REVIEW   Soft pink/violet light leaks
+        shadow_cat/backgrounds/38_sc_layer_pink_violet_leaks.webp
+#39   READY FOR REVIEW   Atmospheric rooftop haze
+        shadow_cat/backgrounds/39_sc_layer_rooftop_haze.webp
+#55   READY FOR REVIEW   Icon — Home (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/55_home.png
+        dark_knight/icons/glyph/55_home@96.png
+        dark_knight/icons/plate/55_home.png
+        shadow_cat/icons/glyph/55_home.png
+        shadow_cat/icons/glyph/55_home@96.png
+        shadow_cat/icons/plate/55_home.png
+#56   READY FOR REVIEW   Icon — Calendar (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/56_calendar.png
+        dark_knight/icons/glyph/56_calendar@96.png
+        dark_knight/icons/plate/56_calendar.png
+        shadow_cat/icons/glyph/56_calendar.png
+        shadow_cat/icons/glyph/56_calendar@96.png
+        shadow_cat/icons/plate/56_calendar.png
+#57   READY FOR REVIEW   Icon — Missions (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/57_missions.png
+        dark_knight/icons/glyph/57_missions@96.png
+        dark_knight/icons/plate/57_missions.png
+        shadow_cat/icons/glyph/57_missions.png
+        shadow_cat/icons/glyph/57_missions@96.png
+        shadow_cat/icons/plate/57_missions.png
+#58   READY FOR REVIEW   Icon — Habits (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/58_habits.png
+        dark_knight/icons/glyph/58_habits@96.png
+        dark_knight/icons/plate/58_habits.png
+        shadow_cat/icons/glyph/58_habits.png
+        shadow_cat/icons/glyph/58_habits@96.png
+        shadow_cat/icons/plate/58_habits.png
+#59   READY FOR REVIEW   Icon — Routines (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/59_routines.png
+        dark_knight/icons/glyph/59_routines@96.png
+        dark_knight/icons/plate/59_routines.png
+        shadow_cat/icons/glyph/59_routines.png
+        shadow_cat/icons/glyph/59_routines@96.png
+        shadow_cat/icons/plate/59_routines.png
+#60   READY FOR REVIEW   Icon — Sleep (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/60_sleep.png
+        dark_knight/icons/glyph/60_sleep@96.png
+        dark_knight/icons/plate/60_sleep.png
+        shadow_cat/icons/glyph/60_sleep.png
+        shadow_cat/icons/glyph/60_sleep@96.png
+        shadow_cat/icons/plate/60_sleep.png
+#61   READY FOR REVIEW   Icon — Water (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/61_water.png
+        dark_knight/icons/glyph/61_water@96.png
+        dark_knight/icons/plate/61_water.png
+        shadow_cat/icons/glyph/61_water.png
+        shadow_cat/icons/glyph/61_water@96.png
+        shadow_cat/icons/plate/61_water.png
+#62   READY FOR REVIEW   Icon — Fitness (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/62_fitness.png
+        dark_knight/icons/glyph/62_fitness@96.png
+        dark_knight/icons/plate/62_fitness.png
+        shadow_cat/icons/glyph/62_fitness.png
+        shadow_cat/icons/glyph/62_fitness@96.png
+        shadow_cat/icons/plate/62_fitness.png
+#63   READY FOR REVIEW   Icon — Nutrition (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/63_nutrition.png
+        dark_knight/icons/glyph/63_nutrition@96.png
+        dark_knight/icons/plate/63_nutrition.png
+        shadow_cat/icons/glyph/63_nutrition.png
+        shadow_cat/icons/glyph/63_nutrition@96.png
+        shadow_cat/icons/plate/63_nutrition.png
+#64   READY FOR REVIEW   Icon — Analytics (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/64_analytics.png
+        dark_knight/icons/glyph/64_analytics@96.png
+        dark_knight/icons/plate/64_analytics.png
+        shadow_cat/icons/glyph/64_analytics.png
+        shadow_cat/icons/glyph/64_analytics@96.png
+        shadow_cat/icons/plate/64_analytics.png
+#65   READY FOR REVIEW   Icon — Settings (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/65_settings.png
+        dark_knight/icons/glyph/65_settings@96.png
+        dark_knight/icons/plate/65_settings.png
+        shadow_cat/icons/glyph/65_settings.png
+        shadow_cat/icons/glyph/65_settings@96.png
+        shadow_cat/icons/plate/65_settings.png
+#66   READY FOR REVIEW   Icon — Notifications (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/66_notifications.png
+        dark_knight/icons/glyph/66_notifications@96.png
+        dark_knight/icons/plate/66_notifications.png
+        shadow_cat/icons/glyph/66_notifications.png
+        shadow_cat/icons/glyph/66_notifications@96.png
+        shadow_cat/icons/plate/66_notifications.png
+#67   READY FOR REVIEW   Icon — Backup (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/67_backup.png
+        dark_knight/icons/glyph/67_backup@96.png
+        dark_knight/icons/plate/67_backup.png
+        shadow_cat/icons/glyph/67_backup.png
+        shadow_cat/icons/glyph/67_backup@96.png
+        shadow_cat/icons/plate/67_backup.png
+#68   READY FOR REVIEW   Icon — Projects (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/68_projects.png
+        dark_knight/icons/glyph/68_projects@96.png
+        dark_knight/icons/plate/68_projects.png
+        shadow_cat/icons/glyph/68_projects.png
+        shadow_cat/icons/glyph/68_projects@96.png
+        shadow_cat/icons/plate/68_projects.png
+#69   READY FOR REVIEW   Icon — Priority (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/69_priority.png
+        dark_knight/icons/glyph/69_priority@96.png
+        dark_knight/icons/plate/69_priority.png
+        shadow_cat/icons/glyph/69_priority.png
+        shadow_cat/icons/glyph/69_priority@96.png
+        shadow_cat/icons/plate/69_priority.png
+#70   READY FOR REVIEW   Icon — Clock (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/70_clock.png
+        dark_knight/icons/glyph/70_clock@96.png
+        dark_knight/icons/plate/70_clock.png
+        shadow_cat/icons/glyph/70_clock.png
+        shadow_cat/icons/glyph/70_clock@96.png
+        shadow_cat/icons/plate/70_clock.png
+#71   READY FOR REVIEW   Icon — Search (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/71_search.png
+        dark_knight/icons/glyph/71_search@96.png
+        dark_knight/icons/plate/71_search.png
+        shadow_cat/icons/glyph/71_search.png
+        shadow_cat/icons/glyph/71_search@96.png
+        shadow_cat/icons/plate/71_search.png
+#72   READY FOR REVIEW   Icon — Add (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/72_add.png
+        dark_knight/icons/glyph/72_add@96.png
+        dark_knight/icons/plate/72_add.png
+        shadow_cat/icons/glyph/72_add.png
+        shadow_cat/icons/glyph/72_add@96.png
+        shadow_cat/icons/plate/72_add.png
+#73   READY FOR REVIEW   Icon — Edit (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/73_edit.png
+        dark_knight/icons/glyph/73_edit@96.png
+        dark_knight/icons/plate/73_edit.png
+        shadow_cat/icons/glyph/73_edit.png
+        shadow_cat/icons/glyph/73_edit@96.png
+        shadow_cat/icons/plate/73_edit.png
+#74   READY FOR REVIEW   Icon — Delete (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/74_delete.png
+        dark_knight/icons/glyph/74_delete@96.png
+        dark_knight/icons/plate/74_delete.png
+        shadow_cat/icons/glyph/74_delete.png
+        shadow_cat/icons/glyph/74_delete@96.png
+        shadow_cat/icons/plate/74_delete.png
+#75   READY FOR REVIEW   Icon — Archive (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/75_archive.png
+        dark_knight/icons/glyph/75_archive@96.png
+        dark_knight/icons/plate/75_archive.png
+        shadow_cat/icons/glyph/75_archive.png
+        shadow_cat/icons/glyph/75_archive@96.png
+        shadow_cat/icons/plate/75_archive.png
+#76   READY FOR REVIEW   Icon — Complete (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/76_complete.png
+        dark_knight/icons/glyph/76_complete@96.png
+        dark_knight/icons/plate/76_complete.png
+        shadow_cat/icons/glyph/76_complete.png
+        shadow_cat/icons/glyph/76_complete@96.png
+        shadow_cat/icons/plate/76_complete.png
+#77   READY FOR REVIEW   Icon — Repeat (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/77_repeat.png
+        dark_knight/icons/glyph/77_repeat@96.png
+        dark_knight/icons/plate/77_repeat.png
+        shadow_cat/icons/glyph/77_repeat.png
+        shadow_cat/icons/glyph/77_repeat@96.png
+        shadow_cat/icons/plate/77_repeat.png
+#78   READY FOR REVIEW   Icon — Reminder (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/78_reminder.png
+        dark_knight/icons/glyph/78_reminder@96.png
+        dark_knight/icons/plate/78_reminder.png
+        shadow_cat/icons/glyph/78_reminder.png
+        shadow_cat/icons/glyph/78_reminder@96.png
+        shadow_cat/icons/plate/78_reminder.png
+#79   READY FOR REVIEW   Icon — Progress (plate 192 px, glyph 192 + 96 px)
+        dark_knight/icons/glyph/79_progress.png
+        dark_knight/icons/glyph/79_progress@96.png
+        dark_knight/icons/plate/79_progress.png
+        shadow_cat/icons/glyph/79_progress.png
+        shadow_cat/icons/glyph/79_progress@96.png
+        shadow_cat/icons/plate/79_progress.png
+#80   READY FOR REVIEW   Empty-state illustrations (4 per theme)
+        dark_knight/illustrations/080_dk_empty_states_all_clear.png
+        dark_knight/illustrations/080_dk_empty_states_no_habits.png
+        dark_knight/illustrations/080_dk_empty_states_no_missions.png
+        dark_knight/illustrations/080_dk_empty_states_nothing_scheduled.png
+        shadow_cat/illustrations/080_sc_empty_states_all_clear.png
+        shadow_cat/illustrations/080_sc_empty_states_no_habits.png
+        shadow_cat/illustrations/080_sc_empty_states_no_missions.png
+        shadow_cat/illustrations/080_sc_empty_states_nothing_scheduled.png
+#81   READY FOR REVIEW   Carbon-fibre texture
+        dark_knight/textures/81_dk_tex_carbon_fibre.webp
+#82   READY FOR REVIEW   Brushed gunmetal texture
+        dark_knight/textures/82_dk_tex_brushed_gunmetal.webp
+#83   READY FOR REVIEW   Dark metallic texture
+        dark_knight/textures/83_dk_tex_dark_metal.webp
+#84   READY FOR REVIEW   Tactical HUD frame
+        dark_knight/textures/84_dk_ui_hud_frame.png
+#85   READY FOR REVIEW   Gold metallic border
+        dark_knight/textures/85_dk_ui_gold_border.png
+#86   READY FOR REVIEW   Dark glass panel texture
+        dark_knight/textures/86_dk_ui_dark_glass_panel.png
+#87   READY FOR REVIEW   Black leather texture
+        shadow_cat/textures/87_sc_tex_black_leather.webp
+#88   READY FOR REVIEW   Burgundy leather texture
+        shadow_cat/textures/88_sc_tex_burgundy_leather.webp
+#89   READY FOR REVIEW   Glossy dark material
+        shadow_cat/textures/89_sc_tex_glossy_dark.webp
+#90   READY FOR REVIEW   Purple glass texture
+        shadow_cat/textures/90_sc_ui_purple_glass.png
+#91   READY FOR REVIEW   Pink neon glow overlay
+        shadow_cat/textures/91_sc_ui_pink_neon_frame.png
+#92   READY FOR REVIEW   Elegant curved panel material
+        shadow_cat/textures/92_sc_ui_curved_panel.png
+#93   READY FOR REVIEW   Subtle grain texture
+        shared/textures/93_grain_tile.png
+#94   READY FOR REVIEW   Dark vignette
+        shared/textures/94_vignette.webp
+#95   READY FOR REVIEW   Background noise texture
+        shared/textures/95_noise_tile.png
+#96   READY FOR REVIEW   Glass panel overlay
+        shared/textures/96_glass_overlay.png
+#97   READY FOR REVIEW   Home — command centre focus frame
+        dark_knight/pages/097_dk_home_mission_focus_frame.png
+        shadow_cat/pages/097_sc_home_mission_focus_frame.png
+#98   READY FOR REVIEW   Calendar — city operations timeline / moon-phase strip
+        dark_knight/pages/098_dk_calendar_timeline_strip.png
+        shadow_cat/pages/098_sc_calendar_timeline_strip.png
+#99   READY FOR REVIEW   Tasks — classified mission board card
+        dark_knight/pages/099_dk_tasks_case_file_card.png
+        shadow_cat/pages/099_sc_tasks_case_file_card.png
+#100  READY FOR REVIEW   Track — monitoring dashboard dial
+        dark_knight/pages/100_dk_track_monitor_dial.png
+        shadow_cat/pages/100_sc_track_monitor_dial.png
+#101  READY FOR REVIEW   Settings — suit systems / wardrobe panel
+        dark_knight/pages/101_dk_settings_suit_panel.webp
+        shadow_cat/pages/101_sc_settings_suit_panel.webp
+#102  READY FOR REVIEW   Routines — mission preparation sequence rail
+        dark_knight/pages/102_dk_routines_sequence_rail.png
+        shadow_cat/pages/102_sc_routines_sequence_rail.png
+#103  READY FOR REVIEW   Sleep — night watch header
+        dark_knight/pages/103_dk_sleep_night_watch_header.webp
+        shadow_cat/pages/103_sc_sleep_night_watch_header.webp
+#104  READY FOR REVIEW   Fitness — training protocol header
+        dark_knight/pages/104_dk_fitness_training_header.webp
+        shadow_cat/pages/104_sc_fitness_training_header.webp
+#105  READY FOR REVIEW   Nutrition — energy and fuel gauge
+        dark_knight/pages/105_dk_nutrition_fuel_gauge.png
+        shadow_cat/pages/105_sc_nutrition_fuel_gauge.png
+#106  READY FOR REVIEW   Analytics — tactical intelligence background
+        dark_knight/pages/106_dk_analytics_intel_background.webp
+        shadow_cat/pages/106_sc_analytics_intel_background.webp
+#107  READY FOR REVIEW   Full-page empty-state scenes (2 per theme)
+        dark_knight/illustrations/107_dk_empty_scene_all_clear.webp
+        dark_knight/illustrations/107_dk_empty_scene_first_launch.webp
+        shadow_cat/illustrations/107_sc_empty_scene_all_clear.webp
+        shadow_cat/illustrations/107_sc_empty_scene_first_launch.webp
+#108  READY FOR REVIEW   Dialog and bottom-sheet elements
+        dark_knight/pages/108_dk_sheet_and_dialog_elements_dialog_frame.png
+        dark_knight/pages/108_dk_sheet_and_dialog_elements_sheet_top.png
+        shadow_cat/pages/108_sc_sheet_and_dialog_elements_dialog_frame.png
+        shadow_cat/pages/108_sc_sheet_and_dialog_elements_sheet_top.png
+
+PLANNED
+-------
+  40–54  Batch 3  Logo reveals, transitions, loaders, completion/streak/achievement animations
+                  Lottie JSON authored by hand from the emblem geometry (needs the `lottie` package — approval) or kept as Flutter-coded animations
+109–117  Batch 4  UI sounds (OGG)
+                  Download from a CC0 sound pack after approval (no audio encoder on this machine)
+118–121  Batch 4  Fonts: Dark Knight display, Shadow Cat display, body, data
+                  Download OFL fonts after approval; body font Inter is already bundled

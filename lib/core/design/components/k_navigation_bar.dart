@@ -1,0 +1,340 @@
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../icons/k_glyph.dart';
+import '../theme/theme_context.dart';
+import 'k_button.dart';
+import 'k_ornaments.dart';
+import '../theme/knightly_style.dart';
+import '../theme/knightly_palette.dart';
+import '../theme/k_shapes.dart';
+import '../tokens/k_motion.dart';
+import '../tokens/k_spacing.dart';
+import '../brand/k_emblems.dart';
+
+@immutable
+class KNavDestination {
+  const KNavDestination({required this.glyph, required this.label});
+
+  final KGlyphData glyph;
+  final String label;
+}
+
+/// The screen-specific command shown above the dock (e.g. "New mission").
+@immutable
+class KDockAction {
+  const KDockAction({required this.glyph, required this.label, required this.onPressed});
+
+  final KGlyphData glyph;
+  final String label;
+  final VoidCallback onPressed;
+}
+
+/// Floating command dock: five destinations with an emblem indicator that
+/// glides to the selected one, and a contextual [action] that changes with the
+/// screen (it swaps in and out above the dock's trailing end).
+///
+/// Sits above the system gesture/navigation bar (edge-to-edge safe). Labels
+/// stay visible for every destination; text scaling is capped at 1.2× inside
+/// the dock so labels never collide. The action row's height is always
+/// reserved so page insets don't jump between tabs; its empty area lets
+/// touches through to the page.
+class KNavigationBar extends StatelessWidget {
+  const KNavigationBar({
+    super.key,
+    required this.destinations,
+    required this.selectedIndex,
+    required this.onSelected,
+    this.action,
+  });
+
+  final List<KNavDestination> destinations;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+  final KDockAction? action;
+
+  static const double barHeight = 68;
+  static const double actionRowHeight = 60;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final style = context.style;
+    final tactical = style.isTactical;
+    final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    // Tactical: an armour bar with chamfered ends. Feline: a floating pill.
+    final shape = tactical ? const KChamferBorder(cut: 16, minorRadius: 3) : const StadiumBorder();
+    final edge = shape.copyWith(
+      side: BorderSide(color: p.outline, width: KStroke.hairline),
+    );
+
+    return MediaQuery.withClampedTextScaling(
+      maxScaleFactor: 1.2,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          KSpacing.md,
+          0,
+          KSpacing.md,
+          math.max(bottomInset, KSpacing.md) + KSpacing.xs,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            SizedBox(
+              height: actionRowHeight,
+              child: Align(
+                alignment: Alignment.topRight,
+                child: AnimatedSwitcher(
+                  duration: style.reveal,
+                  switchInCurve: style.revealCurve,
+                  switchOutCurve: Curves.easeIn,
+                  transitionBuilder: (child, animation) => FadeTransition(
+                    opacity: animation,
+                    child: ScaleTransition(
+                      scale: Tween(begin: 0.85, end: 1.0).animate(animation),
+                      alignment: Alignment.centerRight,
+                      child: child,
+                    ),
+                  ),
+                  child: action == null
+                      ? const SizedBox.shrink()
+                      : KButton(
+                          key: ValueKey(action!.label),
+                          label: action!.label,
+                          glyph: action!.glyph,
+                          size: KButtonSize.compact,
+                          onPressed: action!.onPressed,
+                        ),
+                ),
+              ),
+            ),
+            _dock(context, p, style, tactical, shape, edge),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _dock(
+    BuildContext context,
+    KnightlyPalette p,
+    KnightlyStyle style,
+    bool tactical,
+    ShapeBorder shape,
+    ShapeBorder edge,
+  ) {
+    return DecoratedBox(
+      // Solid and unblurred on purpose: a frosted (BackdropFilter) dock
+      // re-blurs the screen behind it every frame and cost ~65 % of
+      // raster time on low-end GPUs (see PERFORMANCE.md).
+      decoration: ShapeDecoration(shape: shape, color: p.canvas),
+      child: Material(
+        type: MaterialType.transparency,
+        shape: shape,
+        clipBehavior: Clip.hardEdge,
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            shape: edge,
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color.alphaBlend(p.pressedOverlay, p.surfaceRaised), p.surfaceRaised],
+            ),
+          ),
+          child: SizedBox(
+            height: barHeight,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = constraints.maxWidth / destinations.length;
+                const inset = KSpacing.xs + KSpacing.xxs;
+                return Stack(
+                  children: [
+                    AnimatedPositioned(
+                      duration: style.glide,
+                      curve: style.glideCurve,
+                      left: itemWidth * selectedIndex + inset,
+                      width: itemWidth - inset * 2,
+                      top: KSpacing.sm,
+                      bottom: KSpacing.sm,
+                      child: tactical
+                          ? _TacticalIndicator(color: p.accent, fill: p.accentMuted)
+                          : _FelineIndicator(palette: p),
+                    ),
+                    Row(
+                      children: [
+                        for (var i = 0; i < destinations.length; i++)
+                          Expanded(
+                            child: _NavItem(
+                              destination: destinations[i],
+                              selected: i == selectedIndex,
+                              position: '${i + 1} of ${destinations.length}',
+                              onTap: () {
+                                HapticFeedback.selectionClick();
+                                onSelected(i);
+                              },
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// A faint plate with corner brackets and a small winged-blade marker.
+class _TacticalIndicator extends StatelessWidget {
+  const _TacticalIndicator({required this.color, required this.fill});
+
+  final Color color;
+  final Color fill;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _MarkerPainter(color: color, tactical: true),
+      foregroundPainter: KBracketPainter(color: color.withValues(alpha: 0.7), length: 7, stroke: 1.25),
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: fill.withValues(alpha: fill.a * 0.6)),
+      ),
+    );
+  }
+}
+
+/// The emblem riding on top of the selected tab: a winged blade (tactical)
+/// or a pair of cat ears (feline).
+class _MarkerPainter extends CustomPainter {
+  _MarkerPainter({required this.color, required this.tactical});
+
+  final Color color;
+  final bool tactical;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final w = tactical ? 18.0 : 16.0;
+    final h = tactical ? 7.0 : 6.0;
+    final r = Rect.fromLTWH((size.width - w) / 2, -h / 2, w, h);
+    canvas.drawPath(tactical ? KEmblems.wingBlade(r) : KEmblems.catEars(r), Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_MarkerPainter old) => old.color != color || old.tactical != tactical;
+}
+
+/// A soft almond of light with a moon-silver point beneath it.
+class _FelineIndicator extends StatelessWidget {
+  const _FelineIndicator({required this.palette});
+
+  final KnightlyPalette palette;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = palette;
+    return CustomPaint(
+      foregroundPainter: _MarkerPainter(color: p.accentStrong, tactical: false),
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(22),
+                    bottomRight: Radius.circular(22),
+                    topRight: Radius.circular(8),
+                    bottomLeft: Radius.circular(8),
+                  ),
+                  side: BorderSide(color: p.accent.withValues(alpha: 0.22), width: KStroke.hairline),
+                ),
+                gradient: RadialGradient(
+                  radius: 0.9,
+                  colors: [p.accentMuted.withValues(alpha: 0.32), p.accentMuted.withValues(alpha: 0.04)],
+                ),
+              ),
+            ),
+          ),
+          Align(
+            alignment: const Alignment(0, 0.98),
+            child: Container(
+              width: 4,
+              height: 4,
+              decoration: BoxDecoration(color: p.signal, shape: BoxShape.circle),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({
+    required this.destination,
+    required this.selected,
+    required this.position,
+    required this.onTap,
+  });
+
+  final KNavDestination destination;
+  final bool selected;
+  final String position;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final color = selected ? p.accentStrong : p.textMuted;
+
+    return Semantics(
+      button: true,
+      selected: selected,
+      label: destination.label,
+      hint: 'Tab $position',
+      excludeSemantics: true,
+      onTap: onTap,
+      child: InkResponse(
+        onTap: onTap,
+        containedInkWell: true,
+        highlightShape: BoxShape.rectangle,
+        borderRadius: BorderRadius.circular(KRadius.lg),
+        highlightColor: Colors.transparent,
+        splashColor: p.pressedOverlay,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AnimatedScale(
+              scale: selected ? 1 : 0.92,
+              duration: context.style.glide,
+              curve: context.style.glideCurve,
+              child: TweenAnimationBuilder<Color?>(
+                tween: ColorTween(end: color),
+                duration: KMotion.standard,
+                builder: (context, animatedColor, _) =>
+                    KIcon(destination.glyph, size: 24, color: animatedColor, filled: selected),
+              ),
+            ),
+            const SizedBox(height: KSpacing.xs),
+            AnimatedDefaultTextStyle(
+              duration: KMotion.standard,
+              style: context.textStyles.labelMedium!.copyWith(
+                fontSize: context.style.isTactical ? 10.5 : 11,
+                letterSpacing: context.style.isTactical ? 0.9 : 0.3,
+                color: selected ? p.textPrimary : p.textMuted,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              ),
+              child: Text(destination.label, maxLines: 1, overflow: TextOverflow.fade, softWrap: false),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

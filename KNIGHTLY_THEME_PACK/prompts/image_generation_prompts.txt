@@ -1,0 +1,54 @@
+KNIGHTLY — IMAGE GENERATION PROMPTS (optional, photo-realistic versions)
+=======================================================================
+
+Batch 1 files were painted in code; these prompts let you re-create any of
+them photo-realistically in an AI image tool you choose. Keep the asset
+number in the file name so it drops into the right slot.
+
+Rules for every prompt
+- Portrait 1080×2400 (aspect 9:20), WebP or JPG, dark cinematic grade.
+- Focal light upper-right; keep the top-left (page titles) and the middle
+  column (cards) calm and dark.
+- Never ask for trademarked names, logos or characters (no "Batman",
+  "Catwoman", "Gotham", "DC", bat-in-oval logo). The bat/cat shapes must be
+  generic silhouettes.
+- Negative prompt for all: text, watermark, logo, signature, people's faces,
+  recognisable characters, superhero costume, blur, lens dirt.
+
+DARK KNIGHT (black, graphite, steel, gold)
+#12 Night skyline of a gothic art-deco metropolis seen from afar, low clouds lit
+    from below by a single searchlight that projects a generic bat silhouette
+    onto the clouds, upper-right of frame, golden light, deep blue-black sky,
+    thousands of warm window lights in the lower third, cinematic, anamorphic.
+#13 Rain-soaked gothic art-deco skyline at night, heavy diagonal rain, haze
+    between towers, wet glowing windows, steel-blue storm clouds, moody, cinematic.
+#14 Vast natural cave converted into a high-tech command centre, curved wall of
+    glowing monitors above a dark platform, stalactites, cold steel light with
+    gold accents, mist over an underground pool, cinematic wide-angle, portrait.
+#15 Dark rooftop with a wooden water tower in the foreground silhouette,
+    overlooking a dense gothic city at night, full moon upper-right, cold blue air.
+#16 Narrow city street at night between towering gothic buildings, sodium street
+    lamps, wet asphalt reflections, light rain, fog at the vanishing point.
+#17 Gothic art-deco skyline at the moment sunset turns to night: deep amber band
+    on the horizon, navy sky above, near-black tower silhouettes, first lit windows.
+#18 Abstract dark tactical background: graphite surface, faint hexagonal lattice,
+    thin gold HUD arcs and tick marks upper-right, angled panel seams, minimal.
+
+SHADOW CAT (black, burgundy, violet, rose, moon-silver)
+#19 Moonlit rooftops of a gothic city, thin crescent moon upper-right, a sleek
+    black cat sitting on a parapet in silhouette, plum-violet sky, elegant, cinematic.
+#20 Enormous violet-tinted full moon rising behind gothic spires and gables,
+    purple atmosphere, faint clouds, dramatic and mysterious.
+#21 Rainy rooftop skyline at night, chimneys and water towers, violet rain,
+    warm amber windows below, misty, melancholic, cinematic.
+#22 Close foreground silhouette of a black cat sitting on a stone ledge, seen
+    from behind, looking down at a glittering city far below, small crescent moon.
+#23 City towers dissolving into thick violet fog, a few rose-pink neon signs
+    glowing through the mist, mysterious, cinematic.
+#24 Elegant art-deco rooftop terrace at night: stone balustrade, tall arch,
+    crescent moon upper-right, distant spires, burgundy and violet tones.
+#25 Abstract stealth background: flowing silk ribbons of rose and violet light
+    weaving through darkness, glossy, minimal, elegant.
+
+LAUNCHER ICONS (#10, #11) — if regenerated, keep the code-drawn emblem shape and
+only change the background: 1024×1024, emblem within the central 66 %.

@@ -5,6 +5,10 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+### Changed
+- Water and Sleep panels open with scene art from your wallpapers, one per theme: rain over the
+  skyline / the moon garden pond for Water, the moon over the spires / the moonlit window for Sleep.
+
 ## Phase 2 · step 6 — 2026-11-27 — Sleep
 
 ### Added

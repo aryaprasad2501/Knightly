@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:knightly/core/design/components/k_art_header.dart';
 import 'package:knightly/core/design/components/k_bottom_sheet.dart';
 import 'package:knightly/core/design/components/k_activity_rings.dart';
 import 'package:knightly/core/design/components/k_button.dart';
@@ -41,6 +42,10 @@ void main() {
               for (final v in KIconButtonVariant.values)
                 KIconButton(glyph: KGlyphs.plus, tooltip: v.name, variant: v, onPressed: () {}),
               const KSurface(child: Text('surface')),
+              const KSurface(
+                padding: EdgeInsets.zero,
+                child: KArtHeader(image: AssetImage('assets/panels/dk_water.webp'), child: Text('art')),
+              ),
               const KCard(title: 'card', glyph: KGlyphs.moon, child: Text('body')),
               const KTextField(label: 'field', errorText: 'bad'),
               KDropdown<int>(

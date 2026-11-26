@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/design/components/k_activity_rings.dart';
 import '../../../../core/design/components/k_toggle.dart';
 
+import '../../../../core/design/components/k_art_header.dart';
 import '../../../../core/design/components/k_bottom_sheet.dart';
 import '../../../../core/design/components/k_button.dart';
 import '../../../../core/design/components/k_card.dart';
@@ -50,6 +51,17 @@ class _Surfaces extends StatelessWidget {
           trailing: KIcon(KGlyphs.chevronRight, size: 20, color: context.palette.textMuted),
           onTap: () {},
           child: Text('Optional body content sits below the header.', style: context.textStyles.bodyMedium),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KSurface(
+          padding: EdgeInsets.zero,
+          child: KArtHeader(
+            image: AssetImage(context.byStyle('assets/panels/dk_sleep.webp', 'assets/panels/sc_sleep.webp')),
+            child: Text(
+              'KArtHeader — panel art fading into the surface',
+              style: context.textStyles.titleSmall,
+            ),
+          ),
         ),
       ],
     );

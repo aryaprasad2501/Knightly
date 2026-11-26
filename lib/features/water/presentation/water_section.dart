@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/design/components/k_art_header.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_button.dart';
 import '../../../core/design/components/k_chip.dart';
@@ -97,112 +98,127 @@ class _WaterPanel extends ConsumerWidget {
     final percent = (today.totalMl / today.goalMl * 100).round();
 
     return KSurface(
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Semantics(
-            label: 'Water today: ${formatMl(today.totalMl)} of ${formatMl(today.goalMl)}',
-            excludeSemantics: true,
-            child: Row(
-              children: [
-                KProgressRing(
-                  value: today.progress,
-                  size: 104,
-                  strokeWidth: 9,
-                  tone: today.reachedGoal ? KTone.success : KTone.accent,
-                  child: Text('$percent%', style: context.numerals.medium),
-                ),
-                const SizedBox(width: KSpacing.lg),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('TODAY', style: text.labelSmall?.copyWith(color: p.textMuted, letterSpacing: 1.4)),
-                      const SizedBox(height: KSpacing.xxs),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(formatMl(today.totalMl), style: context.numerals.hero),
-                      ),
-                      Text('of ${formatMl(today.goalMl)}', style: text.bodyMedium),
-                      const SizedBox(height: KSpacing.sm),
-                      _StatusPill(
-                        label: today.reachedGoal ? 'Goal reached' : '${formatMl(left)} to go',
-                        color: today.reachedGoal ? p.success : p.accentStrong,
-                        glyph: today.reachedGoal ? KGlyphs.check : KGlyphs.drop,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: KSpacing.xl),
-          Row(
-            children: [
-              Expanded(
-                child: KButton(
-                  label: '+${formatMl(WaterAmounts.glass)}',
-                  expand: true,
-                  size: KButtonSize.compact,
-                  onPressed: () => logWaterWithUndo(context, ref, WaterAmounts.glass),
-                ),
-              ),
-              const SizedBox(width: KSpacing.sm),
-              Expanded(
-                child: KButton(
-                  label: '+${formatMl(WaterAmounts.bottle)}',
-                  variant: KButtonVariant.secondary,
-                  expand: true,
-                  size: KButtonSize.compact,
-                  onPressed: () => logWaterWithUndo(context, ref, WaterAmounts.bottle),
-                ),
-              ),
-              const SizedBox(width: KSpacing.sm),
-              Expanded(
-                child: Semantics(
-                  label: 'Other amount',
-                  button: true,
-                  excludeSemantics: true,
-                  onTap: () => _pickAmount(context, ref),
-                  child: KButton(
-                    label: 'Other',
-                    variant: KButtonVariant.secondary,
-                    expand: true,
-                    size: KButtonSize.compact,
-                    onPressed: () => _pickAmount(context, ref),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: KSpacing.xl),
-          _WeekChart(days: days),
-          if (entries.isNotEmpty) ...[
-            const SizedBox(height: KSpacing.xl),
-            Text(
-              'Today · ${entries.length} ${entries.length == 1 ? 'drink' : 'drinks'}',
-              style: text.labelMedium,
-            ),
-            const SizedBox(height: KSpacing.sm),
-            DecoratedBox(
-              decoration: ShapeDecoration(
-                color: p.surfaceSunken,
-                shape: context.style.panel(
-                  size: KRadius.md,
-                  side: BorderSide(color: p.outline, width: KStroke.hairline),
-                ),
-              ),
-              child: Column(
+          KArtHeader(
+            image: AssetImage(context.byStyle('assets/panels/dk_water.webp', 'assets/panels/sc_water.webp')),
+            height: 200,
+            child: Semantics(
+              label: 'Water today: ${formatMl(today.totalMl)} of ${formatMl(today.goalMl)}',
+              excludeSemantics: true,
+              child: Row(
                 children: [
-                  for (final (i, e) in entries.indexed) ...[
-                    if (i > 0) const KDivider(indent: 56, spacing: 0),
-                    _EntryRow(entry: e),
-                  ],
+                  KProgressRing(
+                    value: today.progress,
+                    size: 104,
+                    strokeWidth: 9,
+                    tone: today.reachedGoal ? KTone.success : KTone.accent,
+                    child: Text('$percent%', style: context.numerals.medium),
+                  ),
+                  const SizedBox(width: KSpacing.lg),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'TODAY',
+                          style: text.labelSmall?.copyWith(color: p.textMuted, letterSpacing: 1.4),
+                        ),
+                        const SizedBox(height: KSpacing.xxs),
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(formatMl(today.totalMl), style: context.numerals.hero),
+                        ),
+                        Text('of ${formatMl(today.goalMl)}', style: text.bodyMedium),
+                        const SizedBox(height: KSpacing.sm),
+                        _StatusPill(
+                          label: today.reachedGoal ? 'Goal reached' : '${formatMl(left)} to go',
+                          color: today.reachedGoal ? p.success : p.accentStrong,
+                          glyph: today.reachedGoal ? KGlyphs.check : KGlyphs.drop,
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-          ],
+          ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(KSpacing.lg, KSpacing.md, KSpacing.lg, KSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: KButton(
+                        label: '+${formatMl(WaterAmounts.glass)}',
+                        expand: true,
+                        size: KButtonSize.compact,
+                        onPressed: () => logWaterWithUndo(context, ref, WaterAmounts.glass),
+                      ),
+                    ),
+                    const SizedBox(width: KSpacing.sm),
+                    Expanded(
+                      child: KButton(
+                        label: '+${formatMl(WaterAmounts.bottle)}',
+                        variant: KButtonVariant.secondary,
+                        expand: true,
+                        size: KButtonSize.compact,
+                        onPressed: () => logWaterWithUndo(context, ref, WaterAmounts.bottle),
+                      ),
+                    ),
+                    const SizedBox(width: KSpacing.sm),
+                    Expanded(
+                      child: Semantics(
+                        label: 'Other amount',
+                        button: true,
+                        excludeSemantics: true,
+                        onTap: () => _pickAmount(context, ref),
+                        child: KButton(
+                          label: 'Other',
+                          variant: KButtonVariant.secondary,
+                          expand: true,
+                          size: KButtonSize.compact,
+                          onPressed: () => _pickAmount(context, ref),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: KSpacing.xl),
+                _WeekChart(days: days),
+                if (entries.isNotEmpty) ...[
+                  const SizedBox(height: KSpacing.xl),
+                  Text(
+                    'Today · ${entries.length} ${entries.length == 1 ? 'drink' : 'drinks'}',
+                    style: text.labelMedium,
+                  ),
+                  const SizedBox(height: KSpacing.sm),
+                  DecoratedBox(
+                    decoration: ShapeDecoration(
+                      color: p.surfaceSunken,
+                      shape: context.style.panel(
+                        size: KRadius.md,
+                        side: BorderSide(color: p.outline, width: KStroke.hairline),
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        for (final (i, e) in entries.indexed) ...[
+                          if (i > 0) const KDivider(indent: 56, spacing: 0),
+                          _EntryRow(entry: e),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );

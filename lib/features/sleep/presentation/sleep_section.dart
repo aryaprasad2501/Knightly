@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/design/components/k_art_header.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_button.dart';
 import '../../../core/design/components/k_chip.dart';
@@ -90,91 +91,109 @@ class _SleepPanel extends StatelessWidget {
     final average = week.average;
 
     return KSurface(
+      padding: EdgeInsets.zero,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('LAST NIGHT', style: text.labelSmall?.copyWith(color: p.textMuted, letterSpacing: 1.4)),
-          const SizedBox(height: KSpacing.xxs),
-          if (last == null) ...[
-            Text('Not logged yet', style: text.titleMedium),
-            const SizedBox(height: KSpacing.xs),
-            Text(
-              'Log when you went to sleep and woke up — it takes a few seconds.',
-              style: text.bodyMedium?.copyWith(color: p.textSecondary),
-            ),
-          ] else
-            Semantics(
-              label:
-                  'Last night: ${formatSleep(last.duration)}, '
-                  '${_clock(context, last.bedtime)} to ${_clock(context, last.wakeTime)}'
-                  '${last.quality == null ? '' : ', ${last.quality!.label}'}',
-              excludeSemantics: true,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.centerLeft,
-                    child: Text(formatSleep(last.duration), style: context.numerals.hero),
-                  ),
+          KArtHeader(
+            image: AssetImage(context.byStyle('assets/panels/dk_sleep.webp', 'assets/panels/sc_sleep.webp')),
+            height: last == null ? 190 : 230,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('LAST NIGHT', style: text.labelSmall?.copyWith(color: p.textMuted, letterSpacing: 1.4)),
+                const SizedBox(height: KSpacing.xxs),
+                if (last == null) ...[
+                  Text('Not logged yet', style: text.titleMedium),
+                  const SizedBox(height: KSpacing.xs),
                   Text(
-                    '${_clock(context, last.bedtime)}  →  ${_clock(context, last.wakeTime)}',
-                    style: text.bodyMedium,
+                    'Log when you went to sleep and woke up — it takes a few seconds.',
+                    style: text.bodyMedium?.copyWith(color: p.textSecondary),
                   ),
-                  const SizedBox(height: KSpacing.sm),
-                  Wrap(
-                    spacing: KSpacing.sm,
-                    runSpacing: KSpacing.xs,
-                    children: [
-                      _Pill(
-                        label: last.duration >= week.goal
-                            ? 'Goal met'
-                            : '${formatSleep(week.goal - last.duration)} short',
-                        color: last.duration >= week.goal ? p.success : p.warning,
-                        glyph: last.duration >= week.goal ? KGlyphs.check : KGlyphs.moon,
-                      ),
-                      if (last.quality != null)
-                        _Pill(label: last.quality!.label, color: p.accentStrong, glyph: KGlyphs.spark),
-                    ],
+                ] else
+                  Semantics(
+                    label:
+                        'Last night: ${formatSleep(last.duration)}, '
+                        '${_clock(context, last.bedtime)} to ${_clock(context, last.wakeTime)}'
+                        '${last.quality == null ? '' : ', ${last.quality!.label}'}',
+                    excludeSemantics: true,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(formatSleep(last.duration), style: context.numerals.hero),
+                        ),
+                        Text(
+                          '${_clock(context, last.bedtime)}  →  ${_clock(context, last.wakeTime)}',
+                          style: text.bodyMedium,
+                        ),
+                        const SizedBox(height: KSpacing.sm),
+                        Wrap(
+                          spacing: KSpacing.sm,
+                          runSpacing: KSpacing.xs,
+                          children: [
+                            _Pill(
+                              label: last.duration >= week.goal
+                                  ? 'Goal met'
+                                  : '${formatSleep(week.goal - last.duration)} short',
+                              color: last.duration >= week.goal ? p.success : p.warning,
+                              glyph: last.duration >= week.goal ? KGlyphs.check : KGlyphs.moon,
+                            ),
+                            if (last.quality != null)
+                              _Pill(label: last.quality!.label, color: p.accentStrong, glyph: KGlyphs.spark),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+              ],
             ),
-          const SizedBox(height: KSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: KButton(
-                  label: last == null ? 'Log last night' : 'Edit night',
-                  variant: last == null ? KButtonVariant.primary : KButtonVariant.secondary,
-                  expand: true,
-                  size: KButtonSize.compact,
-                  onPressed: () => showSleepEditor(context, date: week.today, existing: last),
-                ),
-              ),
-              const SizedBox(width: KSpacing.sm),
-              Expanded(
-                child: KButton(
-                  label: 'Earlier night',
-                  variant: KButtonVariant.secondary,
-                  expand: true,
-                  size: KButtonSize.compact,
-                  onPressed: () => showSleepEditor(context, date: week.today.addDays(-1)),
-                ),
-              ),
-            ],
           ),
-          const SizedBox(height: KSpacing.xl),
-          Text('Last 7 nights', style: text.labelMedium),
-          const SizedBox(height: KSpacing.xxs),
-          Text(
-            average == null
-                ? 'Nothing logged this week yet'
-                : 'Average ${formatSleep(average)} · goal met ${week.nightsMeetingGoal} of ${week.nights.length}',
-            style: text.bodySmall?.copyWith(color: p.textMuted),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(KSpacing.lg, KSpacing.md, KSpacing.lg, KSpacing.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: KButton(
+                        label: last == null ? 'Log last night' : 'Edit night',
+                        variant: last == null ? KButtonVariant.primary : KButtonVariant.secondary,
+                        expand: true,
+                        size: KButtonSize.compact,
+                        onPressed: () => showSleepEditor(context, date: week.today, existing: last),
+                      ),
+                    ),
+                    const SizedBox(width: KSpacing.sm),
+                    Expanded(
+                      child: KButton(
+                        label: 'Earlier night',
+                        variant: KButtonVariant.secondary,
+                        expand: true,
+                        size: KButtonSize.compact,
+                        onPressed: () => showSleepEditor(context, date: week.today.addDays(-1)),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: KSpacing.xl),
+                Text('Last 7 nights', style: text.labelMedium),
+                const SizedBox(height: KSpacing.xxs),
+                Text(
+                  average == null
+                      ? 'Nothing logged this week yet'
+                      : 'Average ${formatSleep(average)} · goal met ${week.nightsMeetingGoal} of ${week.nights.length}',
+                  style: text.bodySmall?.copyWith(color: p.textMuted),
+                ),
+                const SizedBox(height: KSpacing.md),
+                _NightChart(week: week),
+              ],
+            ),
           ),
-          const SizedBox(height: KSpacing.md),
-          _NightChart(week: week),
         ],
       ),
     );

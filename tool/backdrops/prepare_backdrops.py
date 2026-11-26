@@ -10,6 +10,9 @@ Backdrops: each is a full-phone-height crop (720 x 1600, WebP) of one wallpaper,
 framed so no franchise logo is in view. Small emblems that remain are covered
 with a feathered copy of nearby texture (PATCHES, in source pixels).
 
+Panels: wide header art for tracker panels on Track (1080 x 450, WebP), cropped
+from the same wallpapers, again with every franchise logo out of frame.
+
 Logos: the two approved app icons, resized to 384 px for in-app use.
 
 The Shadow Cat Home backdrop (sc_today) is fixed by the user: do not reframe it.
@@ -25,7 +28,9 @@ ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / 'KNIGHTLY_THEME_PACK' / 'user_supplied'
 OUT = ROOT / 'assets' / 'backdrops'
 LOGOS = ROOT / 'assets' / 'brand'
+PANEL_OUT = ROOT / 'assets' / 'panels'
 W, H = 720, 1600
+PW, PH = 1080, 450
 
 # name -> (source file, crop: left, top, right as fractions; the height follows from W x H)
 CROPS = {
@@ -40,6 +45,19 @@ CROPS = {
     'sc_missions': ('SC-02_Shadow_Lounge.png', (0.0, 0.0, 1.0)),
     'sc_track': ('SC-09_Silent_Training.png', (0.0, 0.0, 1.0)),
     'sc_settings': ('SC-06_Velvet_Chamber.png', (0.0, 0.0, 1.0)),
+}
+
+# Panel headers: name -> (source file, crop: left, top, right as fractions;
+# the height follows from PW x PH). DK crops start right of the bat banners.
+PANELS = {
+    # Rain over the lit skyline.
+    'dk_water': ('DK-03_Rainy_Rooftops.png', (0.30, 0.27, 1.0)),
+    # The pond, waterfall and lanterns.
+    'sc_water': ('SC-07_Moon_Garden.png', (0.0, 0.47, 1.0)),
+    # The full moon over the cathedral spires.
+    'dk_sleep': ('DK-H_Rainy_Cathedral.png', (0.36, 0.035, 1.0)),
+    # The moonlit window seat.
+    'sc_sleep': ('SC-06_Velvet_Chamber.png', (0.30, 0.30, 1.0)),
 }
 
 # source file -> [(box in source px, vertical offset of the source patch)]
@@ -60,9 +78,9 @@ def patch(im: Image.Image, box, dy):
     im.paste(src, (x0, y0), mask.filter(ImageFilter.GaussianBlur(m * 0.6)))
 
 
-def crop_box(im: Image.Image, l, t, r):
+def crop_box(im: Image.Image, l, t, r, w=W, h_out=H):
     x0, x1 = l * im.width, r * im.width
-    h = (x1 - x0) * H / W
+    h = (x1 - x0) * h_out / w
     y0 = t * im.height
     assert y0 + h <= im.height + 1, f'crop too tall: needs {y0 + h:.0f} of {im.height}'
     return round(x0), round(y0), round(x1), round(min(im.height, y0 + h))
@@ -81,6 +99,18 @@ def main(only: list[str]):
         crop = ImageEnhance.Sharpness(crop).enhance(1.12)
         path = OUT / f'{name}.webp'
         crop.save(path, 'WEBP', quality=78, method=6)
+        print(f'{name:<12} {file:<38} {path.stat().st_size // 1024} KB')
+    PANEL_OUT.mkdir(parents=True, exist_ok=True)
+    for name, (file, (l, t, r)) in PANELS.items():
+        if only and name not in only:
+            continue
+        im = Image.open(SRC / 'wallpapers' / file).convert('RGB')
+        for box, dy in PATCHES.get(file, []):
+            patch(im, box, dy)
+        crop = im.crop(crop_box(im, l, t, r, PW, PH)).resize((PW, PH), Image.LANCZOS)
+        crop = ImageEnhance.Sharpness(crop).enhance(1.1)
+        path = PANEL_OUT / f'{name}.webp'
+        crop.save(path, 'WEBP', quality=80, method=6)
         print(f'{name:<12} {file:<38} {path.stat().st_size // 1024} KB')
     for name, file in LOGO_FILES.items():
         if only and name not in only:

@@ -1,9 +1,26 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
+
+// Release signing (docs/RELEASE_SIGNING.md). Values come from environment
+// variables or android/key.properties — both stay out of Git. Nothing here is
+// a secret.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("key.properties")
+    if (file.exists()) FileInputStream(file).use { load(it) }
+}
+
+fun signingValue(property: String, env: String): String? =
+    System.getenv(env)?.takeIf { it.isNotBlank() } ?: keystoreProperties.getProperty(property)
+
+val releaseStoreFile = signingValue("storeFile", "KNIGHTLY_KEYSTORE")
+val hasReleaseKey = releaseStoreFile != null
 
 android {
     namespace = "com.knightly.app"
@@ -30,11 +47,34 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        if (hasReleaseKey) {
+            create("release") {
+                storeFile = file(releaseStoreFile!!)
+                storePassword = signingValue("storePassword", "KNIGHTLY_KEYSTORE_PASSWORD")
+                keyAlias = signingValue("keyAlias", "KNIGHTLY_KEY_ALIAS")
+                keyPassword = signingValue("keyPassword", "KNIGHTLY_KEY_PASSWORD")
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasReleaseKey) {
+                signingConfigs.getByName("release")
+            } else {
+                // Store builds must not fall back: set KNIGHTLY_REQUIRE_RELEASE_KEY=true.
+                if (System.getenv("KNIGHTLY_REQUIRE_RELEASE_KEY") == "true") {
+                    throw GradleException(
+                        "No release key configured. See docs/RELEASE_SIGNING.md.",
+                    )
+                }
+                logger.warn(
+                    "Knightly: no release key configured — this release build is signed with the " +
+                        "DEBUG key and can't be published. See docs/RELEASE_SIGNING.md.",
+                )
+                signingConfigs.getByName("debug")
+            }
         }
     }
 }

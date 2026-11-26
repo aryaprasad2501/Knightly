@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_button.dart';
 import '../../../core/design/components/k_chip.dart';
-import '../../../core/design/components/k_confirmation_dialog.dart';
 import '../../../core/design/components/k_dropdown.dart';
 import '../../../core/design/components/k_surface.dart';
 import '../../../core/design/components/k_text_field.dart';
@@ -16,6 +15,7 @@ import '../data/habit_repository.dart';
 import '../domain/habit.dart';
 import '../domain/habit_schedule.dart';
 import '../domain/habit_stats.dart';
+import 'widgets/habit_past_days.dart';
 
 /// Opens the habit editor: creates a habit when [habit] is null, otherwise
 /// edits it and shows its [stats]. Public entry point for the Track tab.
@@ -112,19 +112,30 @@ class _HabitEditorState extends ConsumerState<_HabitEditor> {
     navigator.pop();
   }
 
+  /// Moves the habit (with its history) to the Recycle Bin; Undo restores it.
   Future<void> _delete() async {
     final navigator = Navigator.of(context);
-    final ok = await showKConfirmationDialog(
-      context,
-      title: 'Delete "${widget.habit!.name}"?',
-      message:
-          'Its whole history is removed from this device. Archive instead to keep it. This cannot be undone.',
-      confirmLabel: 'Delete',
-      destructive: true,
-    );
-    if (!ok) return;
-    await ref.read(habitActionsProvider).delete(widget.habit!.id);
+    final messenger = ScaffoldMessenger.of(context);
+    final actions = ref.read(habitActionsProvider);
+    final id = widget.habit!.id;
+    await actions.trash(id);
     navigator.pop();
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: const Text('Habit moved to Recycle Bin · history kept'),
+          action: SnackBarAction(label: 'Undo', onPressed: () => actions.restoreFromBin(id)),
+        ),
+      );
+  }
+
+  HabitStats? get _liveStats {
+    final id = widget.habit?.id;
+    for (final s in ref.watch(habitStatsProvider).valueOrNull ?? const <HabitStats>[]) {
+      if (s.habit.id == id) return s;
+    }
+    return null;
   }
 
   @override
@@ -147,7 +158,12 @@ class _HabitEditorState extends ConsumerState<_HabitEditor> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 if (widget.stats != null) ...[
-                  _StatsRow(stats: widget.stats!),
+                  // Live, so corrections to past days update the figures at once.
+                  _StatsRow(stats: _liveStats ?? widget.stats!),
+                  const SizedBox(height: KSpacing.lg),
+                ],
+                if (widget.habit != null) ...[
+                  HabitPastDays(habit: widget.habit!),
                   const SizedBox(height: KSpacing.lg),
                 ],
                 KTextField(

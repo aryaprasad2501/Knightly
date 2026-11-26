@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/design/components/k_check_circle.dart';
-import '../../../../core/design/components/k_confirmation_dialog.dart';
 import '../../../../core/design/icons/k_glyph.dart';
 import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/theme/k_tone.dart';
 import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/time/calendar_date.dart';
-import '../../application/tasks_providers.dart';
 import '../../domain/due_format.dart';
 import '../../domain/task.dart';
 import '../task_editor_sheet.dart';
@@ -29,14 +27,8 @@ class TaskTile extends ConsumerWidget {
     if (direction == DismissDirection.startToEnd) {
       await setTaskDoneWithUndo(context, ref, task, done: !task.isDone);
     } else {
-      final ok = await showKConfirmationDialog(
-        context,
-        title: 'Delete this mission?',
-        message: '"${task.title}" will be removed from this device. This cannot be undone.',
-        confirmLabel: 'Delete',
-        destructive: true,
-      );
-      if (ok) await ref.read(taskActionsProvider).delete(task.id);
+      // Recoverable: goes to the Recycle Bin, with Undo in the snackbar.
+      await trashMissionWithUndo(context, ref, task);
     }
     // The list updates from the database stream; never let Dismissible remove
     // the row itself (it would still be in the tree until the stream emits).

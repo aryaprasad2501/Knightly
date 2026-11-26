@@ -9,6 +9,7 @@ import 'generated/schema.dart';
 import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
+import 'generated/schema_v4.dart' as v4;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -123,6 +124,180 @@ void main() {
         expect(await newDb.select(newDb.projects).get(), newProjects);
         expect(await newDb.select(newDb.tasks).get(), newTasks);
         expect(await newDb.select(newDb.habits).get(), isEmpty);
+      },
+    );
+  });
+
+  // v4 rebuilds projects, tasks and habits to add uuid / updatedAt / deletedAt.
+  // Every existing row and check-in must survive unchanged, each row gets its
+  // own valid uuid, updatedAt starts as createdAt, and nothing is deleted.
+  test('migration from v3 to v4 keeps all data and adds ids', () async {
+    const at = '2026-11-20T09:00:00.000Z';
+    const later = '2026-11-25T18:30:00.000Z';
+    final uuid = RegExp(
+      r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$',
+    );
+
+    await verifier.testWithDataIntegrity(
+      oldVersion: 3,
+      newVersion: 4,
+      createOld: v3.DatabaseAtV3.new,
+      createNew: v4.DatabaseAtV4.new,
+      openTestedDatabase: AppDatabase.new,
+      createItems: (batch, oldDb) {
+        batch.insertAll(oldDb.appSettings, const [
+          v3.AppSettingsData(
+            key: 'appearance.theme',
+            value: 'shadow_cat',
+            updatedAt: at,
+          ),
+        ]);
+        batch.insertAll(oldDb.projects, const [
+          v3.ProjectsData(id: 1, name: 'Work', createdAt: at),
+          v3.ProjectsData(id: 2, name: 'Home', createdAt: later),
+        ]);
+        batch.insertAll(oldDb.tasks, const [
+          // A completed repeating occurrence linked to its next one.
+          v3.TasksData(
+            id: 1,
+            title: 'Stretch',
+            notes: 'Hips',
+            priority: 3,
+            projectId: 2,
+            dueDate: '2026-11-24',
+            dueMinute: 420,
+            recurrence: 'daily:1',
+            nextTaskId: 2,
+            completedAt: later,
+            createdAt: at,
+            updatedAt: later,
+          ),
+          v3.TasksData(
+            id: 2,
+            title: 'Stretch',
+            notes: 'Hips',
+            priority: 3,
+            projectId: 2,
+            dueDate: '2026-11-25',
+            dueMinute: 420,
+            recurrence: 'daily:1',
+            createdAt: later,
+            updatedAt: later,
+          ),
+          v3.TasksData(
+            id: 3,
+            title: 'Quarterly report',
+            notes: '',
+            priority: 0,
+            projectId: 1,
+            createdAt: at,
+            updatedAt: at,
+          ),
+        ]);
+        batch.insertAll(oldDb.habits, const [
+          v3.HabitsData(
+            id: 1,
+            name: 'Read',
+            kind: 0,
+            schedule: 'daily',
+            target: 1,
+            startDate: '2026-11-01',
+            createdAt: at,
+          ),
+          v3.HabitsData(
+            id: 2,
+            name: 'No sugar',
+            kind: 1,
+            schedule: 'weekly:3',
+            target: 2,
+            startDate: '2026-11-10',
+            createdAt: later,
+            archivedAt: later,
+          ),
+        ]);
+        batch.insertAll(oldDb.habitCheckIns, const [
+          v3.HabitCheckInsData(
+            habitId: 1,
+            date: '2026-11-24',
+            count: 1,
+            updatedAt: later,
+          ),
+          v3.HabitCheckInsData(
+            habitId: 2,
+            date: '2026-11-25',
+            count: 2,
+            updatedAt: later,
+          ),
+        ]);
+      },
+      validateItems: (newDb) async {
+        final settings = await newDb.select(newDb.appSettings).get();
+        expect(settings.single.value, 'shadow_cat');
+
+        final projects = await newDb.select(newDb.projects).get();
+        expect(
+          [
+            for (final p in projects)
+              (p.id, p.name, p.createdAt, p.updatedAt, p.deletedAt),
+          ],
+          [(1, 'Work', at, at, null), (2, 'Home', later, later, null)],
+        );
+
+        final tasks = await newDb.select(newDb.tasks).get();
+        expect(tasks, hasLength(3));
+        final t1 = tasks.firstWhere((t) => t.id == 1);
+        expect(
+          (
+            t1.title,
+            t1.notes,
+            t1.priority,
+            t1.projectId,
+            t1.dueDate,
+            t1.dueMinute,
+          ),
+          ('Stretch', 'Hips', 3, 2, '2026-11-24', 420),
+        );
+        expect(
+          (t1.recurrence, t1.nextTaskId, t1.completedAt, t1.deletedAt),
+          ('daily:1', 2, later, null),
+        );
+        expect(tasks.firstWhere((t) => t.id == 3).projectId, 1);
+
+        final habits = await newDb.select(newDb.habits).get();
+        expect(
+          [
+            for (final h in habits)
+              (h.id, h.name, h.kind, h.schedule, h.target, h.startDate),
+          ],
+          [
+            (1, 'Read', 0, 'daily', 1, '2026-11-01'),
+            (2, 'No sugar', 1, 'weekly:3', 2, '2026-11-10'),
+          ],
+        );
+        expect(habits.last.archivedAt, later);
+        expect(habits.first.updatedAt, at);
+        expect(habits.every((h) => h.deletedAt == null), isTrue);
+
+        final checkIns = await newDb.select(newDb.habitCheckIns).get();
+        expect(
+          [for (final c in checkIns) (c.habitId, c.date, c.count)],
+          [(1, '2026-11-24', 1), (2, '2026-11-25', 2)],
+        );
+
+        // Every row has its own well-formed uuid.
+        final ids = [
+          ...projects.map((p) => p.uuid),
+          ...tasks.map((t) => t.uuid),
+          ...habits.map((h) => h.uuid),
+        ];
+        expect(ids.every(uuid.hasMatch), isTrue, reason: ids.join(', '));
+        expect(ids.toSet(), hasLength(ids.length));
+
+        // References still hold with foreign keys enforced.
+        expect(
+          await newDb.customSelect('PRAGMA foreign_key_check').get(),
+          isEmpty,
+        );
       },
     );
   });

@@ -19,6 +19,13 @@ Future<void> goToTab(WidgetTester tester, String label) async {
   await tester.pumpAndSettle();
 }
 
+/// Scrolls the visible page until [finder] is built and visible, then taps it.
+Future<void> scrollAndTap(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(finder, 250, scrollable: find.byType(Scrollable).hitTestable().first);
+  await tester.pumpAndSettle();
+  await tester.tap(finder);
+}
+
 /// Scrolls [finder] into view (e.g. inside a bottom sheet) and taps it.
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
   await tester.ensureVisible(finder);
@@ -83,22 +90,100 @@ void main() {
     expect(find.text('Call the bank').hitTestable(), findsOneWidget);
   });
 
-  testWidgets('swipe left deletes only after confirmation', (tester) async {
+  testWidgets('swipe left moves to the Recycle Bin; Undo and the bin both restore it', (tester) async {
     usePhoneViewport(tester);
     await pumpSeededApp(tester, (repo) => repo.create(TaskDraft(title: 'Old idea', dueDate: today)));
     await goToTab(tester, 'Tasks');
 
     await tester.drag(find.text('Old idea').hitTestable(), const Offset(-500, 0));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Cancel'));
+    await settleWithDatabase(tester);
+    expect(find.text('Old idea').hitTestable(), findsNothing);
+    expect(find.text('Moved to Recycle Bin'), findsOneWidget);
+
+    await tester.tap(find.text('Undo'));
     await settleWithDatabase(tester);
     expect(find.text('Old idea').hitTestable(), findsOneWidget);
 
+    // Again, then restore from Settings › Recycle Bin.
     await tester.drag(find.text('Old idea').hitTestable(), const Offset(-500, 0));
+    await settleWithDatabase(tester);
+    await goToTab(tester, 'Settings');
+    await scrollAndTap(tester, find.text('Recycle Bin'));
+    await settleWithDatabase(tester);
+    expect(find.text('Old idea'), findsOneWidget);
+    expect(find.textContaining('Deleted today'), findsOneWidget);
+    await tester.tap(find.text('Restore'));
+    await settleWithDatabase(tester);
+    expect(find.text('Recycle Bin is empty'), findsOneWidget);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await goToTab(tester, 'Tasks');
+    expect(find.text('Old idea').hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('deleting a repeating mission asks: only this occurrence, or the whole series', (tester) async {
+    usePhoneViewport(tester);
+    await pumpSeededApp(
+      tester,
+      (repo) => repo.create(TaskDraft(title: 'Stretch', dueDate: today, recurrence: DailyRecurrence())),
+    );
+    await goToTab(tester, 'Tasks');
+
+    await tester.drag(find.text('Stretch').hitTestable(), const Offset(-500, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Delete a repeating mission'), findsOneWidget);
+    await tester.tap(find.text('Cancel'));
+    await settleWithDatabase(tester);
+    expect(find.text('Stretch').hitTestable(), findsOneWidget);
+
+    await tester.drag(find.text('Stretch').hitTestable(), const Offset(-500, 0));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Only this occurrence'));
+    await settleWithDatabase(tester);
+    expect(find.text('Occurrence moved to Recycle Bin · the series continues'), findsOneWidget);
+    expect(find.text('Stretch').hitTestable(), findsNothing, reason: 'today is cleared');
+
+    await tapVisible(tester, find.textContaining('Upcoming'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('Stretch').hitTestable(),
+      findsOneWidget,
+      reason: "tomorrow's occurrence is still there",
+    );
+  });
+
+  testWidgets('Recycle Bin: delete for good and Empty both ask first', (tester) async {
+    usePhoneViewport(tester);
+    await pumpSeededApp(tester, (repo) async {
+      for (final title in ['First', 'Second', 'Third']) {
+        await repo.trash(await repo.create(TaskDraft(title: title)));
+      }
+    });
+    await goToTab(tester, 'Settings');
+    await scrollAndTap(tester, find.text('Recycle Bin'));
+    await settleWithDatabase(tester);
+    expect(find.text('3 deleted items · restore or delete for good'), findsNothing); // on the page now
+
+    await tester.tap(find.byTooltip('Delete "First" for good'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancel'));
+    await settleWithDatabase(tester);
+    expect(find.text('First'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Delete "First" for good'));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(KButton, 'Delete'));
     await settleWithDatabase(tester);
-    expect(find.text('Old idea').hitTestable(), findsNothing);
+    expect(find.text('First'), findsNothing);
+
+    await tester.tap(find.byTooltip('Empty Recycle Bin'));
+    await tester.pumpAndSettle();
+    expect(find.text('Empty the Recycle Bin?'), findsOneWidget);
+    await tester.tap(find.widgetWithText(KButton, 'Empty'));
+    await settleWithDatabase(tester);
+    expect(find.text('Recycle Bin is empty'), findsOneWidget);
+    expect(find.text('Deleted 2 items for good'), findsOneWidget);
   });
 
   testWidgets('completing a repeating mission schedules the next one in Upcoming', (tester) async {

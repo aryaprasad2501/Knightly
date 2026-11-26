@@ -19,16 +19,20 @@ enum TaskPriority {
 
 /// A group of missions, e.g. "Home renovation" or "Work".
 class Project {
-  const Project({required this.id, required this.name});
+  const Project({required this.id, required this.name, this.deletedAt});
 
   final int id;
   final String name;
 
-  @override
-  bool operator ==(Object other) => other is Project && other.id == id && other.name == name;
+  /// When the project was moved to the Recycle Bin, or null.
+  final DateTime? deletedAt;
 
   @override
-  int get hashCode => Object.hash(id, name);
+  bool operator ==(Object other) =>
+      other is Project && other.id == id && other.name == name && other.deletedAt == deletedAt;
+
+  @override
+  int get hashCode => Object.hash(id, name, deletedAt);
 }
 
 /// A mission (task). Immutable; changes go through the repository.
@@ -44,6 +48,7 @@ class Task {
     this.dueTime,
     this.recurrence,
     this.completedAt,
+    this.deletedAt,
   });
 
   final int id;
@@ -59,7 +64,11 @@ class Task {
   final DateTime? completedAt;
   final DateTime createdAt;
 
+  /// When the mission was moved to the Recycle Bin, or null.
+  final DateTime? deletedAt;
+
   bool get isDone => completedAt != null;
+  bool get isDeleted => deletedAt != null;
   bool get isRecurring => recurrence != null;
 
   bool isOverdue(CalendarDate today) => !isDone && dueDate != null && dueDate!.isBefore(today);

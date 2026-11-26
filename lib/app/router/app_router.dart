@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/calendar/presentation/calendar_screen.dart';
+import '../../features/backup/presentation/backup_screen.dart';
 import '../../features/dev/dev_routes.dart';
+import '../../features/recycle_bin/presentation/recycle_bin_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/tasks/presentation/tasks_screen.dart';
 import '../../features/today/presentation/today_screen.dart';
@@ -40,6 +42,8 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
           _branch(AppRoutes.settings, const SettingsScreen()),
         ],
       ),
+      GoRoute(path: AppRoutes.recycleBin, builder: (context, state) => const RecycleBinScreen()),
+      GoRoute(path: AppRoutes.backup, builder: (context, state) => const BackupScreen()),
       if (includeDevTools) ...devRoutes(),
     ],
   );

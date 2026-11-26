@@ -5,6 +5,31 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 1 — 2026-11-26 — Foundation and data safety
+
+### Added
+- **Recycle Bin** (Settings › Data). Deleting a mission, project or habit moves it to the bin, with
+  Undo in the message. Restore brings it back exactly as it was — habits with their full history,
+  projects with their missions. Delete for good and Empty Recycle Bin always ask first.
+- **Deleting a repeating mission** asks: only this occurrence (the series continues) or this and
+  all future ones.
+- **Backup & restore** (Settings › Data). Save all your data to one file wherever you choose — this
+  phone, an SD card or a USB drive — and restore it later. Backups are checked completely before
+  anything changes; damaged, incomplete or newer-version files are refused with the reason. A
+  safety copy of your current data is saved before every restore and can itself be restored.
+- **Correct past habit days**: the habit sheet shows the last two weeks to tap, plus any earlier
+  date up to a year back. Streaks and rates update at once.
+
+### Fixed
+- "Missions done today" counts only missions that were due today or overdue. Finishing a future
+  mission early no longer inflates today's progress.
+
+### Changed
+- Android cloud backup is off for Knightly, matching "no account, no cloud". Keep your own copy
+  with Backup & restore.
+- The database gains stable record ids and deletion dates (schema v4); existing data is migrated
+  automatically.
+
 ## Fixes and polish — 2026-11-26
 
 ### Fixed

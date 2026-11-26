@@ -4,6 +4,18 @@ _Last updated: 2026-11-26 · Living worlds visual pass complete_
 
 ## Where things stand
 
+**Latest (Phase 1 — foundation & data safety, 2026-11-26):** Git initialised (baseline commit
+`08087c7`; Phase 1 changes are uncommitted until the user asks). Schema **v4** (uuid / updated_at /
+deleted_at; migration + data-integrity test). Recycle Bin (`features/recycle_bin/`), soft delete
+for missions, projects and habits, "only this occurrence" vs "all future" for repeating missions.
+Backup & restore (`features/backup/`, SAF channel in `MainActivity.kt`, safety copies). M2 and M4
+fixed (D57, D58). Android cloud backup off (D56, docs/PRIVACY.md). Release signing via env or
+`android/key.properties` (D59, docs/RELEASE_SIGNING.md) — the user still has to create the key.
+Verified on the Pixel 8 AVD: upgrade v3→v4 kept all data; bin, skip-occurrence, restore, backup to
+Downloads through the system picker, restore with safety copy, past-day correction.
+**Not done here (Phase 2+ by scope):** module registry, calendar, notifications, automatic backup.
+
+
 **Latest (review pass, 2026-11-26):** fixed the repeating-mission runaway (D47), added Custom repeat
 (D48), Back → Home (D49), Live backdrop row tap, KButton semantics container, Home header without
 brand row, "Up next" header, no "inspired" chips, Dark Knight is steel blue (D50, user chose to keep it;

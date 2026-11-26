@@ -14,6 +14,11 @@ final archivedHabitsProvider = StreamProvider<List<Habit>>(
   (ref) => ref.watch(habitRepositoryProvider).watchHabits(archived: true),
 );
 
+/// Habits in the Recycle Bin. Public: the Recycle Bin feature lists them.
+final trashedHabitsProvider = StreamProvider<List<Habit>>(
+  (ref) => ref.watch(habitRepositoryProvider).watchTrashed(),
+);
+
 final habitCheckInsProvider = StreamProvider<List<HabitCheckIn>>(
   (ref) => ref.watch(habitRepositoryProvider).watchCheckIns(),
 );
@@ -54,11 +59,21 @@ class HabitActions {
   Future<void> update(int id, HabitDraft draft) => _repo.update(id, draft);
   Future<void> archive(int id) => _repo.archive(id);
   Future<void> restore(int id) => _repo.restore(id);
-  Future<void> delete(int id) => _repo.delete(id);
+
+  /// Moves the habit to the Recycle Bin, history included.
+  Future<void> trash(int id) => _repo.trash(id);
+  Future<void> restoreFromBin(int id) => _repo.restoreFromBin(id);
+  Future<void> deletePermanently(int id) => _repo.deletePermanently(id);
+  Future<int> emptyTrash() => _repo.emptyTrash();
 
   /// Sets today's check-ins, clamped to 0…target.
   Future<void> setTodayCount(Habit habit, int count) =>
       _repo.setCount(habit.id, _today, count.clamp(0, habit.target));
+
+  /// Sets the check-ins for any day up to today, clamped to 0…target. Used to
+  /// correct or fill in past days; streaks and rates update from the stream.
+  Future<void> setCountOn(Habit habit, CalendarDate date, int count) =>
+      _repo.setCount(habit.id, date, count.clamp(0, habit.target));
 
   /// For single-check habits: done ↔ not done.
   Future<void> toggleToday(HabitStats stats) =>

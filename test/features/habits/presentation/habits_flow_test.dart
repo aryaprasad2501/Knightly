@@ -98,10 +98,14 @@ void main() {
       tester,
       now: now,
       seed: (db) async {
-        final repo = repoAt(db, daysAgo: 10);
-        final id = await repo.create(const HabitDraft(name: 'Meditate', schedule: EveryDay()));
+        // Created 10 days ago; check-ins are recorded from today's point of view.
+        final id = await repoAt(
+          db,
+          daysAgo: 10,
+        ).create(const HabitDraft(name: 'Meditate', schedule: EveryDay()));
+        final present = repoAt(db, daysAgo: 0);
         for (var d = 1; d <= 4; d++) {
-          await repo.setCount(id, today.addDays(-d), 1);
+          await present.setCount(id, today.addDays(-d), 1);
         }
       },
     );
@@ -113,6 +117,45 @@ void main() {
     expect(find.text('Streak (days)'), findsOneWidget);
     expect(find.text('Best (days)'), findsOneWidget);
     expect(find.text('40%'), findsOneWidget); // 4 of the 10 expected days before today
+  });
+
+  testWidgets('a forgotten past day can be filled in from the habit sheet; the streak updates', (
+    tester,
+  ) async {
+    usePhoneViewport(tester);
+    await pumpSeededKnightlyApp(
+      tester,
+      now: now,
+      seed: (db) async {
+        final id = await repoAt(
+          db,
+          daysAgo: 10,
+        ).create(const HabitDraft(name: 'Meditate', schedule: EveryDay()));
+        final present = repoAt(db, daysAgo: 0);
+        // Done 1, 2, 4 and 5 days ago; 3 days ago was forgotten.
+        for (final d in [1, 2, 4, 5]) {
+          await present.setCount(id, today.addDays(-d), 1);
+        }
+      },
+    );
+    await goToTab(tester, 'Track');
+    expect(find.text('2 days'), findsOneWidget);
+
+    await tester.tap(find.text('Meditate').hitTestable());
+    await tester.pumpAndSettle();
+    expect(find.text('Past days'), findsOneWidget);
+    // Today is Wed 25 Nov; 3 days ago is Sun 22 Nov.
+    final forgotten = find.bySemanticsLabel(RegExp(r'^Sun 22 Nov, not done'));
+    expect(forgotten, findsOneWidget);
+    await tester.tap(forgotten);
+    await settleWithDatabase(tester);
+    expect(find.bySemanticsLabel(RegExp(r'^Sun 22 Nov, done')), findsOneWidget);
+    // The sheet's streak updates live: 1, 2, 3, 4, 5 days ago in a row.
+    expect(find.descendant(of: find.byType(BottomSheet), matching: find.text('5')), findsWidgets);
+
+    await tester.tapAt(const Offset(10, 10)); // close the sheet
+    await tester.pumpAndSettle();
+    expect(find.text('5 days'), findsOneWidget);
   });
 
   testWidgets('archive hides a habit; restore brings it back', (tester) async {

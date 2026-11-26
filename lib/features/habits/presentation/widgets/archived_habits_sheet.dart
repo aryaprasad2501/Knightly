@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/design/components/k_bottom_sheet.dart';
-import '../../../../core/design/components/k_confirmation_dialog.dart';
 import '../../../../core/design/components/k_icon_button.dart';
 import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/theme/theme_context.dart';
@@ -20,15 +19,19 @@ Future<void> showArchivedHabits(BuildContext context) => showKBottomSheet<void>(
 class _ArchivedList extends ConsumerWidget {
   const _ArchivedList();
 
+  /// Moves the habit (with its history) to the Recycle Bin; Undo restores it.
   Future<void> _delete(BuildContext context, WidgetRef ref, Habit habit) async {
-    final ok = await showKConfirmationDialog(
-      context,
-      title: 'Delete "${habit.name}"?',
-      message: 'Its whole history is removed from this device. This cannot be undone.',
-      confirmLabel: 'Delete',
-      destructive: true,
-    );
-    if (ok) await ref.read(habitActionsProvider).delete(habit.id);
+    final messenger = ScaffoldMessenger.of(context);
+    final actions = ref.read(habitActionsProvider);
+    await actions.trash(habit.id);
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: const Text('Habit moved to Recycle Bin · history kept'),
+          action: SnackBarAction(label: 'Undo', onPressed: () => actions.restoreFromBin(habit.id)),
+        ),
+      );
   }
 
   @override

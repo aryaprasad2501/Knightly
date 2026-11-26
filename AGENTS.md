@@ -26,6 +26,7 @@ flutter run -d emulator-5554                         # run on the Pixel_8 AVD
 python tool/brand/apply_launcher_icon.py                    # launcher icon from the approved app icon
 python tool/backdrops/prepare_backdrops.py                 # page backdrops + logos from KNIGHTLY_THEME_PACK/user_supplied
 flutter build apk --release --dart-define=KNIGHTLY_PERF=true  # frame-timing build (logcat: KNIGHTLY_PERF)
+flutter build appbundle --release                     # store build (needs the release key: docs/RELEASE_SIGNING.md)
 ```
 
 If a Gradle build fails with a missing resource that exists on disk, run

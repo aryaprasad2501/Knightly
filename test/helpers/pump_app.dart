@@ -51,7 +51,12 @@ AppDatabase testDatabase() {
 
 /// Pumps the full app against [db] (default: a fresh in-memory database).
 /// [now] freezes the clock.
-Future<AppDatabase> pumpKnightlyApp(WidgetTester tester, {AppDatabase? db, DateTime? now}) async {
+Future<AppDatabase> pumpKnightlyApp(
+  WidgetTester tester, {
+  AppDatabase? db,
+  DateTime? now,
+  List<Override> overrides = const [],
+}) async {
   final database = db ?? testDatabase();
   await tester.pumpWidget(
     ProviderScope(
@@ -62,6 +67,7 @@ Future<AppDatabase> pumpKnightlyApp(WidgetTester tester, {AppDatabase? db, DateT
         // Live header scenes repaint on a timer; tests need frames to settle.
         liveSceneEnabledProvider.overrideWithValue(false),
         if (now != null) clockProvider.overrideWithValue(() => now),
+        ...overrides,
       ],
       child: const KnightlyApp(),
     ),

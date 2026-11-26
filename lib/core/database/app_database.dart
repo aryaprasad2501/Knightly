@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import '../../features/habits/data/habits_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
+import 'ids.dart';
 import 'app_database.steps.dart';
 
 part 'app_database.g.dart';
@@ -25,32 +26,75 @@ class AppSettings extends Table {
 /// `dart run drift_dev make-migrations`, then add the new `fromXToY` step below.
 /// Never edit a shipped step. Snapshots live in `drift_schemas/`.
 ///
-/// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins.
+/// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
+/// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
+/// ids, Recycle Bin).
 @DriftDatabase(tables: [AppSettings, Projects, Tasks, Habits, HabitCheckIns])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
-    onUpgrade: stepByStep(
-      from1To2: (m, schema) async {
-        await m.createTable(schema.projects);
-        await m.createTable(schema.tasks);
-        await m.createIndex(schema.tasksDueDate);
-        await m.createIndex(schema.tasksCompletedAt);
-      },
-      from2To3: (m, schema) async {
-        await m.createTable(schema.habits);
-        await m.createTable(schema.habitCheckIns);
-        await m.createIndex(schema.habitCheckInsDate);
-      },
-    ),
+    onUpgrade: (m, from, to) async {
+      // Tables are rebuilt below (alterTable); foreign keys stay off until the
+      // whole upgrade is done, then every reference is checked.
+      await customStatement('PRAGMA foreign_keys = OFF');
+      await transaction(() => _steps(m, from, to));
+      final broken = await customSelect('PRAGMA foreign_key_check').get();
+      if (broken.isNotEmpty) {
+        throw StateError('Database upgrade $from→$to left ${broken.length} broken references.');
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
+    },
+  );
+
+  static final _steps = stepByStep(
+    from1To2: (m, schema) async {
+      await m.createTable(schema.projects);
+      await m.createTable(schema.tasks);
+      await m.createIndex(schema.tasksDueDate);
+      await m.createIndex(schema.tasksCompletedAt);
+    },
+    from2To3: (m, schema) async {
+      await m.createTable(schema.habits);
+      await m.createTable(schema.habitCheckIns);
+      await m.createIndex(schema.habitCheckInsDate);
+    },
+    // Existing rows get a fresh uuid each and keep everything else;
+    // updatedAt starts as createdAt where the column is new.
+    from3To4: (m, schema) async {
+      const uuid = CustomExpression<String>(sqlNewUuid);
+      await m.alterTable(
+        TableMigration(
+          schema.projects,
+          newColumns: [schema.projects.uuid, schema.projects.updatedAt, schema.projects.deletedAt],
+          columnTransformer: {
+            schema.projects.uuid: uuid,
+            schema.projects.updatedAt: schema.projects.createdAt,
+          },
+        ),
+      );
+      await m.alterTable(
+        TableMigration(
+          schema.tasks,
+          newColumns: [schema.tasks.uuid, schema.tasks.deletedAt],
+          columnTransformer: {schema.tasks.uuid: uuid},
+        ),
+      );
+      await m.alterTable(
+        TableMigration(
+          schema.habits,
+          newColumns: [schema.habits.uuid, schema.habits.updatedAt, schema.habits.deletedAt],
+          columnTransformer: {schema.habits.uuid: uuid, schema.habits.updatedAt: schema.habits.createdAt},
+        ),
+      );
+      await m.createIndex(schema.tasksDeletedAt);
     },
   );
 

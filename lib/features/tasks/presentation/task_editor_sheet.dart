@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_button.dart';
 import '../../../core/design/components/k_chip.dart';
-import '../../../core/design/components/k_confirmation_dialog.dart';
 import '../../../core/design/components/k_dropdown.dart';
 import '../../../core/design/components/k_icon_button.dart';
 import '../../../core/design/components/k_text_field.dart';
@@ -18,6 +17,7 @@ import '../application/tasks_providers.dart';
 import '../data/task_repository.dart';
 import '../domain/due_format.dart';
 import '../domain/recurrence.dart';
+import 'task_ui_actions.dart';
 import 'widgets/custom_repeat_sheet.dart';
 import '../domain/task.dart';
 import 'time_format.dart';
@@ -178,20 +178,10 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
     }
   }
 
+  /// Moves the mission to the Recycle Bin (recoverable; Undo in the snackbar).
   Future<void> _delete() async {
     final navigator = Navigator.of(context);
-    final ok = await showKConfirmationDialog(
-      context,
-      title: 'Delete this mission?',
-      message: widget.task!.isRecurring
-          ? 'This removes this occurrence and stops it repeating. It cannot be undone.'
-          : 'It will be removed from this device. This cannot be undone.',
-      confirmLabel: 'Delete',
-      destructive: true,
-    );
-    if (!ok) return;
-    await ref.read(taskActionsProvider).delete(widget.task!.id);
-    navigator.pop();
+    if (await trashMissionWithUndo(context, ref, widget.task!)) navigator.pop();
   }
 
   @override

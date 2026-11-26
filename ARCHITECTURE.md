@@ -106,6 +106,14 @@ of re-implementing them:
 | habits | `showHabitEditor()` (`habit_editor_sheet.dart`) | App shell dock "New habit" action |
 | tasks | `composeMission()` (`task_ui_actions.dart`) | App shell dock "New mission" on Tasks |
 
+**Public application providers** used by other features (allowed by the
+rule above): `trashedTasksProvider`, `trashedProjectsProvider`,
+`taskActionsProvider` (tasks) and `trashedHabitsProvider`,
+`habitActionsProvider` (habits) feed the Recycle Bin; `binItemsProvider`
+(recycle_bin) feeds the Settings count; the backup feature invalidates
+`themeControllerProvider` and `liveBackdropControllerProvider` (settings)
+after a restore.
+
 Anything else in a feature's `presentation/` is private to that feature.
 
 ## State management — Riverpod
@@ -159,7 +167,18 @@ Anything else in a feature's `presentation/` is private to that feature.
 - **Schema history:** v1 `app_settings` · v2 `projects`, `tasks` (+ indexes on
   `due_date`, `completed_at`; `project_id` → `ON DELETE SET NULL`) · v3 `habits`,
   `habit_check_ins` (primary key `(habit_id, date)`, index on `date`,
-  `habit_id` → `ON DELETE CASCADE`).
+  `habit_id` → `ON DELETE CASCADE`) · v4 `uuid` (unique), `updated_at`,
+  `deleted_at` on `projects`, `tasks`, `habits` (+ index on `tasks.deleted_at`).
+  The v3→v4 step rebuilds the three tables with `alterTable`, giving every
+  existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
+  during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
+- **Record conventions (v4+).** Every syncable table has an integer `id`
+  (primary key, joins), a `uuid` (identity across devices, backups and a
+  future sync; `newUuid()` in `core/database/ids.dart`), `created_at`,
+  `updated_at` (set on every write) and nullable `deleted_at` (Recycle Bin).
+  Child rows keyed naturally (habit check-ins: habit + date) need no uuid.
+  Every list query filters `deleted_at IS NULL`; only the Recycle Bin and
+  backups read deleted rows.
 - **Changing the schema** (the only supported workflow):
   1. Edit/add tables; bump `schemaVersion`.
   2. `dart run build_runner build --delete-conflicting-outputs`
@@ -170,6 +189,24 @@ Anything else in a feature's `presentation/` is private to that feature.
   5. `flutter test test/drift` must pass.
 - Repeating missions: completing one inserts the next occurrence in the same
   transaction and stores its id in `next_task_id`, so "reopen" can remove it.
+  Deleting *only this occurrence* does the same (the series continues) and
+  restoring it from the Recycle Bin removes that next occurrence again;
+  deleting *this and all future* just moves the open occurrence to the bin.
+- **Recycle Bin.** Delete = set `deleted_at` (recoverable, with Undo in the
+  snackbar). Restore clears it; every field and relationship is unchanged.
+  Projects in the bin keep their missions' links (shown without a project).
+  Habits in the bin keep their check-ins. Permanent deletion (one item, or
+  Empty) always asks for confirmation and cascades as before.
+- **Backup format** (`features/backup/domain/backup_format.dart`): one JSON
+  document `{format: "knightly-backup", formatVersion, schemaVersion, createdAt,
+  counts, checksum, data: {settings, projects, tasks, habits, habitCheckIns}}`.
+  Instants in UTC, calendar dates as `yyyy-MM-dd`, ids and uuids preserved,
+  Recycle Bin rows included, device-only settings (`backup.*`) excluded.
+  `checksum` = CRC-32 of `data` re-encoded compactly. A restore validates
+  everything first (format/schema version, checksum, counts, every field's
+  type and length, uuids, unique ids, references), writes a safety copy of the
+  current data to app storage (newest 3 kept), then replaces all tables in one
+  transaction.
 - Habit check-ins: one row per habit per day with a count; a count of zero
   deletes the row. Habit stats (streaks, rates, week strip) are computed in pure
   Dart from the check-ins on every change — nothing derived is stored.
@@ -269,6 +306,12 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 | `drift_dev` | ^2.31.0 | dev | Drift code generator. |
 | `build_runner` | ^2.15.1 | dev | Runs code generation. |
 | `flutter_lints` | ^5.0.0 | dev | Baseline lint set (plus project rules in `analysis_options.yaml`). |
+| `path_provider` | ^2.1.5 | runtime | App-private folder for restore safety copies. Already resolved (same version) as a dependency of `drift_flutter`; now declared because Knightly calls it directly. |
+
+Files the user picks (backup save/open) go through Android's system file
+picker via a small `knightly/documents` method channel in `MainActivity.kt`
+(`core/platform/document_files.dart`) instead of a file-picker package: two
+methods, no storage permission, no network.
 
 Fonts are bundled assets, not a package: Sora and Inter from Google Fonts (SIL OFL 1.1), with
 their licences in `assets/fonts/*/OFL.txt` and registered with `LicenseRegistry`.
@@ -333,4 +376,12 @@ codegen not needed yet).
 | D48 | 2026-11-26 | Custom repeat in the mission editor: every N days (2–30) or any set of weekdays; a weekly series starts on its first chosen day | The domain already stored both; the editor only offered presets tied to the due date. |
 | D49 | 2026-11-26 | Back on a non-Home tab returns to Home (`PopScope` in `AppShell`) | Back from a tab used to exit the app. |
 | D50 | 2026-11-26 | Dark Knight accent is steel blue (`#4F8FD6` / `#8CC0F2`, AA ≥ 5.2:1 on every surface), signal cool silver; picture lamp glows and embers use the warm `warning` colour; theme pack re-rendered in blue; the logo and launcher icon stay the approved gold artwork | User disliked the yellow, saw the blue trial and chose to keep it. A blue recolour of the logo was tried and rejected by the user (the gold icon looked better). |
-
+| D51 | 2026-11-26 | Git repository with LF line endings (`.gitattributes`), generated Drift code and schema snapshots committed, signing material and local properties ignored | Audit H1. Committing generated code lets the project build without running build_runner first. |
+| D52 | 2026-11-26 | Schema v4: `uuid` + `updated_at` + `deleted_at` on projects, tasks and habits; integer ids stay the primary key | Prepares optional sync and the Recycle Bin without touching joins, providers or screens. UUIDs are generated in Dart (`Random.secure`) and in SQL for the migration; no uuid package. |
+| D53 | 2026-11-26 | Soft delete everywhere the user deletes; permanent deletion only from the Recycle Bin, always confirmed | Audit M3. Undo in the snackbar covers the common slip; the bin covers the rest. |
+| D54 | 2026-11-26 | Deleting a repeating mission asks "only this occurrence" (skip: the next one is scheduled and linked) or "this and all future" | Deleting the open occurrence used to end the series silently. |
+| D55 | 2026-11-26 | Manual backup = one validated JSON file through the system file picker (SAF method channel); restore replaces all data after a safety copy; automatic backup deferred | Audit H2. Fully offline, user-owned files, readable format; a safety copy makes a mistaken restore undoable. |
+| D56 | 2026-11-26 | Android cloud backup off (`allowBackup=false`, `data_extraction_rules.xml`); device-to-device transfer allowed | Audit M5: matches the "no cloud" promise. See docs/PRIVACY.md. |
+| D57 | 2026-11-26 | "Missions done today" = today's commitments (due today or overdue) completed today | Audit M2: early completions inflated today's ratio and counted twice; undated missions were never in today's total. |
+| D58 | 2026-11-26 | Past habit check-ins (any day up to a year back, never the future); the habit's start date is derived as min(creation day, earliest check-in) | Audit M4. A derived start keeps streaks and rates correct when days are added and when they are cleared again. |
+| D59 | 2026-11-26 | Release signing from env vars or git-ignored `android/key.properties`; without a key, release builds fall back to the debug key with a warning unless `KNIGHTLY_REQUIRE_RELEASE_KEY=true` | Audit H3. No key or password is generated or committed; see docs/RELEASE_SIGNING.md. |

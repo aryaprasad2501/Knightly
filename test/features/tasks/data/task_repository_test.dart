@@ -134,13 +134,130 @@ void main() {
     expect(reopened.recurrence, isNull);
   });
 
-  test('deleting a project keeps its missions, unassigned', () async {
+  test('a project in the bin hides; restoring reconnects its missions', () async {
+    final projectId = await repo.createProject('Work');
+    await repo.create(TaskDraft(title: 'Report', projectId: projectId));
+
+    await repo.trashProject(projectId);
+    expect(await repo.watchProjects().first, isEmpty);
+    expect((await repo.watchTrashedProjects().first).single.name, 'Work');
+    // The mission stays visible and keeps its link while the project is away.
+    expect((await repo.watchOpen().first).single.projectId, projectId);
+
+    await repo.restoreProject(projectId);
+    expect((await repo.watchProjects().first).single.id, projectId);
+    expect(await repo.watchTrashedProjects().first, isEmpty);
+  });
+
+  test('deleting a project permanently keeps its missions, unassigned', () async {
     final projectId = await repo.createProject('Work');
     final id = await repo.create(TaskDraft(title: 'Report', projectId: projectId));
-    await repo.deleteProject(projectId);
+    await repo.trashProject(projectId);
+    await repo.deleteProjectPermanently(projectId);
 
-    expect(await repo.watchProjects().first, isEmpty);
+    expect(await repo.watchTrashedProjects().first, isEmpty);
     expect((await repo.find(id))!.projectId, isNull);
+  });
+
+  test('a mission in the bin leaves every list and comes back intact', () async {
+    final projectId = await repo.createProject('Home');
+    final id = await repo.create(
+      TaskDraft(
+        title: 'Fix the gate',
+        notes: 'Hinge',
+        priority: TaskPriority.high,
+        projectId: projectId,
+        dueDate: today,
+        dueTime: const ClockTime(18, 30),
+      ),
+    );
+    final done = await repo.create(TaskDraft(title: 'Done one', dueDate: today));
+    await repo.complete(done);
+
+    await repo.trash(id);
+    await repo.trash(done);
+    expect(await repo.watchOpen().first, isEmpty);
+    expect(await repo.watchCompleted().first, isEmpty);
+    expect({for (final t in await repo.watchTrashed().first) t.id}, {id, done});
+
+    // A trashed mission can't be completed by a stale button.
+    await repo.complete(id);
+    expect((await repo.find(id))!.isDone, isFalse);
+
+    await repo.restore(id);
+    await repo.restore(done);
+    final back = (await repo.watchOpen().first).single;
+    expect(
+      (back.id, back.title, back.notes, back.priority, back.projectId),
+      (id, 'Fix the gate', 'Hinge', TaskPriority.high, projectId),
+    );
+    expect((back.dueDate, back.dueTime, back.deletedAt), (today, const ClockTime(18, 30), null));
+    expect((await repo.watchCompleted().first).single.id, done);
+  });
+
+  test('deleting only this occurrence keeps the series; restoring it undoes the skip', () async {
+    final id = await repo.create(TaskDraft(title: 'Stretch', dueDate: today, recurrence: DailyRecurrence()));
+
+    await repo.trash(id, onlyThisOccurrence: true);
+    final next = (await repo.watchOpen().first).single;
+    expect(next.id, isNot(id));
+    expect(next.dueDate, today.addDays(1));
+    expect(next.recurrence, DailyRecurrence());
+
+    await repo.restore(id);
+    final open = await repo.watchOpen().first;
+    expect(open.single.id, id, reason: 'the replacement occurrence is removed again');
+    expect(open.single.recurrence, DailyRecurrence());
+  });
+
+  test('skipping an overdue occurrence schedules the series from today', () async {
+    final id = await repo.create(
+      TaskDraft(title: 'Water plants', dueDate: today.addDays(-3), recurrence: DailyRecurrence(2)),
+    );
+    await repo.trash(id, onlyThisOccurrence: true);
+    // Due -3, every 2 days: -1 is past, so the next one is +1.
+    expect((await repo.watchOpen().first).single.dueDate, today.addDays(1));
+  });
+
+  test('deleting the whole series stops it; restoring resumes it', () async {
+    final id = await repo.create(TaskDraft(title: 'Stretch', dueDate: today, recurrence: DailyRecurrence()));
+    await repo.trash(id);
+    expect(await repo.watchOpen().first, isEmpty, reason: 'no replacement occurrence');
+
+    await repo.restore(id);
+    expect((await repo.watchOpen().first).single.recurrence, DailyRecurrence());
+  });
+
+  test('restoring a skipped occurrence after its replacement was done stops it repeating', () async {
+    final id = await repo.create(TaskDraft(title: 'Stretch', dueDate: today, recurrence: DailyRecurrence()));
+    await repo.trash(id, onlyThisOccurrence: true);
+    final next = (await repo.watchOpen().first).single;
+    now = now.add(const Duration(days: 1));
+    await repo.complete(next.id);
+
+    await repo.restore(id);
+    final restored = (await repo.find(id))!;
+    expect(restored.isDeleted, isFalse);
+    expect(restored.recurrence, isNull, reason: 'the series continues from the completed one only');
+    final repeating = (await repo.watchOpen().first).where((t) => t.isRecurring);
+    expect(repeating, hasLength(1), reason: 'exactly one live series');
+  });
+
+  test('permanent delete and emptying the bin', () async {
+    final a = await repo.create(const TaskDraft(title: 'A'));
+    final b = await repo.create(const TaskDraft(title: 'B'));
+    final keep = await repo.create(const TaskDraft(title: 'Keep'));
+    final project = await repo.createProject('Old');
+
+    await repo.deletePermanently(a);
+    expect(await repo.find(a), isNull);
+
+    await repo.trash(b);
+    await repo.trashProject(project);
+    expect(await repo.emptyTrash(), 2);
+    expect(await repo.find(b), isNull);
+    expect(await repo.watchTrashedProjects().first, isEmpty);
+    expect((await repo.watchOpen().first).single.id, keep);
   });
 
   test('a corrupt stored value degrades to "none" instead of breaking the list', () async {

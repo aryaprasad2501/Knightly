@@ -14,6 +14,7 @@ import '../../../core/design/layout/k_page.dart';
 import '../../../core/design/theme/knightly_themes.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import '../../recycle_bin/application/recycle_bin_providers.dart';
 import '../application/live_backdrop_controller.dart';
 import '../application/theme_controller.dart';
 import 'widgets/theme_option.dart';
@@ -25,6 +26,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeThemeProvider);
     final live = ref.watch(liveBackdropProvider);
+    final binCount = ref.watch(binItemsProvider).valueOrNull?.length ?? 0;
     final chevron = KIcon(KGlyphs.chevronRight, size: 20, color: context.palette.textMuted);
 
     return KPage(
@@ -54,11 +56,34 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         const SizedBox(height: KSpacing.xl),
+        const KSectionHeader('Data'),
+        KCard(
+          glyph: KGlyphs.backup,
+          title: 'Backup & restore',
+          subtitle: 'Save all your data to a file, or bring it back from one',
+          trailing: chevron,
+          onTap: () => context.push(AppRoutes.backup),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
+          glyph: KGlyphs.trash,
+          title: 'Recycle Bin',
+          subtitle: switch (binCount) {
+            0 => 'Empty',
+            1 => '1 deleted item · restore or delete for good',
+            _ => '$binCount deleted items · restore or delete for good',
+          },
+          trailing: chevron,
+          onTap: () => context.push(AppRoutes.recycleBin),
+        ),
+        const SizedBox(height: KSpacing.xl),
         KSectionHeader(context.byStyle('Intel', 'About')),
         const KCard(
           glyph: KGlyphs.shield,
           title: 'Private by design',
-          subtitle: 'Everything you record stays on this device. No account, no cloud.',
+          subtitle:
+              'Everything you record stays on this device: no account, no cloud, and Android cloud backup is '
+              'off. Keep your own copy with Backup & restore.',
         ),
         const SizedBox(height: KSpacing.md),
         KCard(

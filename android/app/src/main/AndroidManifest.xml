@@ -1,8 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+      No cloud backup (privacy promise "no account, no cloud"):
+      allowBackup=false turns off Android Auto Backup up to Android 11;
+      dataExtractionRules does the same on Android 12+ while still allowing a
+      local device-to-device transfer. Users keep copies with Backup & restore.
+    -->
     <application
         android:label="Knightly"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules">
         <activity
             android:name=".MainActivity"
             android:exported="true"

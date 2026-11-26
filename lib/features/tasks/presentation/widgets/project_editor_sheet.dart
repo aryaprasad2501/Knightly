@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/design/components/k_bottom_sheet.dart';
 import '../../../../core/design/components/k_button.dart';
-import '../../../../core/design/components/k_confirmation_dialog.dart';
 import '../../../../core/design/components/k_text_field.dart';
 import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
@@ -56,18 +55,23 @@ class _ProjectEditorState extends ConsumerState<_ProjectEditor> {
     }
   }
 
+  /// Moves the project to the Recycle Bin. Its missions stay (shown without a
+  /// project) and reconnect when it is restored.
   Future<void> _delete() async {
     final navigator = Navigator.of(context);
-    final ok = await showKConfirmationDialog(
-      context,
-      title: 'Delete "${widget.project!.name}"?',
-      message: 'Its missions stay, without a project. The project itself cannot be restored.',
-      confirmLabel: 'Delete',
-      destructive: true,
-    );
-    if (!ok) return;
-    await ref.read(taskActionsProvider).deleteProject(widget.project!.id);
+    final messenger = ScaffoldMessenger.of(context);
+    final actions = ref.read(taskActionsProvider);
+    final id = widget.project!.id;
+    await actions.trashProject(id);
     navigator.pop();
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          content: const Text('Project moved to Recycle Bin · its missions stay'),
+          action: SnackBarAction(label: 'Undo', onPressed: () => actions.restoreProject(id)),
+        ),
+      );
   }
 
   @override

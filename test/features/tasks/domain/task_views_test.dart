@@ -15,6 +15,7 @@ Task task(
   TaskPriority priority = TaskPriority.none,
   int? project,
   DateTime? completedAt,
+  Recurrence? recurrence,
 }) => Task(
   id: _nextId++,
   title: title,
@@ -24,6 +25,7 @@ Task task(
   priority: priority,
   projectId: project,
   completedAt: completedAt,
+  recurrence: recurrence,
 );
 
 List<String> titles(List<TaskSection> sections) => [for (final s in sections) ...s.tasks.map((t) => t.title)];
@@ -107,8 +109,8 @@ void main() {
       final s = MissionSummary.compute(
         open: [task('later', dueIn: 3), overdue, task('today', dueIn: 0)],
         done: [
-          task('done today', completedAt: DateTime(2026, 11, 25, 7)),
-          task('done before', completedAt: DateTime(2026, 11, 24, 7)),
+          task('done today', dueIn: 0, completedAt: DateTime(2026, 11, 25, 7)),
+          task('done before', dueIn: -1, completedAt: DateTime(2026, 11, 24, 7)),
         ],
         today: today,
       );
@@ -116,6 +118,56 @@ void main() {
       expect(s.completedToday, 1);
       expect(s.completion, closeTo(1 / 3, 1e-9));
       expect(s.next, overdue);
+    });
+
+    // M2: "missions done today" counts only today's commitments finished today.
+    group('done today', () {
+      final at = DateTime(2026, 11, 25, 15);
+      int doneToday(List<Task> done, {List<Task> open = const []}) =>
+          MissionSummary.compute(open: open, done: done, today: today).completedToday;
+
+      test('scheduled for today and completed today counts', () {
+        expect(doneToday([task('a', dueIn: 0, completedAt: at)]), 1);
+      });
+
+      test('scheduled for a later day but completed early does not count', () {
+        final s = MissionSummary.compute(
+          open: [task('today', dueIn: 0)],
+          done: [task('early', dueIn: 2, completedAt: at)],
+          today: today,
+        );
+        expect((s.completedToday, s.totalToday, s.completion), (0, 1, 0.0));
+      });
+
+      test('overdue and completed today counts', () {
+        expect(doneToday([task('late', dueIn: -3, completedAt: at)]), 1);
+      });
+
+      test('a repeating occurrence due today counts once; its next occurrence is not "done"', () {
+        final s = MissionSummary.compute(
+          open: [task('stretch (tomorrow)', dueIn: 1, recurrence: DailyRecurrence())],
+          done: [task('stretch (today)', dueIn: 0, recurrence: DailyRecurrence(), completedAt: at)],
+          today: today,
+        );
+        expect((s.completedToday, s.openToday, s.completion), (1, 0, 1.0));
+      });
+
+      test('completed on an earlier day does not count today', () {
+        expect(doneToday([task('yesterday', dueIn: -1, completedAt: DateTime(2026, 11, 24, 20))]), 0);
+      });
+
+      test('undated missions completed today do not count (they were never due)', () {
+        expect(doneToday([task('someday', completedAt: at)]), 0);
+      });
+
+      test('just after midnight, completions from yesterday roll off', () {
+        final s = MissionSummary.compute(
+          open: const [],
+          done: [task('late night', dueIn: -1, completedAt: DateTime(2026, 11, 24, 23, 59))],
+          today: today,
+        );
+        expect(s.completedToday, 0);
+      });
     });
   });
 

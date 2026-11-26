@@ -15,6 +15,16 @@ final projectsProvider = StreamProvider<List<Project>>(
   (ref) => ref.watch(taskRepositoryProvider).watchProjects(),
 );
 
+/// Missions in the Recycle Bin. Public: the Recycle Bin feature lists them.
+final trashedTasksProvider = StreamProvider<List<Task>>(
+  (ref) => ref.watch(taskRepositoryProvider).watchTrashed(),
+);
+
+/// Projects in the Recycle Bin. Public: the Recycle Bin feature lists them.
+final trashedProjectsProvider = StreamProvider<List<Project>>(
+  (ref) => ref.watch(taskRepositoryProvider).watchTrashedProjects(),
+);
+
 /// Everything the mission list needs, loaded together.
 class TaskBoard {
   const TaskBoard({required this.open, required this.done, required this.projects});
@@ -91,14 +101,22 @@ class TaskActions {
 
   Future<int> create(TaskDraft draft) => _repo.create(draft);
   Future<void> update(int id, TaskDraft draft) => _repo.update(id, draft);
-  Future<void> delete(int id) => _repo.delete(id);
+
+  /// Moves a mission to the Recycle Bin (see `TaskRepository.trash`).
+  Future<void> trash(int id, {bool onlyThisOccurrence = false}) =>
+      _repo.trash(id, onlyThisOccurrence: onlyThisOccurrence);
+  Future<void> restore(int id) => _repo.restore(id);
+  Future<void> deletePermanently(int id) => _repo.deletePermanently(id);
+  Future<int> emptyTrash() => _repo.emptyTrash();
 
   Future<void> setDone(Task task, {required bool done}) =>
       done ? _repo.complete(task.id) : _repo.reopen(task.id);
 
   Future<int> createProject(String name) => _repo.createProject(name);
   Future<void> renameProject(int id, String name) => _repo.renameProject(id, name);
-  Future<void> deleteProject(int id) => _repo.deleteProject(id);
+  Future<void> trashProject(int id) => _repo.trashProject(id);
+  Future<void> restoreProject(int id) => _repo.restoreProject(id);
+  Future<void> deleteProjectPermanently(int id) => _repo.deleteProjectPermanently(id);
 }
 
 final taskActionsProvider = Provider<TaskActions>((ref) => TaskActions(ref.watch(taskRepositoryProvider)));

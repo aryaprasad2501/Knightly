@@ -3,6 +3,8 @@
     python tool/backdrops/prepare_backdrops.py [names...]
 
 Sources (kept unchanged): KNIGHTLY_THEME_PACK/user_supplied/{wallpapers,logos}/.
+That folder is local only (git-ignored): several originals show franchise
+logos, so they are never published; the generated assets are.
 
 Backdrops: each is a full-phone-height crop (720 x 1600, WebP) of one wallpaper,
 framed so no franchise logo is in view. Small emblems that remain are covered

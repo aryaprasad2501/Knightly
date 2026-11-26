@@ -102,6 +102,9 @@ int countFor(
   projectId: projectId,
 ).fold(0, (sum, s) => sum + s.tasks.length);
 
+/// Whether [t] was one of [today]'s commitments: dated today or earlier.
+bool _committedFor(Task t, CalendarDate today) => t.dueDate != null && !t.dueDate!.isAfter(today);
+
 /// Today's mission figures for the Home command center.
 class MissionSummary {
   const MissionSummary({required this.openToday, required this.completedToday, required this.next});
@@ -109,7 +112,10 @@ class MissionSummary {
   /// Open missions due today or overdue.
   final int openToday;
 
-  /// Missions completed today (whatever their due date).
+  /// Today's commitments (due today or overdue) that were completed today.
+  /// Finishing a future mission early does not count here — it would inflate
+  /// today's share and count again on its own day — nor does an undated one,
+  /// which was never part of today's total.
   final int completedToday;
 
   /// The mission to do next, if any open mission exists.
@@ -128,7 +134,9 @@ class MissionSummary {
     final sorted = [...open]..sort(compareOpenTasks);
     return MissionSummary(
       openToday: sorted.where((t) => t.isActionableOn(today)).length,
-      completedToday: done.where((t) => CalendarDate.of(t.completedAt!) == today).length,
+      completedToday: done
+          .where((t) => _committedFor(t, today) && CalendarDate.of(t.completedAt!) == today)
+          .length,
       // Dated missions sort first, so this is the most urgent; otherwise the top undated one.
       next: sorted.isEmpty ? null : sorted.first,
     );

@@ -27,6 +27,7 @@ class Habit {
     this.kind = HabitKind.build,
     this.target = 1,
     this.archivedAt,
+    this.deletedAt,
   });
 
   final int id;
@@ -42,7 +43,11 @@ class Habit {
   final DateTime createdAt;
   final DateTime? archivedAt;
 
+  /// When the habit was moved to the Recycle Bin, or null.
+  final DateTime? deletedAt;
+
   bool get isArchived => archivedAt != null;
+  bool get isDeleted => deletedAt != null;
 
   HabitDraft toDraft() => HabitDraft(name: name, kind: kind, schedule: schedule, target: target);
 }

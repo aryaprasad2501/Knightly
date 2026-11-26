@@ -50,8 +50,8 @@ CROPS = {
 # Panel headers: name -> (source file, crop: left, top, right as fractions;
 # the height follows from PW x PH). DK crops start right of the bat banners.
 PANELS = {
-    # Rain over the lit skyline.
-    'dk_water': ('DK-03_Rainy_Rooftops.png', (0.30, 0.27, 1.0)),
+    # The waterfall below the fortress, between lanterns (banner emblem patched).
+    'dk_water': ('DK-06_Dark_Fortress.png', (0.40, 0.41, 0.96)),
     # The pond, waterfall and lanterns.
     'sc_water': ('SC-07_Moon_Garden.png', (0.0, 0.47, 1.0)),
     # The full moon over the cathedral spires.

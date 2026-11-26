@@ -5,7 +5,7 @@ _Last updated: 2026-11-27 · Phase 2 step 6 (Sleep) complete_
 ## Where things stand
 
 **Latest (panel art, 2026-11-27):** `KArtHeader` (core component, in gallery + components test) shows
-`assets/panels/{dk,sc}_{water,sleep}.webp` (from `prepare_backdrops.py` PANELS: DK-03, SC-07, DK-H, SC-06;
+`assets/panels/{dk,sc}_{water,sleep}.webp` (from `prepare_backdrops.py` PANELS: DK-06 waterfall, SC-07, DK-H, SC-06;
 logos out of frame) at the top of the Water and Sleep panels. Checked in both themes on the Pixel 8 AVD.
 
 

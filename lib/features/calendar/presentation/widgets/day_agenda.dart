@@ -11,6 +11,8 @@ import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/time/calendar_date.dart';
 import '../../../../core/time/clock.dart';
 import '../../../habits/presentation/habit_editor_sheet.dart';
+import '../../../routines/presentation/routine_editor_sheet.dart';
+import '../../../routines/presentation/routines_section.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
 import '../../../tasks/presentation/task_ui_actions.dart';
 import '../../../tasks/presentation/time_format.dart';
@@ -25,7 +27,7 @@ String occurrenceTimeLabel(BuildContext context, EventOccurrence o) {
   return '${formatClockTime(context, t)}–${formatClockTime(context, o.endTime!)}';
 }
 
-/// One day's events, missions and habits as rows. [compactHabits] shows the
+/// One day's events, missions, routines and habits as rows. [compactHabits] shows the
 /// habits as a single summary line (week view).
 class DayAgenda extends StatelessWidget {
   const DayAgenda({super.key, required this.date, required this.day, this.compactHabits = false});
@@ -39,6 +41,7 @@ class DayAgenda extends StatelessWidget {
     final rows = <Widget>[
       for (final o in day.events) OccurrenceTile(occurrence: o),
       for (final m in day.missions) MissionRow(entry: m),
+      for (final r in day.routines) RoutineRow(entry: r, date: date),
       if (day.habits.isNotEmpty)
         if (compactHabits)
           _HabitSummary(habits: day.habits)
@@ -209,6 +212,61 @@ class MissionRow extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// A routine expected that day. Tap runs it today; on other days it opens
+/// the routine.
+class RoutineRow extends ConsumerWidget {
+  const RoutineRow({super.key, required this.entry, required this.date});
+
+  final RoutineEntry entry;
+  final CalendarDate date;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = context.palette;
+    final text = context.textStyles;
+    final r = entry.routine;
+    final isToday = date == ref.watch(todayProvider);
+    final when = r.startTime == null ? r.timeOfDay.label : formatClockTime(context, r.startTime!);
+    final state = entry.done ? 'Done' : (isToday ? 'Start' : '${r.steps.length} steps');
+    return Semantics(
+      container: true,
+      button: true,
+      label: '${r.name}, routine, $when, $state',
+      excludeSemantics: true,
+      onTap: () => _open(context, isToday),
+      child: KSurface(
+        onTap: () => _open(context, isToday),
+        padding: const EdgeInsets.symmetric(horizontal: KSpacing.lg, vertical: KSpacing.md),
+        child: Row(
+          children: [
+            KIcon(KGlyphs.routine, size: 18, color: entry.done ? p.success : p.accentStrong),
+            const SizedBox(width: KSpacing.md),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(r.name, style: text.bodyMedium),
+                  Text(when, style: text.bodySmall),
+                ],
+              ),
+            ),
+            Text(
+              state,
+              style: text.bodySmall?.copyWith(
+                color: entry.done ? p.success : (isToday ? p.accentStrong : p.textMuted),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _open(BuildContext context, bool isToday) => isToday && !entry.done
+      ? openRoutineRun(context, entry.routine)
+      : showRoutineEditor(context, routine: entry.routine);
 }
 
 /// A habit expected that day, with its state. Tap to open the habit.

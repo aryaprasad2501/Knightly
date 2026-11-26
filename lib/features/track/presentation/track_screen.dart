@@ -15,6 +15,7 @@ import '../../../core/modules/app_module.dart';
 import '../../habits/application/habits_providers.dart';
 import '../../habits/domain/habit_stats.dart';
 import '../../habits/presentation/habits_section.dart';
+import '../../routines/presentation/routines_section.dart';
 import '../../tasks/application/tasks_providers.dart';
 
 /// The Track tab — a personal performance console: today's rings, then
@@ -38,6 +39,7 @@ class TrackScreen extends ConsumerWidget {
       if (on.contains(AppModule.analytics) && (habitsOn || on.contains(AppModule.missions)))
         const _PerformancePanel(),
       if (habitsOn) const HabitsSection(),
+      if (on.contains(AppModule.routines)) const RoutinesSection(),
       if (on.any(AppModule.trackers.contains)) const _MoreTrackers(),
     ];
 

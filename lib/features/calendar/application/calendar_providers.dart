@@ -6,6 +6,8 @@ import '../../../core/time/clock.dart';
 import '../../habits/application/habits_providers.dart';
 import '../../habits/domain/habit.dart';
 import '../../habits/domain/habit_schedule.dart';
+import '../../routines/application/routines_providers.dart';
+import '../../routines/domain/routine.dart';
 import '../../tasks/application/tasks_providers.dart';
 import '../../tasks/domain/task.dart';
 import '../../tasks/domain/task_views.dart';
@@ -48,15 +50,29 @@ class HabitEntry {
   bool get done => count >= habit.target;
 }
 
+/// A routine expected (or run) on a calendar day.
+class RoutineEntry {
+  const RoutineEntry({required this.routine, required this.done});
+
+  final Routine routine;
+  final bool done;
+}
+
 /// Everything on one day, for the modules that are on.
 class CalendarDay {
-  const CalendarDay({this.events = const [], this.missions = const [], this.habits = const []});
+  const CalendarDay({
+    this.events = const [],
+    this.missions = const [],
+    this.habits = const [],
+    this.routines = const [],
+  });
 
   final List<EventOccurrence> events;
   final List<MissionEntry> missions;
   final List<HabitEntry> habits;
+  final List<RoutineEntry> routines;
 
-  bool get isEmpty => events.isEmpty && missions.isEmpty && habits.isEmpty;
+  bool get isEmpty => events.isEmpty && missions.isEmpty && habits.isEmpty && routines.isEmpty;
 }
 
 /// Calendar days for an inclusive range (from, to). Missions and habits
@@ -71,9 +87,8 @@ final calendarDaysProvider =
       if (states.hasError) return AsyncError(states.error!, states.stackTrace ?? StackTrace.current);
       if (!events.hasValue || !states.hasValue) return const AsyncLoading();
 
-      final days = <CalendarDate, ({List<EventOccurrence> e, List<MissionEntry> m, List<HabitEntry> h})>{};
-      ({List<EventOccurrence> e, List<MissionEntry> m, List<HabitEntry> h}) dayOf(CalendarDate d) =>
-          days.putIfAbsent(d, () => (e: [], m: [], h: []));
+      final days = <CalendarDate, _DayParts>{};
+      _DayParts dayOf(CalendarDate d) => days.putIfAbsent(d, () => (e: [], m: [], h: [], r: []));
       bool inRange(CalendarDate d) => !d.isBefore(from) && !d.isAfter(to);
 
       for (final o in occurrencesBetween(events.requireValue, states.requireValue, from, to)) {
@@ -113,15 +128,47 @@ final calendarDaysProvider =
         }
       }
 
+      if (on.contains(AppModule.routines)) {
+        final routines = ref.watch(routinesProvider).valueOrNull ?? const <Routine>[];
+        final doneOn = <(int, CalendarDate)>{
+          for (final r in ref.watch(routineRunsSinceProvider(from)).valueOrNull ?? const <RoutineRun>[])
+            if (r.isComplete) (r.routineId, r.date),
+        };
+        for (var d = from; !d.isAfter(to); d = d.addDays(1)) {
+          for (final r in routines) {
+            if (d.isBefore(CalendarDate.of(r.createdAt))) continue;
+            final done = doneOn.contains((r.id, d));
+            // A weekly-quota routine has no fixed days: shown on days it was done.
+            final expected = r.schedule is TimesPerWeek ? done : r.schedule.isScheduledOn(d);
+            if (expected) dayOf(d).r.add(RoutineEntry(routine: r, done: done));
+          }
+        }
+      }
+
       return AsyncData({
         for (final MapEntry(:key, :value) in days.entries)
           key: CalendarDay(
             events: value.e,
             missions: value.m..sort((a, b) => compareOpenTasks(a.task, b.task)),
             habits: value.h,
+            routines: value.r..sort(_byStartTime),
           ),
       });
     });
+
+typedef _DayParts = ({
+  List<EventOccurrence> e,
+  List<MissionEntry> m,
+  List<HabitEntry> h,
+  List<RoutineEntry> r,
+});
+
+// Timed routines first, by time; then by time of day.
+int _byStartTime(RoutineEntry a, RoutineEntry b) {
+  final ta = a.routine.startTime?.inMinutes ?? 24 * 60 + a.routine.timeOfDay.index;
+  final tb = b.routine.startTime?.inMinutes ?? 24 * 60 + b.routine.timeOfDay.index;
+  return ta.compareTo(tb);
+}
 
 /// Flexible occurrences from the last 30 days that were not done. They stay
 /// here until the user reschedules them, marks them done or skips them.

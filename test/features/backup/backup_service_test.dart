@@ -13,6 +13,8 @@ import 'package:knightly/features/calendar/domain/calendar_event.dart';
 import 'package:knightly/features/habits/data/habit_repository.dart';
 import 'package:knightly/features/habits/domain/habit.dart';
 import 'package:knightly/features/habits/domain/habit_schedule.dart';
+import 'package:knightly/features/routines/data/routine_repository.dart';
+import 'package:knightly/features/routines/domain/routine.dart';
 import 'package:knightly/features/settings/data/settings_repository.dart';
 import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/recurrence.dart';
@@ -337,5 +339,86 @@ void main() {
     data.remove('events');
     doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
     expect(() => serviceFor(openDb()).validate(jsonEncode(doc)), throwsA(isA<BackupException>()));
+  });
+
+  group('routines', () {
+    Future<AppDatabase> withRoutines() async {
+      final db = openDb();
+      final routines = RoutineRepository(db, clock: () => now);
+      final morning = await routines.create(
+        RoutineDraft(
+          name: 'Morning',
+          timeOfDay: RoutineTimeOfDay.morning,
+          schedule: SpecificDays({1, 2, 3, 4, 5}),
+          startTime: const ClockTime(6, 30),
+          reminderMinutes: 10,
+          steps: const [
+            StepDraft(title: 'Water', durationSeconds: 30),
+            StepDraft(title: 'Plan the day'),
+          ],
+        ),
+      );
+      final run = await routines.startRun(morning, stepsTotal: 2);
+      await routines.finishRun(run, 2);
+      final old = await routines.create(
+        const RoutineDraft(
+          name: 'Old',
+          schedule: EveryDay(),
+          steps: [StepDraft(title: 'x')],
+        ),
+      );
+      await routines.trash(old);
+      return db;
+    }
+
+    test('routines, their steps and runs are backed up and restored', () async {
+      final source = await withRoutines();
+      final json = await serviceFor(source).exportJson();
+      expect(serviceFor(source).validate(json).routines, 2);
+
+      final target = openDb();
+      await serviceFor(target).restore(json);
+      final restored = RoutineRepository(target, clock: () => now);
+      final morning = (await restored.watchRoutines().first).single;
+      expect(
+        (morning.name, morning.timeOfDay, morning.schedule, morning.startTime, morning.reminderMinutes),
+        ('Morning', RoutineTimeOfDay.morning, SpecificDays({1, 2, 3, 4, 5}), const ClockTime(6, 30), 10),
+      );
+      expect(
+        [for (final s in morning.steps) (s.title, s.durationSeconds)],
+        [('Water', 30), ('Plan the day', null)],
+      );
+      final runs = await restored.watchRuns(since: today).first;
+      expect((runs.single.isComplete, runs.single.date), (true, today));
+      expect((await restored.watchRoutines(trashed: true).first).single.name, 'Old');
+    });
+
+    test('a schema-5 backup (before Routines) restores with no routines', () async {
+      final source = await seeded();
+      final doc = jsonDecode(await serviceFor(source).exportJson()) as Map<String, Object?>;
+      final data = doc['data']! as Map<String, Object?>;
+      for (final t in ['routines', 'routineSteps', 'routineRuns']) {
+        data.remove(t);
+        (doc['counts']! as Map).remove(t);
+      }
+      doc['schemaVersion'] = 5;
+      doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
+
+      final target = await withRoutines();
+      final summary = await serviceFor(target).restore(jsonEncode(doc));
+      expect((summary.missions, summary.routines), (4, 0));
+      expect(await target.select(target.routines).get(), isEmpty);
+      expect(await target.select(target.routineRuns).get(), isEmpty);
+    });
+
+    test('a step whose routine is not in the file is refused', () async {
+      final source = await withRoutines();
+      final doc = jsonDecode(await serviceFor(source).exportJson()) as Map<String, Object?>;
+      final data = doc['data']! as Map<String, Object?>;
+      final steps = data['routineSteps']! as List;
+      (steps.first as Map)['routineId'] = 999;
+      doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
+      expect(() => serviceFor(openDb()).validate(jsonEncode(doc)), throwsA(isA<BackupException>()));
+    });
   });
 }

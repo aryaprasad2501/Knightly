@@ -57,6 +57,9 @@ class BackupService {
       final exceptions = await (_db.select(
         _db.eventExceptions,
       )..orderBy([(t) => OrderingTerm.asc(t.eventId), (t) => OrderingTerm.asc(t.date)])).get();
+      final routines = await (_db.select(_db.routines)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final steps = await (_db.select(_db.routineSteps)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final runs = await (_db.select(_db.routineRuns)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -141,6 +144,47 @@ class BackupService {
               'movedDate': x.movedDate,
               'movedMinute': x.movedMinute,
               'updatedAt': _time(x.updatedAt),
+            },
+        ],
+        'routines': [
+          for (final r in routines)
+            {
+              'id': r.id,
+              'uuid': r.uuid,
+              'name': r.name,
+              'timeOfDay': r.timeOfDay,
+              'schedule': r.schedule,
+              'startMinute': r.startMinute,
+              'reminderMinutes': r.reminderMinutes,
+              'createdAt': _time(r.createdAt),
+              'updatedAt': _time(r.updatedAt),
+              'deletedAt': _time(r.deletedAt),
+            },
+        ],
+        'routineSteps': [
+          for (final s in steps)
+            {
+              'id': s.id,
+              'uuid': s.uuid,
+              'routineId': s.routineId,
+              'position': s.position,
+              'title': s.title,
+              'durationSeconds': s.durationSeconds,
+              'updatedAt': _time(s.updatedAt),
+            },
+        ],
+        'routineRuns': [
+          for (final r in runs)
+            {
+              'id': r.id,
+              'uuid': r.uuid,
+              'routineId': r.routineId,
+              'date': r.date,
+              'startedAt': _time(r.startedAt),
+              'finishedAt': _time(r.finishedAt),
+              'stepsDone': r.stepsDone,
+              'stepsTotal': r.stepsTotal,
+              'updatedAt': _time(r.updatedAt),
             },
         ],
       };
@@ -233,6 +277,9 @@ class BackupService {
       checkIns: [for (final r in tables['habitCheckIns']!) _checkInRow(r)],
       events: [for (final r in tables['events']!) _eventRow(r)],
       exceptions: [for (final r in tables['eventExceptions']!) _exceptionRow(r)],
+      routines: [for (final r in tables['routines']!) _routineRow(r)],
+      steps: [for (final r in tables['routineSteps']!) _stepRow(r)],
+      runs: [for (final r in tables['routineRuns']!) _runRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -276,6 +323,19 @@ class BackupService {
     for (final x in p.exceptions) {
       if (!eventIds.contains(x.eventId.value)) throw _damaged;
     }
+    unique(p.routines.map((r) => r.id.value));
+    unique(p.routines.map((r) => r.uuid.value));
+    unique(p.steps.map((r) => r.id.value));
+    unique(p.steps.map((r) => r.uuid.value));
+    unique(p.runs.map((r) => r.id.value));
+    unique(p.runs.map((r) => r.uuid.value));
+    final routineIds = {for (final r in p.routines) r.id.value};
+    for (final s in p.steps) {
+      if (!routineIds.contains(s.routineId.value)) throw _damaged;
+    }
+    for (final r in p.runs) {
+      if (!routineIds.contains(r.routineId.value)) throw _damaged;
+    }
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -287,6 +347,9 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.routineRuns).go();
+      await _db.delete(_db.routineSteps).go();
+      await _db.delete(_db.routines).go();
       await _db.delete(_db.eventExceptions).go();
       await _db.delete(_db.events).go();
       await _db.delete(_db.habitCheckIns).go();
@@ -302,6 +365,9 @@ class BackupService {
         b.insertAll(_db.habitCheckIns, parsed.checkIns);
         b.insertAll(_db.events, parsed.events);
         b.insertAll(_db.eventExceptions, parsed.exceptions);
+        b.insertAll(_db.routines, parsed.routines);
+        b.insertAll(_db.routineSteps, parsed.steps);
+        b.insertAll(_db.routineRuns, parsed.runs);
       });
     });
     return parsed.summary;
@@ -417,6 +483,41 @@ class BackupService {
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
   );
 
+  RoutinesCompanion _routineRow(Map<String, Object?> r) => RoutinesCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    name: _string(r, 'name', min: 1, max: 60),
+    timeOfDay: Value(_int(r, 'timeOfDay')),
+    schedule: _string(r, 'schedule', min: 1),
+    startMinute: Value(_optionalInt(r, 'startMinute')),
+    reminderMinutes: Value(_optionalInt(r, 'reminderMinutes')),
+    createdAt: Value(_requiredTime(r, 'createdAt')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    deletedAt: Value(_optionalTime(r, 'deletedAt')),
+  );
+
+  RoutineStepsCompanion _stepRow(Map<String, Object?> r) => RoutineStepsCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    routineId: _int(r, 'routineId'),
+    position: _int(r, 'position'),
+    title: _string(r, 'title', min: 1, max: 80),
+    durationSeconds: Value(_optionalInt(r, 'durationSeconds')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+  );
+
+  RoutineRunsCompanion _runRow(Map<String, Object?> r) => RoutineRunsCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    routineId: _int(r, 'routineId'),
+    date: _date(r, 'date'),
+    startedAt: _requiredTime(r, 'startedAt'),
+    finishedAt: Value(_optionalTime(r, 'finishedAt')),
+    stepsDone: Value(_int(r, 'stepsDone')),
+    stepsTotal: _int(r, 'stepsTotal'),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+  );
+
   static int _int(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is int) return v;
@@ -476,6 +577,9 @@ class _Parsed {
     required this.checkIns,
     required this.events,
     required this.exceptions,
+    required this.routines,
+    required this.steps,
+    required this.runs,
   });
 
   final BackupSummary summary;
@@ -486,6 +590,9 @@ class _Parsed {
   final List<HabitCheckInsCompanion> checkIns;
   final List<EventsCompanion> events;
   final List<EventExceptionsCompanion> exceptions;
+  final List<RoutinesCompanion> routines;
+  final List<RoutineStepsCompanion> steps;
+  final List<RoutineRunsCompanion> runs;
 }
 
 final backupServiceProvider = Provider<BackupService>(

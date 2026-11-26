@@ -110,6 +110,10 @@ of re-implementing them:
 | habits | `showHabitEditor()` | Calendar day agenda (habits) |
 | calendar | `showEventEditor()` (`event_editor_sheet.dart`) | App shell dock "New event" |
 | calendar | `TodayScheduleCard` (`today_schedule_card.dart`) | Home |
+| routines | `RoutinesSection` (`routines_section.dart`) | Track tab |
+| routines | `showRoutineEditor()` (`routine_editor_sheet.dart`) | App shell dock "New routine" (Track, habits off); Calendar agenda |
+| routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
+| routines | `showStartRoutineSheet()` (`start_routine_sheet.dart`) | Home "Start routine" quick action |
 
 **Public application providers** used by other features (allowed by the
 rule above): `trashedTasksProvider`, `trashedProjectsProvider`,
@@ -177,7 +181,12 @@ Anything else in a feature's `presentation/` is private to that feature.
   v5 `events` (uuid, kind fixed/flexible, start date + optional minute, duration,
   recurrence, reminder minutes, timestamps, deleted_at; index on `start_date`) and
   `event_exceptions` (primary key `(event_id, date)` = original occurrence date;
-  skipped, done_at, moved_date, moved_minute; `event_id` → `ON DELETE CASCADE`).
+  skipped, done_at, moved_date, moved_minute; `event_id` → `ON DELETE CASCADE`) ·
+  v6 `routines` (uuid, name, time of day, schedule, optional start minute and
+  reminder minutes, timestamps, deleted_at), `routine_steps` (position, title,
+  optional duration in seconds; index on `routine_id`) and `routine_runs` (date,
+  started_at, finished_at, steps done/total; index on `date`); both child tables
+  `routine_id` → `ON DELETE CASCADE`.
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -399,4 +408,6 @@ codegen not needed yet).
 | D62 | 2026-11-26 | Missed occurrences are kept: a flexible occurrence whose day passed undone is listed under **Missed** (30-day window) until the user reschedules it (to today or later), marks it done or skips it — nothing moves automatically. Fixed events never become "missed" | The brief's "preserve missed occurrences" and "user-confirmed rescheduling". |
 | D63 | 2026-11-26 | Missions keep their spawn-on-complete model; the calendar shows them on their due date and *projects* future occurrences of repeating missions (faded, not tickable). Habits show on scheduled days (weekly-quota habits only on days done) | Integrates without migrating working mission logic; projected rows are display-only. |
 | D64 | 2026-11-26 | Event reminders are stored now (`reminder_minutes`) and labelled in the editor as delivered "when notifications are added" | Notifications come after Routines (agreed order); storing the choice now avoids a later data migration. |
-
+| D65 | 2026-11-26 | Routines (schema v6): a routine is an ordered list of steps with optional timers, a time of day, an optional start time and a weekly schedule reusing `HabitSchedule` (moved to `core/time/`, re-exported from habits). Each run is a stored `routine_runs` row; a day counts as done only when a finished run did every step | Same schedule semantics as habits; run history is real data (Home progress, Calendar, later analytics) rather than a derived flag. |
+| D66 | 2026-11-26 | Run-through mode is a pushed route (`/routines/:id/run`). Progress is written after every step, so leaving resumes today's unfinished run; a run left before any step is done is deleted. Timers are wall-clock based (time in other apps still counts) and the UI ticks only while the app is visible; no sounds, a haptic when time is up, no auto-advance | Respects the 60 fps rule (no ticking when hidden), never loses progress, and never moves on without the user. |
+| D67 | 2026-11-26 | Routine reminders are stored now (minutes before the start time) and labelled as delivered with notifications, like event reminders (D64) | Notifications are the next step; storing now avoids a later migration. |

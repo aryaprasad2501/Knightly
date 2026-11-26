@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import '../../features/calendar/data/calendar_tables.dart';
 import '../../features/habits/data/habits_tables.dart';
+import '../../features/routines/data/routines_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
 import 'ids.dart';
 import 'app_database.steps.dart';
@@ -29,13 +30,27 @@ class AppSettings extends Table {
 ///
 /// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
-/// ids, Recycle Bin) · v5 Calendar: events + event_exceptions.
-@DriftDatabase(tables: [AppSettings, Projects, Tasks, Habits, HabitCheckIns, Events, EventExceptions])
+/// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
+/// routine_runs.
+@DriftDatabase(
+  tables: [
+    AppSettings,
+    Projects,
+    Tasks,
+    Habits,
+    HabitCheckIns,
+    Events,
+    EventExceptions,
+    Routines,
+    RoutineSteps,
+    RoutineRuns,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -102,6 +117,14 @@ class AppDatabase extends _$AppDatabase {
       await m.createTable(schema.events);
       await m.createTable(schema.eventExceptions);
       await m.createIndex(schema.eventsStartDate);
+    },
+    // Routines: three new tables; nothing existing changes.
+    from5To6: (m, schema) async {
+      await m.createTable(schema.routines);
+      await m.createTable(schema.routineSteps);
+      await m.createTable(schema.routineRuns);
+      await m.createIndex(schema.routineStepsRoutine);
+      await m.createIndex(schema.routineRunsDate);
     },
   );
 

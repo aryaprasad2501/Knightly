@@ -7,6 +7,7 @@ import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../../../core/time/clock.dart';
+import '../../../routines/presentation/start_routine_sheet.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
 
 /// One-tap capture shortcuts for the modules that are on. Actions whose
@@ -33,7 +34,12 @@ class QuickActionsGrid extends ConsumerWidget {
           onTap: () => showTaskEditor(context, initialDue: today),
         ),
       if (on.contains(AppModule.water)) const _ActionTile(glyph: KGlyphs.drop, label: 'Log water'),
-      if (on.contains(AppModule.routines)) const _ActionTile(glyph: KGlyphs.bolt, label: 'Start routine'),
+      if (on.contains(AppModule.routines))
+        _ActionTile(
+          glyph: KGlyphs.routine,
+          label: 'Start routine',
+          onTap: () => showStartRoutineSheet(context),
+        ),
       if (on.contains(AppModule.sleep)) const _ActionTile(glyph: KGlyphs.moon, label: 'Log sleep'),
     ];
 

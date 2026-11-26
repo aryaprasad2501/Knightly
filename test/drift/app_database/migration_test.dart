@@ -11,6 +11,7 @@ import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
 import 'generated/schema_v5.dart' as v5;
+import 'generated/schema_v6.dart' as v6;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -337,6 +338,58 @@ void main() {
           );
           expect(await newDb.select(newDb.events).get(), isEmpty);
           expect(await newDb.select(newDb.eventExceptions).get(), isEmpty);
+        },
+      );
+    },
+  );
+
+  // v6 only adds the Routines tables: v5 data (including calendar events) is untouched.
+  test(
+    'migration from v5 to v6 keeps everything and adds empty routine tables',
+    () async {
+      const at = '2026-11-26T09:00:00.000Z';
+      const uuid = '9b2c1a3e-1b0d-4c2e-9a7f-1d2e3c4b5a01';
+      await verifier.testWithDataIntegrity(
+        oldVersion: 5,
+        newVersion: 6,
+        createOld: v5.DatabaseAtV5.new,
+        createNew: v6.DatabaseAtV6.new,
+        openTestedDatabase: AppDatabase.new,
+        createItems: (batch, oldDb) {
+          batch.insertAll(oldDb.events, const [
+            v5.EventsData(
+              id: 1,
+              uuid: uuid,
+              title: 'Dentist',
+              notes: '',
+              kind: 0,
+              startDate: '2026-11-27',
+              startMinute: 570,
+              durationMinutes: 45,
+              createdAt: at,
+              updatedAt: at,
+            ),
+          ]);
+          batch.insertAll(oldDb.eventExceptions, const [
+            v5.EventExceptionsData(
+              eventId: 1,
+              date: '2026-11-27',
+              skipped: 0,
+              doneAt: at,
+              updatedAt: at,
+            ),
+          ]);
+        },
+        validateItems: (newDb) async {
+          final event = (await newDb.select(newDb.events).get()).single;
+          expect(
+            (event.id, event.uuid, event.title, event.startMinute),
+            (1, uuid, 'Dentist', 570),
+          );
+          expect(await newDb.select(newDb.eventExceptions).get(), hasLength(1));
+          expect(await newDb.select(newDb.routines).get(), isEmpty);
+          expect(await newDb.select(newDb.routineSteps).get(), isEmpty);
+          expect(await newDb.select(newDb.routineRuns).get(), isEmpty);
         },
       );
     },

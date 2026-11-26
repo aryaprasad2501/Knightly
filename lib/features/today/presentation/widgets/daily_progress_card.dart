@@ -8,11 +8,11 @@ import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../../habits/application/habits_providers.dart';
+import '../../../routines/application/routines_providers.dart';
 import '../../../tasks/application/tasks_providers.dart';
 
 /// Completion of today's commitments for the modules that are on: the ring
-/// combines missions and habits; routines stay "no data" until that module
-/// ships. [hasContent] says whether the card has anything to show at all.
+/// combines missions, habits and routines. [hasContent] says whether the card has anything to show at all.
 class DailyProgressCard extends ConsumerWidget {
   const DailyProgressCard({super.key});
 
@@ -25,9 +25,10 @@ class DailyProgressCard extends ConsumerWidget {
     final on = ref.watch(enabledModulesProvider);
     final missions = on.contains(AppModule.missions) ? ref.watch(missionSummaryProvider).valueOrNull : null;
     final habits = on.contains(AppModule.habits) ? ref.watch(habitSummaryProvider).valueOrNull : null;
+    final routines = on.contains(AppModule.routines) ? ref.watch(routineSummaryProvider).valueOrNull : null;
 
-    final total = (missions?.totalToday ?? 0) + (habits?.dueToday ?? 0);
-    final done = (missions?.completedToday ?? 0) + (habits?.doneToday ?? 0);
+    final total = (missions?.totalToday ?? 0) + (habits?.dueToday ?? 0) + (routines?.dueToday ?? 0);
+    final done = (missions?.completedToday ?? 0) + (habits?.doneToday ?? 0) + (routines?.doneToday ?? 0);
     final completion = total == 0 ? null : done / total;
 
     String figure(int doneCount, int totalCount) => totalCount == 0 ? '—' : '$doneCount of $totalCount';
@@ -66,7 +67,11 @@ class DailyProgressCard extends ConsumerWidget {
                       valueLabel: figure(habits?.doneToday ?? 0, habits?.dueToday ?? 0),
                     ),
                   if (on.contains(AppModule.routines))
-                    const KProgressBar(value: null, label: 'Routines', valueLabel: '—'),
+                    KProgressBar(
+                      value: routines?.completion,
+                      label: 'Routines',
+                      valueLabel: figure(routines?.doneToday ?? 0, routines?.dueToday ?? 0),
+                    ),
                 ].indexed) ...[if (i > 0) const SizedBox(height: KSpacing.md), bar],
               ],
             ),

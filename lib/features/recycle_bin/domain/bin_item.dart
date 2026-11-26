@@ -3,7 +3,8 @@ enum BinKind {
   mission('Mission'),
   project('Project'),
   habit('Habit'),
-  event('Event');
+  event('Event'),
+  routine('Routine');
 
   const BinKind(this.label);
 

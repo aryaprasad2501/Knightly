@@ -102,6 +102,7 @@ class _BinRow extends ConsumerWidget {
     BinKind.project => KGlyphs.folder,
     BinKind.habit => KGlyphs.habit,
     BinKind.event => KGlyphs.calendar,
+    BinKind.routine => KGlyphs.routine,
   };
 
   Future<void> _restore(BuildContext context, WidgetRef ref) async {
@@ -124,6 +125,8 @@ class _BinRow extends ConsumerWidget {
         BinKind.mission => 'The mission is removed from this device. This cannot be undone.',
         BinKind.event =>
           'The event and all its occurrences are removed from this device. This cannot be undone.',
+        BinKind.routine =>
+          'The routine, its steps and its run history are removed from this device. This cannot be undone.',
       },
       confirmLabel: 'Delete',
       destructive: true,

@@ -2,10 +2,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../calendar/application/calendar_providers.dart';
 import '../../habits/application/habits_providers.dart';
+import '../../routines/application/routines_providers.dart';
 import '../../tasks/application/tasks_providers.dart';
 import '../domain/bin_item.dart';
 
-/// Everything in the Recycle Bin — missions, projects and habits — newest
+/// Everything in the Recycle Bin — missions, projects, habits, events and
+/// routines — newest
 /// deletion first. Built only from the other features' public application
 /// providers (ARCHITECTURE.md › Layer rules).
 final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
@@ -13,10 +15,11 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
   final projects = ref.watch(trashedProjectsProvider);
   final habits = ref.watch(trashedHabitsProvider);
   final events = ref.watch(trashedEventsProvider);
-  for (final value in <AsyncValue<Object>>[tasks, projects, habits, events]) {
+  final routines = ref.watch(trashedRoutinesProvider);
+  for (final value in <AsyncValue<Object>>[tasks, projects, habits, events, routines]) {
     if (value.hasError) return AsyncError(value.error!, value.stackTrace ?? StackTrace.current);
   }
-  if (!tasks.hasValue || !projects.hasValue || !habits.hasValue || !events.hasValue) {
+  if (!tasks.hasValue || !projects.hasValue || !habits.hasValue || !events.hasValue || !routines.hasValue) {
     return const AsyncLoading();
   }
 
@@ -53,23 +56,33 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
         deletedAt: e.deletedAt!,
         detail: e.isRecurring ? '${e.recurrence!.describe()} · history kept' : 'History kept',
       ),
+    for (final r in routines.requireValue)
+      BinItem(
+        kind: BinKind.routine,
+        id: r.id,
+        title: r.name,
+        deletedAt: r.deletedAt!,
+        detail: '${r.steps.length} ${r.steps.length == 1 ? 'step' : 'steps'} · history kept',
+      ),
   ]..sort((a, b) => b.deletedAt.compareTo(a.deletedAt));
   return AsyncData(items);
 });
 
 /// Restore and permanent deletion for any [BinItem].
 class RecycleBinActions {
-  RecycleBinActions(this._tasks, this._habits, this._calendar);
+  RecycleBinActions(this._tasks, this._habits, this._calendar, this._routines);
 
   final TaskActions _tasks;
   final HabitActions _habits;
   final CalendarActions _calendar;
+  final RoutineActions _routines;
 
   Future<void> restore(BinItem item) => switch (item.kind) {
     BinKind.mission => _tasks.restore(item.id),
     BinKind.project => _tasks.restoreProject(item.id),
     BinKind.habit => _habits.restoreFromBin(item.id),
     BinKind.event => _calendar.restore(item.id),
+    BinKind.routine => _routines.restore(item.id),
   };
 
   /// Deletes the item for good. Callers confirm with the user first.
@@ -78,11 +91,15 @@ class RecycleBinActions {
     BinKind.project => _tasks.deleteProjectPermanently(item.id),
     BinKind.habit => _habits.deletePermanently(item.id),
     BinKind.event => _calendar.deletePermanently(item.id),
+    BinKind.routine => _routines.deletePermanently(item.id),
   };
 
   /// Permanently deletes everything in the bin. Returns how many records went.
   Future<int> emptyAll() async =>
-      await _tasks.emptyTrash() + await _habits.emptyTrash() + await _calendar.emptyTrash();
+      await _tasks.emptyTrash() +
+      await _habits.emptyTrash() +
+      await _calendar.emptyTrash() +
+      await _routines.emptyTrash();
 }
 
 final recycleBinActionsProvider = Provider<RecycleBinActions>(
@@ -90,5 +107,6 @@ final recycleBinActionsProvider = Provider<RecycleBinActions>(
     ref.watch(taskActionsProvider),
     ref.watch(habitActionsProvider),
     ref.watch(calendarActionsProvider),
+    ref.watch(routineActionsProvider),
   ),
 );

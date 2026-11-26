@@ -66,9 +66,10 @@ void main() {
       expect(AppShell.isBranchVisible(2, {AppModule.missions}), isTrue);
     });
 
-    test('Track stays while habits, performance or any tracker is on', () {
+    test('Track stays while habits, routines, performance or any tracker is on', () {
       expect(AppShell.isBranchVisible(3, {AppModule.missions, AppModule.calendar}), isFalse);
       expect(AppShell.isBranchVisible(3, {AppModule.habits}), isTrue);
+      expect(AppShell.isBranchVisible(3, {AppModule.routines}), isTrue);
       expect(AppShell.isBranchVisible(3, {AppModule.analytics}), isTrue);
       expect(AppShell.isBranchVisible(3, {AppModule.water}), isTrue);
     });

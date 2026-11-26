@@ -180,6 +180,7 @@ void main() {
     await settleWithDatabase(tester);
     await tester.tapAt(const Offset(20, 20)); // dismiss the sheet
     await tester.pumpAndSettle();
+    await scrollToTop(tester);
     expect(find.text('Cold shower').hitTestable(), findsOneWidget);
   });
 

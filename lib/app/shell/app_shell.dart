@@ -13,6 +13,7 @@ import '../../features/calendar/application/calendar_providers.dart';
 import '../../features/calendar/presentation/event_editor_sheet.dart';
 import '../../features/habits/presentation/habit_editor_sheet.dart';
 import '../../core/time/clock.dart';
+import '../../features/routines/presentation/routine_editor_sheet.dart';
 import '../../features/tasks/presentation/task_editor_sheet.dart';
 import '../../features/tasks/presentation/task_ui_actions.dart';
 
@@ -43,6 +44,7 @@ class AppShell extends ConsumerWidget {
     2 => on.contains(AppModule.missions),
     3 =>
       on.contains(AppModule.habits) ||
+          on.contains(AppModule.routines) ||
           on.contains(AppModule.analytics) ||
           on.any(AppModule.trackers.contains),
     _ => true,
@@ -75,6 +77,11 @@ class AppShell extends ConsumerWidget {
       glyph: KGlyphs.plus,
       label: 'New habit',
       onPressed: () => showHabitEditor(context),
+    ),
+    3 when _on(ref, AppModule.routines) => KDockAction(
+      glyph: KGlyphs.plus,
+      label: 'New routine',
+      onPressed: () => showRoutineEditor(context),
     ),
     _ => null,
   };

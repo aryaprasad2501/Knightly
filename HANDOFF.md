@@ -1,8 +1,20 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-26 · Living worlds visual pass complete_
+_Last updated: 2026-11-26 · Phase 2 step 3 (Routines) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 3 — Routines, 2026-11-26):** schema v6 (`features/routines/data/routines_tables.dart`,
+migration v5→v6 + test), domain `routine.dart` (`RoutineDraft` validation, `RoutineToday`, `RoutineSummary`),
+`routine_repository.dart` (runs, resume via `unfinishedRunOn`), `routines_providers.dart`. UI:
+`routines_section.dart` (Track, below habits), `routine_editor_sheet.dart`, `routine_run_screen.dart`
+(route `/routines/:id/run`), `start_routine_sheet.dart` (Home quick action). Integrated: module switch
+(built), Track visibility + dock "New routine", Home progress bar/ring, Calendar agenda (`RoutineRow`),
+Recycle Bin, Backup (since schema 6). `HabitSchedule` moved to `core/time/`. 249 tests, analyze clean,
+debug build OK. Verified on the Pixel 8 AVD: create routine, timed run, completion, Track "Done today",
+Home "Routines 1 of 1". **Next:** notifications (needs `flutter_local_notifications` — ask before
+downloading), then the trackers.
+
 
 **Latest (Phase 2 step 2 — Calendar, 2026-11-26):** schema v5 (`features/calendar/data/calendar_tables.dart`,
 migration + test), domain `calendar_event.dart` (`occurrencesBetween`, `missedOccurrences`),

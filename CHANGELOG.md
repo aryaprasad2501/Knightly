@@ -5,6 +5,21 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 3 — 2026-11-26 — Routines
+
+### Added
+- **Routines** on the Track tab: a named list of steps (each with an optional timer), a time of
+  day, an optional start time, and a schedule — every day, specific days or a number of times a
+  week. Each routine shows whether it is due, in progress, done or resting today.
+- **Run-through mode**: one step at a time with a countdown ring, pause/resume and restart, Done,
+  Skip and Back. Progress is saved after every step, so you can leave and resume later today.
+- Home: **Start routine** now works (pick a routine and go), and the Routines bar and the daily ring
+  count today's routines.
+- Calendar shows scheduled routines on each day; today's can be started from there.
+- Routines go to the Recycle Bin with their history, are included in backups (older backups still
+  restore), and can be switched off in Settings › Modules.
+- Reminders can be set and are saved; alerts arrive with notifications.
+
 ## Phase 2 · step 2 — 2026-11-26 — Calendar
 
 ### Added

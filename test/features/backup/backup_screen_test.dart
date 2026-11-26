@@ -112,7 +112,10 @@ void main() {
     await tester.tap(find.text('Choose backup file'));
     await settleIo(tester);
     expect(find.text('Replace all your data?'), findsOneWidget);
-    expect(find.textContaining('1 mission, 0 projects, 0 habits, 0 check-ins and 0 events'), findsOneWidget);
+    expect(
+      find.textContaining('1 mission, 0 projects, 0 habits, 0 check-ins, 0 events and 0 routines'),
+      findsOneWidget,
+    );
     await tester.tap(find.text('Cancel'));
     await settleIo(tester);
 

@@ -12,6 +12,10 @@ abstract final class AppRoutes {
   static const backup = '/backup';
   static const modules = '/modules';
 
+  /// A routine's run-through mode. Build with [routineRunFor].
+  static const routineRun = '/routines/:id/run';
+  static String routineRunFor(int id) => '/routines/$id/run';
+
   // Development tools. Registered only in debug builds.
   static const devBuildStatus = '/dev/build-status';
   static const devGallery = '/dev/gallery';

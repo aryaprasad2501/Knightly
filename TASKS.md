@@ -102,13 +102,16 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 - [ ] Measure on a real low-end phone (only emulators so far)
 - [ ] Trademark review of theme tags/store listing before public release
 
-## Stage 4 — Routines module (NEXT)
+## Stage 4 — Routines module (DONE 2026-11-26)
 
-Exact next task: **Routines domain + data layer** — `Routine` (name, time of day: morning / evening / any, optional schedule reusing `HabitSchedule`), ordered `RoutineStep`s (title, optional duration in minutes), and `RoutineRun` records (started/finished, steps completed) — pure Dart with unit tests (total duration, run progress, "done today"). Then Drift tables `routines`, `routine_steps`, `routine_runs` as schema **v4** via `make-migrations`, repository + tests, before UI (a focused run-through mode with step timers; Home "Start routine" quick action and the Routines progress bar).
+- [x] Routines: domain, schema v6, repository, Track list, editor, run-through mode, Home quick
+  action and progress, Calendar, Recycle Bin, Backup, module switch — with tests
+
+Original brief: **Routines domain + data layer** — `Routine` (name, time of day: morning / evening / any, optional schedule reusing `HabitSchedule`), ordered `RoutineStep`s (title, optional duration in minutes), and `RoutineRun` records (started/finished, steps completed) — pure Dart with unit tests (total duration, run progress, "done today"). Then Drift tables `routines`, `routine_steps`, `routine_runs` as schema **v4** via `make-migrations`, repository + tests, before UI (a focused run-through mode with step timers; Home "Start routine" quick action and the Routines progress bar).
 
 ## Later stages (one module per stage, in this order unless re-prioritised)
 
-- [ ] Calendar (local events + scheduled tasks/routines)
+- [x] Calendar (local events + scheduled tasks/routines)
 - [ ] Water
 - [ ] Sleep
 - [ ] Workouts

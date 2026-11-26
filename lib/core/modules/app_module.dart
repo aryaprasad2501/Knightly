@@ -20,7 +20,7 @@ enum AppModule {
   analytics('Performance', 'Activity rings for today and this week on the Track tab', built: true),
   calendar('Calendar', 'Day, week and month views of events, missions and habits', built: true),
   routines('Routines', 'Step-by-step morning and evening routines', built: true),
-  sleep('Sleep', 'Bedtime, wake time and sleep history'),
+  sleep('Sleep', 'Bedtime, wake time and sleep history', built: true),
   water('Water', 'Glasses of water against a daily goal', built: true),
   workouts('Workouts', 'Exercises, sets, reps and weights'),
   nutrition('Nutrition', 'Meals and calories'),

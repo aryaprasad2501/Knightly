@@ -1,8 +1,17 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-26 · Phase 2 step 5 (Water) complete_
+_Last updated: 2026-11-27 · Phase 2 step 6 (Sleep) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 6 — Sleep, 2026-11-27):** schema v8 (`features/sleep/data/sleep_tables.dart`, unique
+night date; migration v7→v8 + test), `domain/sleep.dart` (`SleepDraft` bed/wake resolution, `SleepWeek`),
+`sleep_repository.dart` (upsert per night, remove → putBack), `sleep_providers.dart` (goal setting
+`sleep.goal_minutes`), `presentation/sleep_section.dart` + `sleep_editor_sheet.dart`. Home overview + quick
+action, backup (since 8), module built. Water section polished (ring kept at the user's request). 300 tests.
+Verified on the Pixel 8 AVD (real v7→v8 upgrade, log from Home, Track view across midnight).
+**Next:** Workouts.
+
 
 **Latest (Phase 2 step 5 — Water, 2026-11-26):** schema v7 (`features/water/data/water_tables.dart`,
 migration v6→v7 + test), `domain/water.dart` (`WaterDay.range`, `formatMl`), `water_repository.dart`

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/design/components/k_button.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
@@ -15,6 +16,14 @@ Future<void> goToTab(WidgetTester tester, String label) async {
   await tester.pumpAndSettle();
 }
 
+/// Scrolls [finder] into view (clear of the dock and snackbars), then taps it.
+Future<void> tapShown(WidgetTester tester, Finder finder) async {
+  await tester.ensureVisible(finder);
+  await tester.pumpAndSettle();
+  await tester.dragUntilVisible(finder, find.byType(Scrollable).hitTestable().first, const Offset(0, -80));
+  await tester.tap(finder);
+}
+
 Finder inWater(Finder f) => find.descendant(of: find.byType(WaterSection), matching: f);
 
 Future<void> openWater(WidgetTester tester) async {
@@ -30,9 +39,9 @@ void main() {
     await openWater(tester);
     expect(inWater(find.text('0 ml')), findsOneWidget);
 
-    await tester.tap(inWater(find.widgetWithText(KButton, '+250 ml')));
+    await tapShown(tester, inWater(find.widgetWithText(KButton, '+250 ml')));
     await settleWithDatabase(tester);
-    await tester.tap(inWater(find.widgetWithText(KButton, '+500 ml')));
+    await tapShown(tester, inWater(find.widgetWithText(KButton, '+500 ml')));
     await settleWithDatabase(tester);
     expect(inWater(find.text('750 ml')), findsOneWidget);
     expect(inWater(find.text('1.25 L to go')), findsOneWidget);
@@ -50,7 +59,7 @@ void main() {
     await pumpKnightlyApp(tester, now: now);
     await openWater(tester);
 
-    await tester.tap(inWater(find.widgetWithText(KButton, 'Other')));
+    await tapShown(tester, inWater(find.widgetWithText(KButton, 'Other')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('1 L').hitTestable());
     await settleWithDatabase(tester);

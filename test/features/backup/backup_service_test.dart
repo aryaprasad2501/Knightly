@@ -16,6 +16,8 @@ import 'package:knightly/features/habits/domain/habit_schedule.dart';
 import 'package:knightly/features/routines/data/routine_repository.dart';
 import 'package:knightly/features/routines/domain/routine.dart';
 import 'package:knightly/features/settings/data/settings_repository.dart';
+import 'package:knightly/features/sleep/data/sleep_repository.dart';
+import 'package:knightly/features/sleep/domain/sleep.dart';
 import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/recurrence.dart';
 import 'package:knightly/features/tasks/domain/task.dart';
@@ -445,5 +447,27 @@ void main() {
     final summary = await serviceFor(target).restore(jsonEncode(doc));
     expect(summary.waterLogs, 0);
     expect(await target.select(target.waterLogs).get(), isEmpty);
+  });
+
+  test('sleep logs are backed up and restored', () async {
+    final source = openDb();
+    await SleepRepository(source, clock: () => now).save(
+      SleepDraft(
+        date: today,
+        bedtime: const ClockTime(23, 0),
+        wakeTime: const ClockTime(7, 0),
+        quality: SleepQuality.great,
+      ),
+    );
+    final json = await serviceFor(source).exportJson();
+    expect(serviceFor(source).validate(json).sleepLogs, 1);
+
+    final target = openDb();
+    await serviceFor(target).restore(json);
+    final night = (await SleepRepository(target, clock: () => now).watchNights(since: today).first).single;
+    expect(
+      (night.date, night.duration, night.quality),
+      (today, const Duration(hours: 8), SleepQuality.great),
+    );
   });
 }

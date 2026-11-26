@@ -8,6 +8,7 @@ import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../../../core/time/clock.dart';
 import '../../../routines/presentation/start_routine_sheet.dart';
+import '../../../sleep/presentation/sleep_editor_sheet.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
 import '../../../water/domain/water.dart';
 import '../../../water/presentation/water_section.dart';
@@ -47,7 +48,12 @@ class QuickActionsGrid extends ConsumerWidget {
           label: 'Start routine',
           onTap: () => showStartRoutineSheet(context),
         ),
-      if (on.contains(AppModule.sleep)) const _ActionTile(glyph: KGlyphs.moon, label: 'Log sleep'),
+      if (on.contains(AppModule.sleep))
+        _ActionTile(
+          glyph: KGlyphs.moon,
+          label: 'Log sleep',
+          onTap: () => showSleepEditor(context, date: today),
+        ),
     ];
 
     return Column(

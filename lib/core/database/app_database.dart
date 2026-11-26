@@ -4,6 +4,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 import '../../features/calendar/data/calendar_tables.dart';
 import '../../features/habits/data/habits_tables.dart';
 import '../../features/routines/data/routines_tables.dart';
+import '../../features/sleep/data/sleep_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
 import '../../features/water/data/water_tables.dart';
 import 'ids.dart';
@@ -32,7 +33,7 @@ class AppSettings extends Table {
 /// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
-/// routine_runs · v7 water_logs.
+/// routine_runs · v7 water_logs · v8 sleep_logs.
 @DriftDatabase(
   tables: [
     AppSettings,
@@ -46,13 +47,14 @@ class AppSettings extends Table {
     RoutineSteps,
     RoutineRuns,
     WaterLogs,
+    SleepLogs,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -132,6 +134,10 @@ class AppDatabase extends _$AppDatabase {
     from6To7: (m, schema) async {
       await m.createTable(schema.waterLogs);
       await m.createIndex(schema.waterLogsDate);
+    },
+    // Sleep: one new table; nothing existing changes.
+    from7To8: (m, schema) async {
+      await m.createTable(schema.sleepLogs);
     },
   );
 

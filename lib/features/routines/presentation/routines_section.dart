@@ -115,7 +115,8 @@ class RoutineTile extends StatelessWidget {
       else
         routine.timeOfDay.label,
       routine.schedule.describe(),
-      '$n ${n == 1 ? 'step' : 'steps'}${total > 0 ? ' · ${formatDuration(total)}' : ''}',
+      // Non-breaking spaces keep "30 s" and "2 steps" on one line.
+      '$n ${n == 1 ? 'step' : 'steps'}${total > 0 ? ' · ${formatDuration(total).replaceAll(' ', ' ')}' : ''}',
     ].join(' · ');
 
     final (String statusLabel, Color statusColor) = switch (status) {

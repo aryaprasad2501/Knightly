@@ -8,18 +8,23 @@ import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../../habits/application/habits_providers.dart';
+import '../../../sleep/application/sleep_providers.dart';
+import '../../../sleep/domain/sleep.dart';
 import '../../../tasks/application/tasks_providers.dart';
 import '../../../water/application/water_providers.dart';
 import '../../../water/domain/water.dart';
 
 /// The day's headline figures, one per module that is on (missions, habits,
-/// water). Nothing is ever invented: no data yet shows "—".
+/// water, sleep). Nothing is ever invented: no data yet shows "—".
 /// [hasContent] says whether the card has anything to show at all.
 class OverviewCard extends ConsumerWidget {
   const OverviewCard({super.key});
 
   static bool hasContent(Set<AppModule> on) =>
-      on.contains(AppModule.missions) || on.contains(AppModule.habits) || on.contains(AppModule.water);
+      on.contains(AppModule.missions) ||
+      on.contains(AppModule.habits) ||
+      on.contains(AppModule.water) ||
+      on.contains(AppModule.sleep);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -27,6 +32,7 @@ class OverviewCard extends ConsumerWidget {
     final summary = ref.watch(missionSummaryProvider).valueOrNull;
     final habits = ref.watch(habitSummaryProvider).valueOrNull;
     final water = on.contains(AppModule.water) ? ref.watch(waterTodayProvider).valueOrNull : null;
+    final sleep = on.contains(AppModule.sleep) ? ref.watch(sleepWeekProvider).valueOrNull?.lastNight : null;
 
     final metrics = <Widget>[
       if (on.contains(AppModule.missions))
@@ -51,6 +57,13 @@ class OverviewCard extends ConsumerWidget {
           semanticValue: water == null
               ? null
               : '${formatMl(water.totalMl)} of ${formatMl(water.goalMl)} today',
+        ),
+      if (on.contains(AppModule.sleep))
+        _Metric(
+          glyph: KGlyphs.moon,
+          label: 'Sleep',
+          value: sleep == null ? null : formatSleep(sleep.duration),
+          semanticValue: sleep == null ? null : '${formatSleep(sleep.duration)} last night',
         ),
     ];
 

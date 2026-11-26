@@ -16,6 +16,7 @@ import '../../habits/application/habits_providers.dart';
 import '../../habits/domain/habit_stats.dart';
 import '../../habits/presentation/habits_section.dart';
 import '../../routines/presentation/routines_section.dart';
+import '../../sleep/presentation/sleep_section.dart';
 import '../../tasks/application/tasks_providers.dart';
 import '../../water/presentation/water_section.dart';
 
@@ -42,6 +43,7 @@ class TrackScreen extends ConsumerWidget {
       if (habitsOn) const HabitsSection(),
       if (on.contains(AppModule.routines)) const RoutinesSection(),
       if (on.contains(AppModule.water)) const WaterSection(),
+      if (on.contains(AppModule.sleep)) const SleepSection(),
       if (on.any((m) => AppModule.trackers.contains(m) && !m.built)) const _MoreTrackers(),
     ];
 
@@ -86,7 +88,6 @@ class _MoreTrackers extends ConsumerWidget {
                 spacing: KSpacing.sm,
                 runSpacing: KSpacing.sm,
                 children: [
-                  if (on.contains(AppModule.sleep)) const KChip(label: 'Sleep', glyph: KGlyphs.moon),
                   if (on.contains(AppModule.workouts)) const KChip(label: 'Workouts', glyph: KGlyphs.bolt),
                   if (on.contains(AppModule.nutrition)) const KChip(label: 'Nutrition', glyph: KGlyphs.spark),
                 ],

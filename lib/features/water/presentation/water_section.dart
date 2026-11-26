@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,10 +8,12 @@ import '../../../core/design/components/k_chip.dart';
 import '../../../core/design/components/k_divider.dart';
 import '../../../core/design/components/k_empty_state.dart';
 import '../../../core/design/components/k_loading_indicator.dart';
+import '../../../core/design/components/k_progress_ring.dart';
 import '../../../core/design/components/k_section_header.dart';
 import '../../../core/design/components/k_surface.dart';
 import '../../../core/design/icons/k_glyph.dart';
 import '../../../core/design/icons/k_glyphs.dart';
+import '../../../core/design/theme/k_tone.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/time/calendar_date.dart';
@@ -37,7 +37,7 @@ Future<void> logWaterWithUndo(BuildContext context, WidgetRef ref, int amountMl)
     );
 }
 
-/// The water part of the Track tab: a glass filling toward the goal, one-tap
+/// The water part of the Track tab: a gauge filling toward the goal, one-tap
 /// logging, the last 7 days and today's drinks. Public entry point for Track.
 class WaterSection extends ConsumerWidget {
   const WaterSection({super.key});
@@ -105,8 +105,14 @@ class _WaterPanel extends ConsumerWidget {
             excludeSemantics: true,
             child: Row(
               children: [
-                _WaterGlass(level: today.progress, reached: today.reachedGoal),
-                const SizedBox(width: KSpacing.xl),
+                KProgressRing(
+                  value: today.progress,
+                  size: 104,
+                  strokeWidth: 9,
+                  tone: today.reachedGoal ? KTone.success : KTone.accent,
+                  child: Text('$percent%', style: context.numerals.medium),
+                ),
+                const SizedBox(width: KSpacing.lg),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +124,7 @@ class _WaterPanel extends ConsumerWidget {
                         alignment: Alignment.centerLeft,
                         child: Text(formatMl(today.totalMl), style: context.numerals.hero),
                       ),
-                      Text('of ${formatMl(today.goalMl)} · $percent%', style: text.bodyMedium),
+                      Text('of ${formatMl(today.goalMl)}', style: text.bodyMedium),
                       const SizedBox(height: KSpacing.sm),
                       _StatusPill(
                         label: today.reachedGoal ? 'Goal reached' : '${formatMl(left)} to go',
@@ -261,127 +267,17 @@ class _StatusPill extends StatelessWidget {
           children: [
             KIcon(glyph, size: 14, color: color),
             const SizedBox(width: KSpacing.xs),
-            Text(label, style: context.textStyles.labelMedium?.copyWith(color: color)),
+            Flexible(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Text(label, style: context.textStyles.labelMedium?.copyWith(color: color)),
+              ),
+            ),
           ],
         ),
       ),
     );
   }
-}
-
-/// A glass that fills to [level] (0–1) with a still wave on top. The level
-/// eases to its new height when a drink is logged.
-class _WaterGlass extends StatelessWidget {
-  const _WaterGlass({required this.level, required this.reached});
-
-  final double level;
-  final bool reached;
-
-  @override
-  Widget build(BuildContext context) {
-    final p = context.palette;
-    final fill = reached ? p.success : p.accent;
-    return TweenAnimationBuilder<double>(
-      tween: Tween(end: level),
-      duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : const Duration(milliseconds: 650),
-      curve: Curves.easeOutCubic,
-      builder: (context, value, _) => CustomPaint(
-        size: const Size(84, 112),
-        painter: _GlassPainter(
-          level: value,
-          fill: fill,
-          fillDeep: Color.lerp(fill, p.canvas, 0.45)!,
-          glass: p.outlineStrong,
-          shine: p.textPrimary.withValues(alpha: 0.10),
-          back: p.surfaceSunken,
-        ),
-      ),
-    );
-  }
-}
-
-class _GlassPainter extends CustomPainter {
-  _GlassPainter({
-    required this.level,
-    required this.fill,
-    required this.fillDeep,
-    required this.glass,
-    required this.shine,
-    required this.back,
-  });
-
-  final double level;
-  final Color fill;
-  final Color fillDeep;
-  final Color glass;
-  final Color shine;
-  final Color back;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    // A tumbler: slightly narrower at the base.
-    final inset = w * 0.12;
-    final body = Path()
-      ..moveTo(0, 0)
-      ..lineTo(w, 0)
-      ..lineTo(w - inset, h - 10)
-      ..quadraticBezierTo(w - inset, h, w - inset - 10, h)
-      ..lineTo(inset + 10, h)
-      ..quadraticBezierTo(inset, h, inset, h - 10)
-      ..close();
-
-    canvas.drawPath(body, Paint()..color = back);
-
-    final l = level.clamp(0.0, 1.0);
-    if (l > 0) {
-      final top = h - (h - 6) * l;
-      final amp = l >= 0.99 ? 0.0 : 3.0;
-      final water = Path()..moveTo(0, top);
-      for (var x = 0.0; x <= w; x += 2) {
-        water.lineTo(x, top + math.sin(x / w * math.pi * 2) * amp);
-      }
-      water
-        ..lineTo(w, h)
-        ..lineTo(0, h)
-        ..close();
-      canvas
-        ..save()
-        ..clipPath(body)
-        ..drawPath(
-          water,
-          Paint()
-            ..shader = LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [fill, fillDeep],
-            ).createShader(Rect.fromLTWH(0, top, w, h - top)),
-        )
-        ..restore();
-    }
-
-    // Shine along the left wall, then the rim and outline.
-    canvas.drawLine(
-      Offset(w * 0.16, h * 0.10),
-      Offset(w * 0.24, h * 0.80),
-      Paint()
-        ..color = shine
-        ..strokeWidth = 4
-        ..strokeCap = StrokeCap.round,
-    );
-    canvas.drawPath(
-      body,
-      Paint()
-        ..color = glass
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
-    );
-  }
-
-  @override
-  bool shouldRepaint(_GlassPainter old) =>
-      old.level != level || old.fill != fill || old.glass != glass || old.back != back;
 }
 
 /// The last 7 days as columns against a goal line; today last and marked.

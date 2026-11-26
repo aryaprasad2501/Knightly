@@ -61,6 +61,7 @@ class BackupService {
       final steps = await (_db.select(_db.routineSteps)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final runs = await (_db.select(_db.routineRuns)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final water = await (_db.select(_db.waterLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final sleep = await (_db.select(_db.sleepLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -199,6 +200,18 @@ class BackupService {
               'updatedAt': _time(w.updatedAt),
             },
         ],
+        'sleepLogs': [
+          for (final s in sleep)
+            {
+              'id': s.id,
+              'uuid': s.uuid,
+              'date': s.date,
+              'bedtime': _time(s.bedtime),
+              'wakeTime': _time(s.wakeTime),
+              'quality': s.quality,
+              'updatedAt': _time(s.updatedAt),
+            },
+        ],
       };
     });
 
@@ -293,6 +306,7 @@ class BackupService {
       steps: [for (final r in tables['routineSteps']!) _stepRow(r)],
       runs: [for (final r in tables['routineRuns']!) _runRow(r)],
       water: [for (final r in tables['waterLogs']!) _waterRow(r)],
+      sleep: [for (final r in tables['sleepLogs']!) _sleepRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -351,6 +365,9 @@ class BackupService {
     }
     unique(p.water.map((r) => r.id.value));
     unique(p.water.map((r) => r.uuid.value));
+    unique(p.sleep.map((r) => r.id.value));
+    unique(p.sleep.map((r) => r.uuid.value));
+    unique(p.sleep.map((r) => r.date.value));
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -362,6 +379,7 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.sleepLogs).go();
       await _db.delete(_db.waterLogs).go();
       await _db.delete(_db.routineRuns).go();
       await _db.delete(_db.routineSteps).go();
@@ -385,6 +403,7 @@ class BackupService {
         b.insertAll(_db.routineSteps, parsed.steps);
         b.insertAll(_db.routineRuns, parsed.runs);
         b.insertAll(_db.waterLogs, parsed.water);
+        b.insertAll(_db.sleepLogs, parsed.sleep);
       });
     });
     return parsed.summary;
@@ -548,6 +567,22 @@ class BackupService {
     );
   }
 
+  SleepLogsCompanion _sleepRow(Map<String, Object?> r) {
+    final bed = _requiredTime(r, 'bedtime');
+    final wake = _requiredTime(r, 'wakeTime');
+    final quality = _optionalInt(r, 'quality');
+    if (!wake.isAfter(bed) || (quality != null && (quality < 1 || quality > 5))) throw _damaged;
+    return SleepLogsCompanion.insert(
+      id: Value(_int(r, 'id')),
+      uuid: Value(_uuid(r)),
+      date: _date(r, 'date'),
+      bedtime: bed,
+      wakeTime: wake,
+      quality: Value(quality),
+      updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    );
+  }
+
   static int _int(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is int) return v;
@@ -611,6 +646,7 @@ class _Parsed {
     required this.steps,
     required this.runs,
     required this.water,
+    required this.sleep,
   });
 
   final BackupSummary summary;
@@ -625,6 +661,7 @@ class _Parsed {
   final List<RoutineStepsCompanion> steps;
   final List<RoutineRunsCompanion> runs;
   final List<WaterLogsCompanion> water;
+  final List<SleepLogsCompanion> sleep;
 }
 
 final backupServiceProvider = Provider<BackupService>(

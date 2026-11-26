@@ -113,6 +113,8 @@ of re-implementing them:
 | routines | `RoutinesSection` (`routines_section.dart`) | Track tab |
 | routines | `showRoutineEditor()` (`routine_editor_sheet.dart`) | App shell dock "New routine" (Track, habits off); Calendar agenda |
 | routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
+| sleep | `SleepSection` (`sleep_section.dart`) | Track tab |
+| sleep | `showSleepEditor()` (`sleep_editor_sheet.dart`) | Home "Log sleep" quick action |
 | water | `WaterSection` (`water_section.dart`) | Track tab |
 | water | `logWaterWithUndo()` (`water_section.dart`) | Home "Log water" quick action |
 | notifications | `ReminderHost` (`reminder_host.dart`) | App root (`knightly_app.dart`) |
@@ -191,7 +193,9 @@ Anything else in a feature's `presentation/` is private to that feature.
   optional duration in seconds; index on `routine_id`) and `routine_runs` (date,
   started_at, finished_at, steps done/total; index on `date`); both child tables
   `routine_id` → `ON DELETE CASCADE` · v7 `water_logs` (uuid, date, logged_at,
-  amount_ml, updated_at; index on `date`).
+  amount_ml, updated_at; index on `date`) · v8 `sleep_logs` (uuid, date = the
+  morning the night ended (unique), bedtime, wake_time, quality 1–5 nullable,
+  updated_at).
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -422,3 +426,5 @@ codegen not needed yet).
 | D69 | 2026-11-26 | Exact timing when the user allows "Alarms & reminders" (`SCHEDULE_EXACT_ALARM`), otherwise inexact (Android may deliver within its window). Not `USE_EXACT_ALARM` | User's choice ("exact, ask if needed"); `USE_EXACT_ALARM` is reserved for alarm-clock apps by Play policy. |
 | D70 | 2026-11-26 | The platform plugin sits behind `NotificationGateway`; the default provider is a silent `NoNotifications`, and `main.dart` overrides it with `LocalNotifications`. Untimed events are reminded relative to 09:00; a routine is not reminded on a day it is already done or resting | Widget tests and non-Android runs never call the plugin; reminders stay quiet when there is nothing to do. |
 | D71 | 2026-11-26 | Water (schema v7): each drink is a `water_logs` row (amount in ml, the day it counts toward, when). Entries are removed outright with an Undo that puts the same row back, not via the Recycle Bin. The daily goal is a setting (`water.goal_ml`, default 2 L). Millilitres only for now | A log line is not worth restoring days later; the setting travels with backups. Imperial units can come with a units setting. |
+| D72 | 2026-11-27 | Sleep (schema v8): one entry per night, keyed by the morning it ended (unique `date`; saving the same night again edits it). The editor takes clock times; bedtime counts as the evening before when it is later in the day than the wake time. Nights over 16 h are refused. Goal is a setting (`sleep.goal_minutes`, default 8 h). Removed with Undo, like water | Matches how people think about "last night"; no overlapping or duplicate nights to reconcile. |
+| D73 | 2026-11-27 | Trackers share one visual language on Track: a header link for the goal, a big figure with a status pill, a 7-day column chart (goal days in success green), compact rows. Water keeps the tactical ring gauge (user preferred it to a drawn glass) | Consistency across modules; the ring fits the theme. |

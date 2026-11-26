@@ -5,6 +5,23 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 6 — 2026-11-27 — Sleep
+
+### Added
+- **Sleep** on the Track tab: last night's length, bedtime → wake-up, whether it met your goal, and
+  how it felt; the last 7 nights against a goal line (tap a night to log or edit it); the nightly
+  goal (6–10 h).
+- **Night editor**: which night (this morning, yesterday or another day), when you went to sleep and
+  woke up (the length updates as you go), and an optional rating from Poor to Great. Remove a night
+  with Undo.
+- Home: the overview shows last night's sleep, and **Log sleep** opens the editor.
+- Included in backups; can be switched off in Settings › Modules.
+
+### Changed
+- Water: polished Track section — ring gauge with a status pill, the goal as a header link, a
+  clearer 7-day chart and compact entry rows; amount buttons show the full amount.
+- Routine details no longer break "30 s" across lines.
+
 ## Phase 2 · step 5 — 2026-11-26 — Water
 
 ### Added

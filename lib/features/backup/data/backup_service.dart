@@ -53,6 +53,10 @@ class BackupService {
       final checkIns = await (_db.select(
         _db.habitCheckIns,
       )..orderBy([(t) => OrderingTerm.asc(t.habitId), (t) => OrderingTerm.asc(t.date)])).get();
+      final events = await (_db.select(_db.events)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final exceptions = await (_db.select(
+        _db.eventExceptions,
+      )..orderBy([(t) => OrderingTerm.asc(t.eventId), (t) => OrderingTerm.asc(t.date)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -108,6 +112,36 @@ class BackupService {
         'habitCheckIns': [
           for (final c in checkIns)
             {'habitId': c.habitId, 'date': c.date, 'count': c.count, 'updatedAt': _time(c.updatedAt)},
+        ],
+        'events': [
+          for (final e in events)
+            {
+              'id': e.id,
+              'uuid': e.uuid,
+              'title': e.title,
+              'notes': e.notes,
+              'kind': e.kind,
+              'startDate': e.startDate,
+              'startMinute': e.startMinute,
+              'durationMinutes': e.durationMinutes,
+              'recurrence': e.recurrence,
+              'reminderMinutes': e.reminderMinutes,
+              'createdAt': _time(e.createdAt),
+              'updatedAt': _time(e.updatedAt),
+              'deletedAt': _time(e.deletedAt),
+            },
+        ],
+        'eventExceptions': [
+          for (final x in exceptions)
+            {
+              'eventId': x.eventId,
+              'date': x.date,
+              'skipped': x.skipped,
+              'doneAt': _time(x.doneAt),
+              'movedDate': x.movedDate,
+              'movedMinute': x.movedMinute,
+              'updatedAt': _time(x.updatedAt),
+            },
         ],
       };
     });
@@ -177,6 +211,10 @@ class BackupService {
     final tables = <String, List<Map<String, Object?>>>{};
     for (final table in backupTables) {
       final rows = data[table];
+      if (rows == null && schemaVersion < (backupTablesSince[table] ?? 0)) {
+        tables[table] = const [];
+        continue;
+      }
       if (rows is! List || counts[table] != rows.length) throw _incomplete;
       if (rows.any((r) => r is! Map<String, Object?>)) throw _damaged;
       tables[table] = rows.cast<Map<String, Object?>>();
@@ -193,6 +231,8 @@ class BackupService {
       tasks: [for (final r in tables['tasks']!) _taskRow(r)],
       habits: [for (final r in tables['habits']!) _habitRow(r)],
       checkIns: [for (final r in tables['habitCheckIns']!) _checkInRow(r)],
+      events: [for (final r in tables['events']!) _eventRow(r)],
+      exceptions: [for (final r in tables['eventExceptions']!) _exceptionRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -229,6 +269,13 @@ class BackupService {
     for (final c in p.checkIns) {
       if (!habitIds.contains(c.habitId.value)) throw _damaged;
     }
+    unique(p.events.map((r) => r.id.value));
+    unique(p.events.map((r) => r.uuid.value));
+    unique(p.exceptions.map((r) => (r.eventId.value, r.date.value)));
+    final eventIds = {for (final r in p.events) r.id.value};
+    for (final x in p.exceptions) {
+      if (!eventIds.contains(x.eventId.value)) throw _damaged;
+    }
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -240,6 +287,8 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.eventExceptions).go();
+      await _db.delete(_db.events).go();
       await _db.delete(_db.habitCheckIns).go();
       await _db.delete(_db.tasks).go();
       await _db.delete(_db.projects).go();
@@ -251,6 +300,8 @@ class BackupService {
         b.insertAll(_db.habits, parsed.habits);
         b.insertAll(_db.tasks, parsed.tasks);
         b.insertAll(_db.habitCheckIns, parsed.checkIns);
+        b.insertAll(_db.events, parsed.events);
+        b.insertAll(_db.eventExceptions, parsed.exceptions);
       });
     });
     return parsed.summary;
@@ -340,6 +391,32 @@ class BackupService {
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
   );
 
+  EventsCompanion _eventRow(Map<String, Object?> r) => EventsCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    title: _string(r, 'title', min: 1, max: 200),
+    notes: Value(_string(r, 'notes')),
+    kind: Value(_int(r, 'kind')),
+    startDate: _date(r, 'startDate'),
+    startMinute: Value(_optionalInt(r, 'startMinute')),
+    durationMinutes: Value(_optionalInt(r, 'durationMinutes')),
+    recurrence: Value(_optionalString(r, 'recurrence')),
+    reminderMinutes: Value(_optionalInt(r, 'reminderMinutes')),
+    createdAt: Value(_requiredTime(r, 'createdAt')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    deletedAt: Value(_optionalTime(r, 'deletedAt')),
+  );
+
+  EventExceptionsCompanion _exceptionRow(Map<String, Object?> r) => EventExceptionsCompanion.insert(
+    eventId: _int(r, 'eventId'),
+    date: _date(r, 'date'),
+    skipped: Value(r['skipped'] is bool ? r['skipped']! as bool : throw _damaged),
+    doneAt: Value(_optionalTime(r, 'doneAt')),
+    movedDate: Value(_optionalDate(r, 'movedDate')),
+    movedMinute: Value(_optionalInt(r, 'movedMinute')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+  );
+
   static int _int(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is int) return v;
@@ -397,6 +474,8 @@ class _Parsed {
     required this.tasks,
     required this.habits,
     required this.checkIns,
+    required this.events,
+    required this.exceptions,
   });
 
   final BackupSummary summary;
@@ -405,6 +484,8 @@ class _Parsed {
   final List<TasksCompanion> tasks;
   final List<HabitsCompanion> habits;
   final List<HabitCheckInsCompanion> checkIns;
+  final List<EventsCompanion> events;
+  final List<EventExceptionsCompanion> exceptions;
 }
 
 final backupServiceProvider = Provider<BackupService>(

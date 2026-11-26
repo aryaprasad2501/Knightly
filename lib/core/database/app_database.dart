@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
+import '../../features/calendar/data/calendar_tables.dart';
 import '../../features/habits/data/habits_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
 import 'ids.dart';
@@ -28,13 +29,13 @@ class AppSettings extends Table {
 ///
 /// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
-/// ids, Recycle Bin).
-@DriftDatabase(tables: [AppSettings, Projects, Tasks, Habits, HabitCheckIns])
+/// ids, Recycle Bin) · v5 Calendar: events + event_exceptions.
+@DriftDatabase(tables: [AppSettings, Projects, Tasks, Habits, HabitCheckIns, Events, EventExceptions])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -95,6 +96,12 @@ class AppDatabase extends _$AppDatabase {
         ),
       );
       await m.createIndex(schema.tasksDeletedAt);
+    },
+    // Calendar: two new tables; nothing existing changes.
+    from4To5: (m, schema) async {
+      await m.createTable(schema.events);
+      await m.createTable(schema.eventExceptions);
+      await m.createIndex(schema.eventsStartDate);
     },
   );
 

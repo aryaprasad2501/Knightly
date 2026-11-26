@@ -8,7 +8,8 @@
 ///   "createdAt": "2026-11-26T18:30:00.000Z",
 ///   "counts": {"settings": 2, "projects": 1, "tasks": 3, "habits": 2, "habitCheckIns": 40},
 ///   "checksum": "1a2b3c4d",
-///   "data": {"settings": [...], "projects": [...], "tasks": [...], "habits": [...], "habitCheckIns": [...]}
+///   "data": {"settings": [...], "projects": [...], "tasks": [...], "habits": [...], "habitCheckIns": [...],
+///            "events": [...], "eventExceptions": [...]}
 /// }
 /// ```
 ///
@@ -23,7 +24,19 @@ const backupFormatName = 'knightly-backup';
 const backupFormatVersion = 1;
 
 /// The tables, in the order they are written and restored.
-const backupTables = ['settings', 'projects', 'tasks', 'habits', 'habitCheckIns'];
+const backupTables = [
+  'settings',
+  'projects',
+  'tasks',
+  'habits',
+  'habitCheckIns',
+  'events',
+  'eventExceptions',
+];
+
+/// Tables added after the first backup format; files made before them (an
+/// older schema) simply don't have them and restore with them empty.
+const backupTablesSince = {'events': 5, 'eventExceptions': 5};
 
 /// Settings that describe this device rather than the user's data; they are
 /// never exported and never overwritten by a restore.
@@ -43,6 +56,7 @@ class BackupSummary {
   int get projects => counts['projects'] ?? 0;
   int get habits => counts['habits'] ?? 0;
   int get checkIns => counts['habitCheckIns'] ?? 0;
+  int get events => counts['events'] ?? 0;
 }
 
 /// A backup that cannot be read or restored. [message] is user-facing and

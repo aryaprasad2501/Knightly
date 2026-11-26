@@ -10,6 +10,7 @@ import 'generated/schema_v1.dart' as v1;
 import 'generated/schema_v2.dart' as v2;
 import 'generated/schema_v3.dart' as v3;
 import 'generated/schema_v4.dart' as v4;
+import 'generated/schema_v5.dart' as v5;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -301,4 +302,43 @@ void main() {
       },
     );
   });
+
+  // v5 only adds the Calendar tables: v4 data must be untouched.
+  test(
+    'migration from v4 to v5 keeps everything and adds empty calendar tables',
+    () async {
+      const at = '2026-11-26T09:00:00.000Z';
+      const uuid = '3f2c9a1e-6b0d-4c2e-9a7f-1d2e3c4b5a69';
+      await verifier.testWithDataIntegrity(
+        oldVersion: 4,
+        newVersion: 5,
+        createOld: v4.DatabaseAtV4.new,
+        createNew: v5.DatabaseAtV5.new,
+        openTestedDatabase: AppDatabase.new,
+        createItems: (batch, oldDb) {
+          batch.insertAll(oldDb.tasks, const [
+            v4.TasksData(
+              id: 1,
+              uuid: uuid,
+              title: 'Report',
+              notes: '',
+              priority: 2,
+              dueDate: '2026-11-27',
+              createdAt: at,
+              updatedAt: at,
+            ),
+          ]);
+        },
+        validateItems: (newDb) async {
+          final task = (await newDb.select(newDb.tasks).get()).single;
+          expect(
+            (task.id, task.uuid, task.title, task.priority, task.dueDate),
+            (1, uuid, 'Report', 2, '2026-11-27'),
+          );
+          expect(await newDb.select(newDb.events).get(), isEmpty);
+          expect(await newDb.select(newDb.eventExceptions).get(), isEmpty);
+        },
+      );
+    },
+  );
 }

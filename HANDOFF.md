@@ -4,6 +4,17 @@ _Last updated: 2026-11-26 · Living worlds visual pass complete_
 
 ## Where things stand
 
+**Latest (Phase 2 step 2 — Calendar, 2026-11-26):** schema v5 (`features/calendar/data/calendar_tables.dart`,
+migration + test), domain `calendar_event.dart` (`occurrencesBetween`, `missedOccurrences`),
+`event_repository.dart`, `calendar_providers.dart` (`calendarDaysProvider` merges events, missions incl.
+projected repeats, habits; respects module switches), screens `calendar_screen.dart` + `widgets/`
+(month grid, day timeline, agenda, missed sheet), `event_editor_sheet.dart`, Home
+`today_schedule_card.dart`, dock "New event", Recycle Bin + Backup (old schema-4 backups still restore).
+`Recurrence` moved to `core/time/` (re-exported from tasks). 215 tests. Verified on the Pixel 8 AVD
+(migration v4→v5 on real data, month/day views, create/delete event, Recycle Bin). **Next:** Routines,
+then notifications (needs `flutter_local_notifications` — ask first).
+
+
 **Latest (Phase 2 step 1 — module registry, 2026-11-26):** `core/modules/app_module.dart`
 (`AppModule`, `ModuleSettings`, `enabledModulesProvider`), Settings › Modules
 (`settings/presentation/modules_screen.dart`, route `/modules`). Gated: tabs in `AppShell`, Home

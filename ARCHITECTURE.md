@@ -105,6 +105,11 @@ of re-implementing them:
 | habits | `HabitsSection` (`habits_section.dart`) | Track tab |
 | habits | `showHabitEditor()` (`habit_editor_sheet.dart`) | App shell dock "New habit" action |
 | tasks | `composeMission()` (`task_ui_actions.dart`) | App shell dock "New mission" on Tasks |
+| tasks | `showCustomRepeatSheet()` (`widgets/custom_repeat_sheet.dart`) | Calendar event editor |
+| tasks | `setTaskDoneWithUndo()`, `showLockedMissionHint()`, `showTaskEditor()`, `formatClockTime()` | Calendar day agenda (missions) |
+| habits | `showHabitEditor()` | Calendar day agenda (habits) |
+| calendar | `showEventEditor()` (`event_editor_sheet.dart`) | App shell dock "New event" |
+| calendar | `TodayScheduleCard` (`today_schedule_card.dart`) | Home |
 
 **Public application providers** used by other features (allowed by the
 rule above): `trashedTasksProvider`, `trashedProjectsProvider`,
@@ -168,7 +173,11 @@ Anything else in a feature's `presentation/` is private to that feature.
   `due_date`, `completed_at`; `project_id` → `ON DELETE SET NULL`) · v3 `habits`,
   `habit_check_ins` (primary key `(habit_id, date)`, index on `date`,
   `habit_id` → `ON DELETE CASCADE`) · v4 `uuid` (unique), `updated_at`,
-  `deleted_at` on `projects`, `tasks`, `habits` (+ index on `tasks.deleted_at`).
+  `deleted_at` on `projects`, `tasks`, `habits` (+ index on `tasks.deleted_at`) ·
+  v5 `events` (uuid, kind fixed/flexible, start date + optional minute, duration,
+  recurrence, reminder minutes, timestamps, deleted_at; index on `start_date`) and
+  `event_exceptions` (primary key `(event_id, date)` = original occurrence date;
+  skipped, done_at, moved_date, moved_minute; `event_id` → `ON DELETE CASCADE`).
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -386,4 +395,8 @@ codegen not needed yet).
 | D58 | 2026-11-26 | Past habit check-ins (any day up to a year back, never the future); the habit's start date is derived as min(creation day, earliest check-in) | Audit M4. A derived start keeps streaks and rates correct when days are added and when they are cleared again. |
 | D59 | 2026-11-26 | Release signing from env vars or git-ignored `android/key.properties`; without a key, release builds fall back to the debug key with a warning unless `KNIGHTLY_REQUIRE_RELEASE_KEY=true` | Audit H3. No key or password is generated or committed; see docs/RELEASE_SIGNING.md. |
 | D60 | 2026-11-26 | Module registry in `core/modules/app_module.dart`: `AppModule` enum (built and planned modules), on/off saved as the list of *disabled* modules in `app_settings` (`modules.disabled`), read through `enabledModulesProvider` | Users switch off what they don't use. Storing only what is off means modules added later start on. Off = hidden only: tabs (`AppShell.isBranchVisible`), Home sections, Track parts, dock commands, streak displays; data is never touched, so switching back on restores everything. Backup and the Recycle Bin always include all modules. **Contract for later phases:** every new module adds an `AppModule` value, checks `enabledModulesProvider` wherever it appears, and its reminder scheduler must skip (and cancel) notifications while it is off. |
+| D61 | 2026-11-26 | Calendar (schema v5): events are *fixed* (set time or all day) or *flexible* (fit in that day, can be done). Repeats reuse `core/time/recurrence.dart` (moved from tasks, re-exported there). Occurrences are computed in pure Dart (`occurrencesBetween`), never stored; only per-occurrence changes are stored in `event_exceptions` keyed by the original date (done / skipped / moved) | One shared repeat engine; no generated rows to keep in sync; editing a series never loses per-occurrence history. |
+| D62 | 2026-11-26 | Missed occurrences are kept: a flexible occurrence whose day passed undone is listed under **Missed** (30-day window) until the user reschedules it (to today or later), marks it done or skips it — nothing moves automatically. Fixed events never become "missed" | The brief's "preserve missed occurrences" and "user-confirmed rescheduling". |
+| D63 | 2026-11-26 | Missions keep their spawn-on-complete model; the calendar shows them on their due date and *projects* future occurrences of repeating missions (faded, not tickable). Habits show on scheduled days (weekly-quota habits only on days done) | Integrates without migrating working mission logic; projected rows are display-only. |
+| D64 | 2026-11-26 | Event reminders are stored now (`reminder_minutes`) and labelled in the editor as delivered "when notifications are added" | Notifications come after Routines (agreed order); storing the choice now avoids a later data migration. |
 

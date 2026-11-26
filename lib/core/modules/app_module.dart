@@ -18,7 +18,7 @@ enum AppModule {
   habits('Habits', 'Daily and weekly habits with check-ins and history', built: true),
   streaks('Streaks', 'Streak counters on habits and the performance panel', built: true),
   analytics('Performance', 'Activity rings for today and this week on the Track tab', built: true),
-  calendar('Calendar', 'Day, week and month timeline for events and missions'),
+  calendar('Calendar', 'Day, week and month views of events, missions and habits', built: true),
   routines('Routines', 'Step-by-step morning and evening routines'),
   sleep('Sleep', 'Bedtime, wake time and sleep history'),
   water('Water', 'Glasses of water against a daily goal'),

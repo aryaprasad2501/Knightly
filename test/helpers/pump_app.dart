@@ -99,3 +99,16 @@ Future<void> settleWithDatabase(WidgetTester tester) async {
 /// Canvas colour of the theme applied to the widget found by [finder].
 Color canvasOf(WidgetTester tester, Finder finder) =>
     Theme.of(tester.element(finder)).scaffoldBackgroundColor;
+
+/// Scrolls the visible page until [finder] is built and on screen. Pages build
+/// lower sections lazily, so anything below the fold needs this first.
+Future<void> scrollTo(WidgetTester tester, Finder finder) async {
+  await tester.scrollUntilVisible(finder, 250, scrollable: find.byType(Scrollable).hitTestable().first);
+  await tester.pumpAndSettle();
+}
+
+/// Scrolls the visible page back to its top.
+Future<void> scrollToTop(WidgetTester tester) async {
+  await tester.drag(find.byType(Scrollable).hitTestable().first, const Offset(0, 3000));
+  await tester.pumpAndSettle();
+}

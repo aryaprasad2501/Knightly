@@ -5,6 +5,20 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 2 — 2026-11-26 — Calendar
+
+### Added
+- **Calendar tab** with Month, Week and Day views, previous/next and Today. Each day shows your
+  events, missions (including the planned future repeats of repeating missions) and habits.
+- **Events**: fixed time (or all day) and flexible ones you fit into the day and tick off. Repeat
+  daily, weekly, monthly or custom, set a length, notes and a reminder (saved now; alerts arrive
+  with notifications).
+- **Missed**: flexible events whose day passed undone wait under Missed until you reschedule,
+  mark them done late, or skip them. Nothing is moved for you.
+- Delete one occurrence of a repeating event or the whole series; events go to the Recycle Bin
+  and are included in backups.
+- Home shows **Today's schedule**; the dock offers **New event** on the Calendar tab.
+
 ## Phase 2 · step 1 — 2026-11-26 — Modules
 
 ### Added

@@ -196,6 +196,7 @@ void main() {
         await repo.setCount(done, today, 1);
       },
     );
+    await scrollTo(tester, find.text('1/2'));
     expect(find.text('1/2'), findsOneWidget); // Habits done
     await tester.scrollUntilVisible(
       find.text('1 of 2'),

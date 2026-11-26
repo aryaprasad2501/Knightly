@@ -2126,6 +2126,1078 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
   }
 }
 
+class $EventsTable extends Events with TableInfo<$EventsTable, EventRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+  );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    clientDefault: newUuid,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 200),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<int> kind = GeneratedColumn<int>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta('startDate');
+  @override
+  late final GeneratedColumn<String> startDate = GeneratedColumn<String>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startMinuteMeta = const VerificationMeta('startMinute');
+  @override
+  late final GeneratedColumn<int> startMinute = GeneratedColumn<int>(
+    'start_minute',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMinutesMeta = const VerificationMeta('durationMinutes');
+  @override
+  late final GeneratedColumn<int> durationMinutes = GeneratedColumn<int>(
+    'duration_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _recurrenceMeta = const VerificationMeta('recurrence');
+  @override
+  late final GeneratedColumn<String> recurrence = GeneratedColumn<String>(
+    'recurrence',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _reminderMinutesMeta = const VerificationMeta('reminderMinutes');
+  @override
+  late final GeneratedColumn<int> reminderMinutes = GeneratedColumn<int>(
+    'reminder_minutes',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    uuid,
+    title,
+    notes,
+    kind,
+    startDate,
+    startMinute,
+    durationMinutes,
+    recurrence,
+    reminderMinutes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'events';
+  @override
+  VerificationContext validateIntegrity(Insertable<EventRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(_uuidMeta, uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(_titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(_notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('kind')) {
+      context.handle(_kindMeta, kind.isAcceptableOrUnknown(data['kind']!, _kindMeta));
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(_startDateMeta, startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta));
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('start_minute')) {
+      context.handle(
+        _startMinuteMeta,
+        startMinute.isAcceptableOrUnknown(data['start_minute']!, _startMinuteMeta),
+      );
+    }
+    if (data.containsKey('duration_minutes')) {
+      context.handle(
+        _durationMinutesMeta,
+        durationMinutes.isAcceptableOrUnknown(data['duration_minutes']!, _durationMinutesMeta),
+      );
+    }
+    if (data.containsKey('recurrence')) {
+      context.handle(_recurrenceMeta, recurrence.isAcceptableOrUnknown(data['recurrence']!, _recurrenceMeta));
+    }
+    if (data.containsKey('reminder_minutes')) {
+      context.handle(
+        _reminderMinutesMeta,
+        reminderMinutes.isAcceptableOrUnknown(data['reminder_minutes']!, _reminderMinutesMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EventRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      uuid: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}uuid'])!,
+      title: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      notes: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}notes'])!,
+      kind: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}kind'])!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_date'],
+      )!,
+      startMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}start_minute'],
+      ),
+      durationMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_minutes'],
+      ),
+      recurrence: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}recurrence'],
+      ),
+      reminderMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_minutes'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $EventsTable createAlias(String alias) {
+    return $EventsTable(attachedDatabase, alias);
+  }
+}
+
+class EventRow extends DataClass implements Insertable<EventRow> {
+  final int id;
+  final String uuid;
+  final String title;
+  final String notes;
+
+  /// `EventKind.storageValue`: 0 fixed, 1 flexible.
+  final int kind;
+
+  /// First (or only) occurrence, `yyyy-MM-dd`.
+  final String startDate;
+
+  /// Minutes after midnight; null = all day (fixed) or any time (flexible).
+  final int? startMinute;
+
+  /// Length in minutes; null for all-day and untimed events.
+  final int? durationMinutes;
+
+  /// `Recurrence.encode()` text; null = happens once.
+  final String? recurrence;
+
+  /// Minutes before the start to remind; null = no reminder. Stored now,
+  /// delivered once notifications exist.
+  final int? reminderMinutes;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  /// Set when the event (the whole series) is in the Recycle Bin.
+  final DateTime? deletedAt;
+  const EventRow({
+    required this.id,
+    required this.uuid,
+    required this.title,
+    required this.notes,
+    required this.kind,
+    required this.startDate,
+    this.startMinute,
+    this.durationMinutes,
+    this.recurrence,
+    this.reminderMinutes,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['uuid'] = Variable<String>(uuid);
+    map['title'] = Variable<String>(title);
+    map['notes'] = Variable<String>(notes);
+    map['kind'] = Variable<int>(kind);
+    map['start_date'] = Variable<String>(startDate);
+    if (!nullToAbsent || startMinute != null) {
+      map['start_minute'] = Variable<int>(startMinute);
+    }
+    if (!nullToAbsent || durationMinutes != null) {
+      map['duration_minutes'] = Variable<int>(durationMinutes);
+    }
+    if (!nullToAbsent || recurrence != null) {
+      map['recurrence'] = Variable<String>(recurrence);
+    }
+    if (!nullToAbsent || reminderMinutes != null) {
+      map['reminder_minutes'] = Variable<int>(reminderMinutes);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  EventsCompanion toCompanion(bool nullToAbsent) {
+    return EventsCompanion(
+      id: Value(id),
+      uuid: Value(uuid),
+      title: Value(title),
+      notes: Value(notes),
+      kind: Value(kind),
+      startDate: Value(startDate),
+      startMinute: startMinute == null && nullToAbsent ? const Value.absent() : Value(startMinute),
+      durationMinutes: durationMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMinutes),
+      recurrence: recurrence == null && nullToAbsent ? const Value.absent() : Value(recurrence),
+      reminderMinutes: reminderMinutes == null && nullToAbsent
+          ? const Value.absent()
+          : Value(reminderMinutes),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+    );
+  }
+
+  factory EventRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventRow(
+      id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String>(json['uuid']),
+      title: serializer.fromJson<String>(json['title']),
+      notes: serializer.fromJson<String>(json['notes']),
+      kind: serializer.fromJson<int>(json['kind']),
+      startDate: serializer.fromJson<String>(json['startDate']),
+      startMinute: serializer.fromJson<int?>(json['startMinute']),
+      durationMinutes: serializer.fromJson<int?>(json['durationMinutes']),
+      recurrence: serializer.fromJson<String?>(json['recurrence']),
+      reminderMinutes: serializer.fromJson<int?>(json['reminderMinutes']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String>(uuid),
+      'title': serializer.toJson<String>(title),
+      'notes': serializer.toJson<String>(notes),
+      'kind': serializer.toJson<int>(kind),
+      'startDate': serializer.toJson<String>(startDate),
+      'startMinute': serializer.toJson<int?>(startMinute),
+      'durationMinutes': serializer.toJson<int?>(durationMinutes),
+      'recurrence': serializer.toJson<String?>(recurrence),
+      'reminderMinutes': serializer.toJson<int?>(reminderMinutes),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  EventRow copyWith({
+    int? id,
+    String? uuid,
+    String? title,
+    String? notes,
+    int? kind,
+    String? startDate,
+    Value<int?> startMinute = const Value.absent(),
+    Value<int?> durationMinutes = const Value.absent(),
+    Value<String?> recurrence = const Value.absent(),
+    Value<int?> reminderMinutes = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => EventRow(
+    id: id ?? this.id,
+    uuid: uuid ?? this.uuid,
+    title: title ?? this.title,
+    notes: notes ?? this.notes,
+    kind: kind ?? this.kind,
+    startDate: startDate ?? this.startDate,
+    startMinute: startMinute.present ? startMinute.value : this.startMinute,
+    durationMinutes: durationMinutes.present ? durationMinutes.value : this.durationMinutes,
+    recurrence: recurrence.present ? recurrence.value : this.recurrence,
+    reminderMinutes: reminderMinutes.present ? reminderMinutes.value : this.reminderMinutes,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  EventRow copyWithCompanion(EventsCompanion data) {
+    return EventRow(
+      id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      title: data.title.present ? data.title.value : this.title,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      startMinute: data.startMinute.present ? data.startMinute.value : this.startMinute,
+      durationMinutes: data.durationMinutes.present ? data.durationMinutes.value : this.durationMinutes,
+      recurrence: data.recurrence.present ? data.recurrence.value : this.recurrence,
+      reminderMinutes: data.reminderMinutes.present ? data.reminderMinutes.value : this.reminderMinutes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventRow(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('title: $title, ')
+          ..write('notes: $notes, ')
+          ..write('kind: $kind, ')
+          ..write('startDate: $startDate, ')
+          ..write('startMinute: $startMinute, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('recurrence: $recurrence, ')
+          ..write('reminderMinutes: $reminderMinutes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    uuid,
+    title,
+    notes,
+    kind,
+    startDate,
+    startMinute,
+    durationMinutes,
+    recurrence,
+    reminderMinutes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventRow &&
+          other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.title == this.title &&
+          other.notes == this.notes &&
+          other.kind == this.kind &&
+          other.startDate == this.startDate &&
+          other.startMinute == this.startMinute &&
+          other.durationMinutes == this.durationMinutes &&
+          other.recurrence == this.recurrence &&
+          other.reminderMinutes == this.reminderMinutes &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class EventsCompanion extends UpdateCompanion<EventRow> {
+  final Value<int> id;
+  final Value<String> uuid;
+  final Value<String> title;
+  final Value<String> notes;
+  final Value<int> kind;
+  final Value<String> startDate;
+  final Value<int?> startMinute;
+  final Value<int?> durationMinutes;
+  final Value<String?> recurrence;
+  final Value<int?> reminderMinutes;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  const EventsCompanion({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.title = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.startMinute = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.recurrence = const Value.absent(),
+    this.reminderMinutes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  });
+  EventsCompanion.insert({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    required String title,
+    this.notes = const Value.absent(),
+    this.kind = const Value.absent(),
+    required String startDate,
+    this.startMinute = const Value.absent(),
+    this.durationMinutes = const Value.absent(),
+    this.recurrence = const Value.absent(),
+    this.reminderMinutes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  }) : title = Value(title),
+       startDate = Value(startDate);
+  static Insertable<EventRow> custom({
+    Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<String>? title,
+    Expression<String>? notes,
+    Expression<int>? kind,
+    Expression<String>? startDate,
+    Expression<int>? startMinute,
+    Expression<int>? durationMinutes,
+    Expression<String>? recurrence,
+    Expression<int>? reminderMinutes,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (title != null) 'title': title,
+      if (notes != null) 'notes': notes,
+      if (kind != null) 'kind': kind,
+      if (startDate != null) 'start_date': startDate,
+      if (startMinute != null) 'start_minute': startMinute,
+      if (durationMinutes != null) 'duration_minutes': durationMinutes,
+      if (recurrence != null) 'recurrence': recurrence,
+      if (reminderMinutes != null) 'reminder_minutes': reminderMinutes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+    });
+  }
+
+  EventsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? uuid,
+    Value<String>? title,
+    Value<String>? notes,
+    Value<int>? kind,
+    Value<String>? startDate,
+    Value<int?>? startMinute,
+    Value<int?>? durationMinutes,
+    Value<String?>? recurrence,
+    Value<int?>? reminderMinutes,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+  }) {
+    return EventsCompanion(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      title: title ?? this.title,
+      notes: notes ?? this.notes,
+      kind: kind ?? this.kind,
+      startDate: startDate ?? this.startDate,
+      startMinute: startMinute ?? this.startMinute,
+      durationMinutes: durationMinutes ?? this.durationMinutes,
+      recurrence: recurrence ?? this.recurrence,
+      reminderMinutes: reminderMinutes ?? this.reminderMinutes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<int>(kind.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<String>(startDate.value);
+    }
+    if (startMinute.present) {
+      map['start_minute'] = Variable<int>(startMinute.value);
+    }
+    if (durationMinutes.present) {
+      map['duration_minutes'] = Variable<int>(durationMinutes.value);
+    }
+    if (recurrence.present) {
+      map['recurrence'] = Variable<String>(recurrence.value);
+    }
+    if (reminderMinutes.present) {
+      map['reminder_minutes'] = Variable<int>(reminderMinutes.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventsCompanion(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('title: $title, ')
+          ..write('notes: $notes, ')
+          ..write('kind: $kind, ')
+          ..write('startDate: $startDate, ')
+          ..write('startMinute: $startMinute, ')
+          ..write('durationMinutes: $durationMinutes, ')
+          ..write('recurrence: $recurrence, ')
+          ..write('reminderMinutes: $reminderMinutes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EventExceptionsTable extends EventExceptions with TableInfo<$EventExceptionsTable, EventExceptionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventExceptionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _eventIdMeta = const VerificationMeta('eventId');
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES events (id) ON DELETE CASCADE'),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _skippedMeta = const VerificationMeta('skipped');
+  @override
+  late final GeneratedColumn<bool> skipped = GeneratedColumn<bool>(
+    'skipped',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("skipped" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _doneAtMeta = const VerificationMeta('doneAt');
+  @override
+  late final GeneratedColumn<DateTime> doneAt = GeneratedColumn<DateTime>(
+    'done_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _movedDateMeta = const VerificationMeta('movedDate');
+  @override
+  late final GeneratedColumn<String> movedDate = GeneratedColumn<String>(
+    'moved_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _movedMinuteMeta = const VerificationMeta('movedMinute');
+  @override
+  late final GeneratedColumn<int> movedMinute = GeneratedColumn<int>(
+    'moved_minute',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [eventId, date, skipped, doneAt, movedDate, movedMinute, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'event_exceptions';
+  @override
+  VerificationContext validateIntegrity(Insertable<EventExceptionRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('event_id')) {
+      context.handle(_eventIdMeta, eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta));
+    } else if (isInserting) {
+      context.missing(_eventIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('skipped')) {
+      context.handle(_skippedMeta, skipped.isAcceptableOrUnknown(data['skipped']!, _skippedMeta));
+    }
+    if (data.containsKey('done_at')) {
+      context.handle(_doneAtMeta, doneAt.isAcceptableOrUnknown(data['done_at']!, _doneAtMeta));
+    }
+    if (data.containsKey('moved_date')) {
+      context.handle(_movedDateMeta, movedDate.isAcceptableOrUnknown(data['moved_date']!, _movedDateMeta));
+    }
+    if (data.containsKey('moved_minute')) {
+      context.handle(
+        _movedMinuteMeta,
+        movedMinute.isAcceptableOrUnknown(data['moved_minute']!, _movedMinuteMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {eventId, date};
+  @override
+  EventExceptionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventExceptionRow(
+      eventId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}event_id'])!,
+      date: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}date'])!,
+      skipped: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}skipped'])!,
+      doneAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}done_at']),
+      movedDate: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}moved_date']),
+      movedMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}moved_minute'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $EventExceptionsTable createAlias(String alias) {
+    return $EventExceptionsTable(attachedDatabase, alias);
+  }
+}
+
+class EventExceptionRow extends DataClass implements Insertable<EventExceptionRow> {
+  /// Permanently deleting an event deletes its occurrence history.
+  final int eventId;
+
+  /// The occurrence's original date, `yyyy-MM-dd`.
+  final String date;
+  final bool skipped;
+  final DateTime? doneAt;
+
+  /// Where the occurrence was moved to, if rescheduled.
+  final String? movedDate;
+  final int? movedMinute;
+  final DateTime updatedAt;
+  const EventExceptionRow({
+    required this.eventId,
+    required this.date,
+    required this.skipped,
+    this.doneAt,
+    this.movedDate,
+    this.movedMinute,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['event_id'] = Variable<int>(eventId);
+    map['date'] = Variable<String>(date);
+    map['skipped'] = Variable<bool>(skipped);
+    if (!nullToAbsent || doneAt != null) {
+      map['done_at'] = Variable<DateTime>(doneAt);
+    }
+    if (!nullToAbsent || movedDate != null) {
+      map['moved_date'] = Variable<String>(movedDate);
+    }
+    if (!nullToAbsent || movedMinute != null) {
+      map['moved_minute'] = Variable<int>(movedMinute);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  EventExceptionsCompanion toCompanion(bool nullToAbsent) {
+    return EventExceptionsCompanion(
+      eventId: Value(eventId),
+      date: Value(date),
+      skipped: Value(skipped),
+      doneAt: doneAt == null && nullToAbsent ? const Value.absent() : Value(doneAt),
+      movedDate: movedDate == null && nullToAbsent ? const Value.absent() : Value(movedDate),
+      movedMinute: movedMinute == null && nullToAbsent ? const Value.absent() : Value(movedMinute),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory EventExceptionRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventExceptionRow(
+      eventId: serializer.fromJson<int>(json['eventId']),
+      date: serializer.fromJson<String>(json['date']),
+      skipped: serializer.fromJson<bool>(json['skipped']),
+      doneAt: serializer.fromJson<DateTime?>(json['doneAt']),
+      movedDate: serializer.fromJson<String?>(json['movedDate']),
+      movedMinute: serializer.fromJson<int?>(json['movedMinute']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'eventId': serializer.toJson<int>(eventId),
+      'date': serializer.toJson<String>(date),
+      'skipped': serializer.toJson<bool>(skipped),
+      'doneAt': serializer.toJson<DateTime?>(doneAt),
+      'movedDate': serializer.toJson<String?>(movedDate),
+      'movedMinute': serializer.toJson<int?>(movedMinute),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  EventExceptionRow copyWith({
+    int? eventId,
+    String? date,
+    bool? skipped,
+    Value<DateTime?> doneAt = const Value.absent(),
+    Value<String?> movedDate = const Value.absent(),
+    Value<int?> movedMinute = const Value.absent(),
+    DateTime? updatedAt,
+  }) => EventExceptionRow(
+    eventId: eventId ?? this.eventId,
+    date: date ?? this.date,
+    skipped: skipped ?? this.skipped,
+    doneAt: doneAt.present ? doneAt.value : this.doneAt,
+    movedDate: movedDate.present ? movedDate.value : this.movedDate,
+    movedMinute: movedMinute.present ? movedMinute.value : this.movedMinute,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  EventExceptionRow copyWithCompanion(EventExceptionsCompanion data) {
+    return EventExceptionRow(
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      date: data.date.present ? data.date.value : this.date,
+      skipped: data.skipped.present ? data.skipped.value : this.skipped,
+      doneAt: data.doneAt.present ? data.doneAt.value : this.doneAt,
+      movedDate: data.movedDate.present ? data.movedDate.value : this.movedDate,
+      movedMinute: data.movedMinute.present ? data.movedMinute.value : this.movedMinute,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventExceptionRow(')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('skipped: $skipped, ')
+          ..write('doneAt: $doneAt, ')
+          ..write('movedDate: $movedDate, ')
+          ..write('movedMinute: $movedMinute, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(eventId, date, skipped, doneAt, movedDate, movedMinute, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventExceptionRow &&
+          other.eventId == this.eventId &&
+          other.date == this.date &&
+          other.skipped == this.skipped &&
+          other.doneAt == this.doneAt &&
+          other.movedDate == this.movedDate &&
+          other.movedMinute == this.movedMinute &&
+          other.updatedAt == this.updatedAt);
+}
+
+class EventExceptionsCompanion extends UpdateCompanion<EventExceptionRow> {
+  final Value<int> eventId;
+  final Value<String> date;
+  final Value<bool> skipped;
+  final Value<DateTime?> doneAt;
+  final Value<String?> movedDate;
+  final Value<int?> movedMinute;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const EventExceptionsCompanion({
+    this.eventId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.skipped = const Value.absent(),
+    this.doneAt = const Value.absent(),
+    this.movedDate = const Value.absent(),
+    this.movedMinute = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EventExceptionsCompanion.insert({
+    required int eventId,
+    required String date,
+    this.skipped = const Value.absent(),
+    this.doneAt = const Value.absent(),
+    this.movedDate = const Value.absent(),
+    this.movedMinute = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : eventId = Value(eventId),
+       date = Value(date);
+  static Insertable<EventExceptionRow> custom({
+    Expression<int>? eventId,
+    Expression<String>? date,
+    Expression<bool>? skipped,
+    Expression<DateTime>? doneAt,
+    Expression<String>? movedDate,
+    Expression<int>? movedMinute,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (eventId != null) 'event_id': eventId,
+      if (date != null) 'date': date,
+      if (skipped != null) 'skipped': skipped,
+      if (doneAt != null) 'done_at': doneAt,
+      if (movedDate != null) 'moved_date': movedDate,
+      if (movedMinute != null) 'moved_minute': movedMinute,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EventExceptionsCompanion copyWith({
+    Value<int>? eventId,
+    Value<String>? date,
+    Value<bool>? skipped,
+    Value<DateTime?>? doneAt,
+    Value<String?>? movedDate,
+    Value<int?>? movedMinute,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return EventExceptionsCompanion(
+      eventId: eventId ?? this.eventId,
+      date: date ?? this.date,
+      skipped: skipped ?? this.skipped,
+      doneAt: doneAt ?? this.doneAt,
+      movedDate: movedDate ?? this.movedDate,
+      movedMinute: movedMinute ?? this.movedMinute,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (skipped.present) {
+      map['skipped'] = Variable<bool>(skipped.value);
+    }
+    if (doneAt.present) {
+      map['done_at'] = Variable<DateTime>(doneAt.value);
+    }
+    if (movedDate.present) {
+      map['moved_date'] = Variable<String>(movedDate.value);
+    }
+    if (movedMinute.present) {
+      map['moved_minute'] = Variable<int>(movedMinute.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventExceptionsCompanion(')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('skipped: $skipped, ')
+          ..write('doneAt: $doneAt, ')
+          ..write('movedDate: $movedDate, ')
+          ..write('movedMinute: $movedMinute, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2134,6 +3206,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TasksTable tasks = $TasksTable(this);
   late final $HabitsTable habits = $HabitsTable(this);
   late final $HabitCheckInsTable habitCheckIns = $HabitCheckInsTable(this);
+  late final $EventsTable events = $EventsTable(this);
+  late final $EventExceptionsTable eventExceptions = $EventExceptionsTable(this);
   late final Index tasksDueDate = Index('tasks_due_date', 'CREATE INDEX tasks_due_date ON tasks (due_date)');
   late final Index tasksCompletedAt = Index(
     'tasks_completed_at',
@@ -2147,6 +3221,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'habit_check_ins_date',
     'CREATE INDEX habit_check_ins_date ON habit_check_ins (date)',
   );
+  late final Index eventsStartDate = Index(
+    'events_start_date',
+    'CREATE INDEX events_start_date ON events (start_date)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2157,10 +3235,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     tasks,
     habits,
     habitCheckIns,
+    events,
+    eventExceptions,
     tasksDueDate,
     tasksCompletedAt,
     tasksDeletedAt,
     habitCheckInsDate,
+    eventsStartDate,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -2171,6 +3252,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName('habits', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('habit_check_ins', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('events', limitUpdateKind: UpdateKind.delete),
+      result: [TableUpdate('event_exceptions', kind: UpdateKind.delete)],
     ),
   ]);
   @override
@@ -3514,6 +4599,656 @@ typedef $$HabitCheckInsTableProcessedTableManager =
       HabitCheckInRow,
       PrefetchHooks Function({bool habitId})
     >;
+typedef $$EventsTableCreateCompanionBuilder =
+    EventsCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      required String title,
+      Value<String> notes,
+      Value<int> kind,
+      required String startDate,
+      Value<int?> startMinute,
+      Value<int?> durationMinutes,
+      Value<String?> recurrence,
+      Value<int?> reminderMinutes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+    });
+typedef $$EventsTableUpdateCompanionBuilder =
+    EventsCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      Value<String> title,
+      Value<String> notes,
+      Value<int> kind,
+      Value<String> startDate,
+      Value<int?> startMinute,
+      Value<int?> durationMinutes,
+      Value<String?> recurrence,
+      Value<int?> reminderMinutes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+    });
+
+final class $$EventsTableReferences extends BaseReferences<_$AppDatabase, $EventsTable, EventRow> {
+  $$EventsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$EventExceptionsTable, List<EventExceptionRow>> _eventExceptionsRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.eventExceptions,
+    aliasName: $_aliasNameGenerator(db.events.id, db.eventExceptions.eventId),
+  );
+
+  $$EventExceptionsTableProcessedTableManager get eventExceptionsRefs {
+    final manager = $$EventExceptionsTableTableManager(
+      $_db,
+      $_db.eventExceptions,
+    ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_eventExceptionsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$EventsTableFilterComposer extends Composer<_$AppDatabase, $EventsTable> {
+  $$EventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get startMinute =>
+      $composableBuilder(column: $table.startMinute, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get durationMinutes =>
+      $composableBuilder(column: $table.durationMinutes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get recurrence =>
+      $composableBuilder(column: $table.recurrence, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get reminderMinutes =>
+      $composableBuilder(column: $table.reminderMinutes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> eventExceptionsRefs(Expression<bool> Function($$EventExceptionsTableFilterComposer f) f) {
+    final $$EventExceptionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.eventExceptions,
+      getReferencedColumn: (t) => t.eventId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventExceptionsTableFilterComposer(
+            $db: $db,
+            $table: $db.eventExceptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$EventsTableOrderingComposer extends Composer<_$AppDatabase, $EventsTable> {
+  $$EventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get startMinute =>
+      $composableBuilder(column: $table.startMinute, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get durationMinutes =>
+      $composableBuilder(column: $table.durationMinutes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get recurrence =>
+      $composableBuilder(column: $table.recurrence, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get reminderMinutes =>
+      $composableBuilder(column: $table.reminderMinutes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$EventsTableAnnotationComposer extends Composer<_$AppDatabase, $EventsTable> {
+  $$EventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid => $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<String> get title => $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get notes => $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<int> get kind => $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<int> get startMinute =>
+      $composableBuilder(column: $table.startMinute, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMinutes =>
+      $composableBuilder(column: $table.durationMinutes, builder: (column) => column);
+
+  GeneratedColumn<String> get recurrence =>
+      $composableBuilder(column: $table.recurrence, builder: (column) => column);
+
+  GeneratedColumn<int> get reminderMinutes =>
+      $composableBuilder(column: $table.reminderMinutes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  Expression<T> eventExceptionsRefs<T extends Object>(
+    Expression<T> Function($$EventExceptionsTableAnnotationComposer a) f,
+  ) {
+    final $$EventExceptionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.eventExceptions,
+      getReferencedColumn: (t) => t.eventId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventExceptionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.eventExceptions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$EventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EventsTable,
+          EventRow,
+          $$EventsTableFilterComposer,
+          $$EventsTableOrderingComposer,
+          $$EventsTableAnnotationComposer,
+          $$EventsTableCreateCompanionBuilder,
+          $$EventsTableUpdateCompanionBuilder,
+          (EventRow, $$EventsTableReferences),
+          EventRow,
+          PrefetchHooks Function({bool eventExceptionsRefs})
+        > {
+  $$EventsTableTableManager(_$AppDatabase db, $EventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$EventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$EventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$EventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> notes = const Value.absent(),
+                Value<int> kind = const Value.absent(),
+                Value<String> startDate = const Value.absent(),
+                Value<int?> startMinute = const Value.absent(),
+                Value<int?> durationMinutes = const Value.absent(),
+                Value<String?> recurrence = const Value.absent(),
+                Value<int?> reminderMinutes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+              }) => EventsCompanion(
+                id: id,
+                uuid: uuid,
+                title: title,
+                notes: notes,
+                kind: kind,
+                startDate: startDate,
+                startMinute: startMinute,
+                durationMinutes: durationMinutes,
+                recurrence: recurrence,
+                reminderMinutes: reminderMinutes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                required String title,
+                Value<String> notes = const Value.absent(),
+                Value<int> kind = const Value.absent(),
+                required String startDate,
+                Value<int?> startMinute = const Value.absent(),
+                Value<int?> durationMinutes = const Value.absent(),
+                Value<String?> recurrence = const Value.absent(),
+                Value<int?> reminderMinutes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+              }) => EventsCompanion.insert(
+                id: id,
+                uuid: uuid,
+                title: title,
+                notes: notes,
+                kind: kind,
+                startDate: startDate,
+                startMinute: startMinute,
+                durationMinutes: durationMinutes,
+                recurrence: recurrence,
+                reminderMinutes: reminderMinutes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$EventsTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({eventExceptionsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (eventExceptionsRefs) db.eventExceptions],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (eventExceptionsRefs)
+                    await $_getPrefetchedData<EventRow, $EventsTable, EventExceptionRow>(
+                      currentTable: table,
+                      referencedTable: $$EventsTableReferences._eventExceptionsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$EventsTableReferences(db, table, p0).eventExceptionsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.eventId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EventsTable,
+      EventRow,
+      $$EventsTableFilterComposer,
+      $$EventsTableOrderingComposer,
+      $$EventsTableAnnotationComposer,
+      $$EventsTableCreateCompanionBuilder,
+      $$EventsTableUpdateCompanionBuilder,
+      (EventRow, $$EventsTableReferences),
+      EventRow,
+      PrefetchHooks Function({bool eventExceptionsRefs})
+    >;
+typedef $$EventExceptionsTableCreateCompanionBuilder =
+    EventExceptionsCompanion Function({
+      required int eventId,
+      required String date,
+      Value<bool> skipped,
+      Value<DateTime?> doneAt,
+      Value<String?> movedDate,
+      Value<int?> movedMinute,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$EventExceptionsTableUpdateCompanionBuilder =
+    EventExceptionsCompanion Function({
+      Value<int> eventId,
+      Value<String> date,
+      Value<bool> skipped,
+      Value<DateTime?> doneAt,
+      Value<String?> movedDate,
+      Value<int?> movedMinute,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$EventExceptionsTableReferences
+    extends BaseReferences<_$AppDatabase, $EventExceptionsTable, EventExceptionRow> {
+  $$EventExceptionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $EventsTable _eventIdTable(_$AppDatabase db) =>
+      db.events.createAlias($_aliasNameGenerator(db.eventExceptions.eventId, db.events.id));
+
+  $$EventsTableProcessedTableManager get eventId {
+    final $_column = $_itemColumn<int>('event_id')!;
+
+    final manager = $$EventsTableTableManager($_db, $_db.events).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$EventExceptionsTableFilterComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
+  $$EventExceptionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get doneAt =>
+      $composableBuilder(column: $table.doneAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get movedDate =>
+      $composableBuilder(column: $table.movedDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get movedMinute =>
+      $composableBuilder(column: $table.movedMinute, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$EventsTableFilterComposer get eventId {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventExceptionsTableOrderingComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
+  $$EventExceptionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get doneAt =>
+      $composableBuilder(column: $table.doneAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get movedDate =>
+      $composableBuilder(column: $table.movedDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get movedMinute =>
+      $composableBuilder(column: $table.movedMinute, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$EventsTableOrderingComposer get eventId {
+    final $$EventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventExceptionsTableAnnotationComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
+  $$EventExceptionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date => $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get doneAt =>
+      $composableBuilder(column: $table.doneAt, builder: (column) => column);
+
+  GeneratedColumn<String> get movedDate =>
+      $composableBuilder(column: $table.movedDate, builder: (column) => column);
+
+  GeneratedColumn<int> get movedMinute =>
+      $composableBuilder(column: $table.movedMinute, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$EventsTableAnnotationComposer get eventId {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventExceptionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EventExceptionsTable,
+          EventExceptionRow,
+          $$EventExceptionsTableFilterComposer,
+          $$EventExceptionsTableOrderingComposer,
+          $$EventExceptionsTableAnnotationComposer,
+          $$EventExceptionsTableCreateCompanionBuilder,
+          $$EventExceptionsTableUpdateCompanionBuilder,
+          (EventExceptionRow, $$EventExceptionsTableReferences),
+          EventExceptionRow,
+          PrefetchHooks Function({bool eventId})
+        > {
+  $$EventExceptionsTableTableManager(_$AppDatabase db, $EventExceptionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$EventExceptionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$EventExceptionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$EventExceptionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> eventId = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<bool> skipped = const Value.absent(),
+                Value<DateTime?> doneAt = const Value.absent(),
+                Value<String?> movedDate = const Value.absent(),
+                Value<int?> movedMinute = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventExceptionsCompanion(
+                eventId: eventId,
+                date: date,
+                skipped: skipped,
+                doneAt: doneAt,
+                movedDate: movedDate,
+                movedMinute: movedMinute,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int eventId,
+                required String date,
+                Value<bool> skipped = const Value.absent(),
+                Value<DateTime?> doneAt = const Value.absent(),
+                Value<String?> movedDate = const Value.absent(),
+                Value<int?> movedMinute = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventExceptionsCompanion.insert(
+                eventId: eventId,
+                date: date,
+                skipped: skipped,
+                doneAt: doneAt,
+                movedDate: movedDate,
+                movedMinute: movedMinute,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$EventExceptionsTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({eventId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (eventId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.eventId,
+                                referencedTable: $$EventExceptionsTableReferences._eventIdTable(db),
+                                referencedColumn: $$EventExceptionsTableReferences._eventIdTable(db).id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EventExceptionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EventExceptionsTable,
+      EventExceptionRow,
+      $$EventExceptionsTableFilterComposer,
+      $$EventExceptionsTableOrderingComposer,
+      $$EventExceptionsTableAnnotationComposer,
+      $$EventExceptionsTableCreateCompanionBuilder,
+      $$EventExceptionsTableUpdateCompanionBuilder,
+      (EventExceptionRow, $$EventExceptionsTableReferences),
+      EventExceptionRow,
+      PrefetchHooks Function({bool eventId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3524,4 +5259,7 @@ class $AppDatabaseManager {
   $$HabitsTableTableManager get habits => $$HabitsTableTableManager(_db, _db.habits);
   $$HabitCheckInsTableTableManager get habitCheckIns =>
       $$HabitCheckInsTableTableManager(_db, _db.habitCheckIns);
+  $$EventsTableTableManager get events => $$EventsTableTableManager(_db, _db.events);
+  $$EventExceptionsTableTableManager get eventExceptions =>
+      $$EventExceptionsTableTableManager(_db, _db.eventExceptions);
 }

@@ -75,7 +75,8 @@ class RecycleBinScreen extends ConsumerWidget {
                   glyph: KGlyphs.trash,
                   title: 'Recycle Bin is empty',
                   message:
-                      'Deleted missions, projects and habits wait here until you restore them or delete them for good.',
+                      'Deleted missions, projects, habits and events wait here until you restore them or delete them '
+                      'for good.',
                 ),
               ]
             : [
@@ -100,6 +101,7 @@ class _BinRow extends ConsumerWidget {
     BinKind.mission => KGlyphs.tasks,
     BinKind.project => KGlyphs.folder,
     BinKind.habit => KGlyphs.habit,
+    BinKind.event => KGlyphs.calendar,
   };
 
   Future<void> _restore(BuildContext context, WidgetRef ref) async {
@@ -120,6 +122,8 @@ class _BinRow extends ConsumerWidget {
         BinKind.project =>
           'The project is removed; its missions stay, without a project. This cannot be undone.',
         BinKind.mission => 'The mission is removed from this device. This cannot be undone.',
+        BinKind.event =>
+          'The event and all its occurrences are removed from this device. This cannot be undone.',
       },
       confirmLabel: 'Delete',
       destructive: true,

@@ -10,8 +10,11 @@ void main() {
 
     // Home opens on the greeting; no app-name banner.
     expect(find.text('KNIGHTLY'), findsNothing);
-    expect(find.text("TODAY'S OVERVIEW"), findsOneWidget);
+    expect(find.text("TODAY'S SCHEDULE"), findsOneWidget);
+    expect(find.text('Nothing scheduled today'), findsOneWidget);
     expect(find.text('No mission scheduled'), findsOneWidget);
+    await scrollTo(tester, find.text("TODAY'S OVERVIEW"));
+    expect(find.text("TODAY'S OVERVIEW"), findsOneWidget);
     // Overview metrics show the "no data" dash, never a number.
     expect(find.text('—'), findsWidgets);
     // Build status lives in the dev screen now, not on Home.

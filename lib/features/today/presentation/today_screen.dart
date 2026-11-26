@@ -6,6 +6,7 @@ import '../../../core/design/components/k_section_header.dart';
 import '../../../core/design/layout/k_page.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/modules/app_module.dart';
+import '../../calendar/presentation/today_schedule_card.dart';
 import 'widgets/command_header.dart';
 import 'widgets/daily_progress_card.dart';
 import 'widgets/overview_card.dart';
@@ -29,6 +30,7 @@ class TodayScreen extends ConsumerWidget {
     final on = ref.watch(enabledModulesProvider);
     final sections = <List<Widget>>[
       if (on.contains(AppModule.missions)) const [UpcomingMissionHeader(), UpcomingMissionCard()],
+      if (on.contains(AppModule.calendar)) const [KSectionHeader("Today's schedule"), TodayScheduleCard()],
       if (OverviewCard.hasContent(on)) const [KSectionHeader("Today's overview"), OverviewCard()],
       if (DailyProgressCard.hasContent(on)) const [KSectionHeader('Daily progress'), DailyProgressCard()],
       if (QuickActionsGrid.hasContent(on)) const [KSectionHeader('Quick actions'), QuickActionsGrid()],

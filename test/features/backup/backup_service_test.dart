@@ -8,6 +8,8 @@ import 'package:knightly/core/database/app_database.dart';
 import 'package:knightly/core/time/calendar_date.dart';
 import 'package:knightly/features/backup/data/backup_service.dart';
 import 'package:knightly/features/backup/domain/backup_format.dart';
+import 'package:knightly/features/calendar/data/event_repository.dart';
+import 'package:knightly/features/calendar/domain/calendar_event.dart';
 import 'package:knightly/features/habits/data/habit_repository.dart';
 import 'package:knightly/features/habits/domain/habit.dart';
 import 'package:knightly/features/habits/domain/habit_schedule.dart';
@@ -265,5 +267,75 @@ void main() {
 
   test('crc32 matches the standard check value', () {
     expect(crc32Hex(utf8.encode('123456789')), 'cbf43926');
+  });
+
+  test('calendar events and their occurrence states are backed up and restored', () async {
+    final source = openDb();
+    final events = EventRepository(source, clock: () => now);
+    final gym = await events.create(
+      EventDraft(
+        title: 'Gym',
+        startDate: today.addDays(-3),
+        startTime: const ClockTime(18, 0),
+        durationMinutes: 90,
+        recurrence: DailyRecurrence(2),
+        reminderMinutes: 30,
+      ),
+    );
+    await events.setDone(gym, today.addDays(-3), done: true);
+    await events.skip(gym, today.addDays(-1));
+    await events.reschedule(gym, today.addDays(1), today.addDays(2), time: const ClockTime(9, 0));
+    final binned = await events.create(EventDraft(title: 'Old plan', startDate: today));
+    await events.trash(binned);
+
+    final json = await serviceFor(source).exportJson();
+    expect(serviceFor(source).validate(json).events, 2);
+
+    final target = openDb();
+    await serviceFor(target).restore(json);
+    final restored = EventRepository(target, clock: () => now);
+    final occurrences = occurrencesBetween(
+      await restored.watchEvents().first,
+      await restored.watchStates().first,
+      today.addDays(-3),
+      today.addDays(3),
+    );
+    expect(
+      [for (final o in occurrences) (o.originalDate, o.date, o.done, o.time)],
+      [
+        (today.addDays(-3), today.addDays(-3), true, const ClockTime(18, 0)),
+        (today.addDays(1), today.addDays(2), false, const ClockTime(9, 0)),
+        (today.addDays(3), today.addDays(3), false, const ClockTime(18, 0)),
+      ],
+    );
+    expect(occurrences.first.event.reminderMinutes, 30);
+    expect((await restored.watchTrashed().first).single.title, 'Old plan');
+  });
+
+  test('a backup from before Calendar existed (schema 4) still restores', () async {
+    final source = await seeded();
+    final doc = jsonDecode(await serviceFor(source).exportJson()) as Map<String, Object?>;
+    final data = doc['data']! as Map<String, Object?>;
+    data.remove('events');
+    data.remove('eventExceptions');
+    (doc['counts']! as Map).remove('events');
+    (doc['counts']! as Map).remove('eventExceptions');
+    doc['schemaVersion'] = 4;
+    doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
+
+    final target = openDb();
+    await EventRepository(target, clock: () => now).create(EventDraft(title: 'Replaced', startDate: today));
+    final summary = await serviceFor(target).restore(jsonEncode(doc));
+    expect((summary.missions, summary.events), (4, 0));
+    expect(await target.select(target.events).get(), isEmpty);
+  });
+
+  test('a schema-5 backup missing its events table is refused', () async {
+    final source = await seeded();
+    final doc = jsonDecode(await serviceFor(source).exportJson()) as Map<String, Object?>;
+    final data = doc['data']! as Map<String, Object?>;
+    data.remove('events');
+    doc['checksum'] = crc32Hex(utf8.encode(jsonEncode(data)));
+    expect(() => serviceFor(openDb()).validate(jsonEncode(doc)), throwsA(isA<BackupException>()));
   });
 }

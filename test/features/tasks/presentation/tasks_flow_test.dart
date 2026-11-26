@@ -296,18 +296,17 @@ void main() {
     );
     expect(find.text('File taxes'), findsOneWidget);
     expect(find.text('Overdue · 2 days'), findsOneWidget);
+    // The overview sits below the fold; the page builds lazily.
+    await scrollTo(tester, find.text('0/1'));
     expect(find.text('0/1'), findsOneWidget);
+    await scrollToTop(tester);
 
-    await tester.tap(find.byType(KCheckCircle).hitTestable());
+    await tester.tap(find.byType(KCheckCircle).hitTestable().first);
     await settleWithDatabase(tester);
-    expect(find.text('1/1'), findsOneWidget);
-    // Daily progress sits below the fold; the list builds lazily.
-    await tester.scrollUntilVisible(
-      find.text('100%'),
-      300,
-      scrollable: find.byType(Scrollable).hitTestable().first,
-    );
-    expect(find.text('100%'), findsOneWidget);
     expect(find.text('No mission scheduled'), findsOneWidget);
+    await scrollTo(tester, find.text('1/1'));
+    expect(find.text('1/1'), findsOneWidget);
+    await scrollTo(tester, find.text('100%'));
+    expect(find.text('100%'), findsOneWidget);
   });
 }

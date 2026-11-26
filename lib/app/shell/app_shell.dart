@@ -9,6 +9,8 @@ import '../../core/design/icons/k_glyphs.dart';
 import '../../core/design/theme/theme_context.dart';
 import '../../core/design/tokens/k_motion.dart';
 import '../../core/design/tokens/k_spacing.dart';
+import '../../features/calendar/application/calendar_providers.dart';
+import '../../features/calendar/presentation/event_editor_sheet.dart';
 import '../../features/habits/presentation/habit_editor_sheet.dart';
 import '../../core/time/clock.dart';
 import '../../features/tasks/presentation/task_editor_sheet.dart';
@@ -58,6 +60,11 @@ class AppShell extends ConsumerWidget {
       glyph: KGlyphs.plus,
       label: 'New mission',
       onPressed: () => showTaskEditor(context, initialDue: ref.read(todayProvider)),
+    ),
+    1 => KDockAction(
+      glyph: KGlyphs.plus,
+      label: 'New event',
+      onPressed: () => showEventEditor(context, initialDate: ref.read(focusedDateProvider)),
     ),
     2 => KDockAction(
       glyph: KGlyphs.plus,

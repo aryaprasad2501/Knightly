@@ -22,7 +22,7 @@ void main() {
 
     // Each destination has a distinctive, visible (hit-testable) element.
     const expectations = {
-      'Calendar': 'Your timeline is coming',
+      'Calendar': 'Week',
       'Tasks': 'No missions yet',
       'Track': 'No habits yet',
       'Settings': 'SHADOW CAT',

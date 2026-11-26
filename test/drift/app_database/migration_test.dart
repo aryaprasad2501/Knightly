@@ -14,6 +14,7 @@ import 'generated/schema_v5.dart' as v5;
 import 'generated/schema_v6.dart' as v6;
 import 'generated/schema_v7.dart' as v7;
 import 'generated/schema_v8.dart' as v8;
+import 'generated/schema_v9.dart' as v9;
 
 void main() {
   driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
@@ -463,6 +464,40 @@ void main() {
           final log = (await newDb.select(newDb.waterLogs).get()).single;
           expect((log.id, log.uuid, log.amountMl), (1, uuid, 250));
           expect(await newDb.select(newDb.sleepLogs).get(), isEmpty);
+        },
+      );
+    },
+  );
+
+  // v9 only adds the workout tables: v8 data (including sleep) is untouched.
+  test(
+    'migration from v8 to v9 keeps everything and adds empty workout tables',
+    () async {
+      const at = '2026-11-27T07:00:00.000Z';
+      const uuid = '9b2c1a3e-1b0d-4c2e-9a7f-1d2e3c4b5a04';
+      await verifier.testWithDataIntegrity(
+        oldVersion: 8,
+        newVersion: 9,
+        createOld: v8.DatabaseAtV8.new,
+        createNew: v9.DatabaseAtV9.new,
+        openTestedDatabase: AppDatabase.new,
+        createItems: (batch, oldDb) {
+          batch.insertAll(oldDb.sleepLogs, const [
+            v8.SleepLogsData(
+              id: 1,
+              uuid: uuid,
+              date: '2026-11-27',
+              bedtime: '2026-11-26T23:00:00.000Z',
+              wakeTime: at,
+              updatedAt: at,
+            ),
+          ]);
+        },
+        validateItems: (newDb) async {
+          final night = (await newDb.select(newDb.sleepLogs).get()).single;
+          expect((night.id, night.uuid, night.date), (1, uuid, '2026-11-27'));
+          expect(await newDb.select(newDb.workouts).get(), isEmpty);
+          expect(await newDb.select(newDb.workoutSets).get(), isEmpty);
         },
       );
     },

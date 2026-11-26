@@ -12,6 +12,9 @@ import '../../features/routines/presentation/routine_run_screen.dart';
 import '../../features/settings/presentation/modules_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/tasks/presentation/tasks_screen.dart';
+import '../../features/workouts/presentation/exercise_library_screen.dart';
+import '../../features/workouts/presentation/workout_history_screen.dart';
+import '../../features/workouts/presentation/workout_screen.dart';
 import '../../features/today/presentation/today_screen.dart';
 import '../../features/track/presentation/track_screen.dart';
 import '../shell/app_shell.dart';
@@ -48,6 +51,17 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
       GoRoute(path: AppRoutes.recycleBin, builder: (context, state) => const RecycleBinScreen()),
       GoRoute(path: AppRoutes.backup, builder: (context, state) => const BackupScreen()),
       GoRoute(path: AppRoutes.modules, builder: (context, state) => const ModulesScreen()),
+      GoRoute(
+        path: AppRoutes.exercises,
+        builder: (context, state) =>
+            ExerciseLibraryScreen(pickForWorkout: int.tryParse(state.uri.queryParameters['workout'] ?? '')),
+      ),
+      GoRoute(path: AppRoutes.workoutLog, builder: (context, state) => const WorkoutHistoryScreen()),
+      GoRoute(
+        path: AppRoutes.workout,
+        builder: (context, state) =>
+            WorkoutScreen(workoutId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1),
+      ),
       GoRoute(path: AppRoutes.notifications, builder: (context, state) => const NotificationsScreen()),
       GoRoute(
         path: AppRoutes.routineRun,

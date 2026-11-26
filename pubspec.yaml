@@ -65,6 +65,7 @@ flutter:
     - assets/backdrops/
     - assets/brand/
     - assets/panels/
+    - assets/data/
     - assets/fonts/inter/OFL.txt
     - assets/fonts/sora/OFL.txt
 

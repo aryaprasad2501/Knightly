@@ -106,6 +106,7 @@ class _WaterPanel extends ConsumerWidget {
             image: AssetImage(context.byStyle('assets/panels/dk_water.webp', 'assets/panels/sc_water.webp')),
             height: 200,
             child: Semantics(
+              container: true,
               label: 'Water today: ${formatMl(today.totalMl)} of ${formatMl(today.goalMl)}',
               excludeSemantics: true,
               child: Row(

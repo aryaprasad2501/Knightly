@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../calendar/application/calendar_providers.dart';
 import '../../habits/application/habits_providers.dart';
 import '../../routines/application/routines_providers.dart';
+import '../../workouts/application/workouts_providers.dart';
+import '../../workouts/domain/workout.dart';
 import '../../tasks/application/tasks_providers.dart';
 import '../domain/bin_item.dart';
 
@@ -16,10 +18,16 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
   final habits = ref.watch(trashedHabitsProvider);
   final events = ref.watch(trashedEventsProvider);
   final routines = ref.watch(trashedRoutinesProvider);
-  for (final value in <AsyncValue<Object>>[tasks, projects, habits, events, routines]) {
+  final workouts = ref.watch(trashedWorkoutsProvider);
+  for (final value in <AsyncValue<Object>>[tasks, projects, habits, events, routines, workouts]) {
     if (value.hasError) return AsyncError(value.error!, value.stackTrace ?? StackTrace.current);
   }
-  if (!tasks.hasValue || !projects.hasValue || !habits.hasValue || !events.hasValue || !routines.hasValue) {
+  if (!tasks.hasValue ||
+      !projects.hasValue ||
+      !habits.hasValue ||
+      !events.hasValue ||
+      !routines.hasValue ||
+      !workouts.hasValue) {
     return const AsyncLoading();
   }
 
@@ -64,18 +72,27 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
         deletedAt: r.deletedAt!,
         detail: '${r.steps.length} ${r.steps.length == 1 ? 'step' : 'steps'} · history kept',
       ),
+    for (final w in workouts.requireValue)
+      BinItem(
+        kind: BinKind.workout,
+        id: w.id,
+        title: w.name,
+        deletedAt: w.deletedAt!,
+        detail: '${setCount(w.doneSets)}${w.volume == 0 ? '' : ' · ${formatKg(w.volume)}'}',
+      ),
   ]..sort((a, b) => b.deletedAt.compareTo(a.deletedAt));
   return AsyncData(items);
 });
 
 /// Restore and permanent deletion for any [BinItem].
 class RecycleBinActions {
-  RecycleBinActions(this._tasks, this._habits, this._calendar, this._routines);
+  RecycleBinActions(this._tasks, this._habits, this._calendar, this._routines, this._workouts);
 
   final TaskActions _tasks;
   final HabitActions _habits;
   final CalendarActions _calendar;
   final RoutineActions _routines;
+  final WorkoutActions _workouts;
 
   Future<void> restore(BinItem item) => switch (item.kind) {
     BinKind.mission => _tasks.restore(item.id),
@@ -83,6 +100,7 @@ class RecycleBinActions {
     BinKind.habit => _habits.restoreFromBin(item.id),
     BinKind.event => _calendar.restore(item.id),
     BinKind.routine => _routines.restore(item.id),
+    BinKind.workout => _workouts.restore(item.id),
   };
 
   /// Deletes the item for good. Callers confirm with the user first.
@@ -92,6 +110,7 @@ class RecycleBinActions {
     BinKind.habit => _habits.deletePermanently(item.id),
     BinKind.event => _calendar.deletePermanently(item.id),
     BinKind.routine => _routines.deletePermanently(item.id),
+    BinKind.workout => _workouts.deletePermanently(item.id),
   };
 
   /// Permanently deletes everything in the bin. Returns how many records went.
@@ -99,7 +118,8 @@ class RecycleBinActions {
       await _tasks.emptyTrash() +
       await _habits.emptyTrash() +
       await _calendar.emptyTrash() +
-      await _routines.emptyTrash();
+      await _routines.emptyTrash() +
+      await _workouts.emptyTrash();
 }
 
 final recycleBinActionsProvider = Provider<RecycleBinActions>(
@@ -108,5 +128,6 @@ final recycleBinActionsProvider = Provider<RecycleBinActions>(
     ref.watch(habitActionsProvider),
     ref.watch(calendarActionsProvider),
     ref.watch(routineActionsProvider),
+    ref.watch(workoutActionsProvider),
   ),
 );

@@ -15,6 +15,7 @@ import 'package:knightly/core/design/components/k_empty_state.dart';
 import 'package:knightly/core/design/components/k_icon_button.dart';
 import 'package:knightly/core/design/components/k_loading_indicator.dart';
 import 'package:knightly/core/design/components/k_metal_text.dart';
+import 'package:knightly/core/design/components/k_number_field.dart';
 import 'package:knightly/core/design/components/k_progress_bar.dart';
 import 'package:knightly/core/design/components/k_progress_ring.dart';
 import 'package:knightly/core/design/components/k_section_header.dart';
@@ -48,6 +49,7 @@ void main() {
               ),
               const KCard(title: 'card', glyph: KGlyphs.moon, child: Text('body')),
               const KTextField(label: 'field', errorText: 'bad'),
+              KNumberField(value: 62.5, decimal: true, semanticLabel: 'kg', onChanged: (_) {}),
               KDropdown<int>(
                 label: 'drop',
                 value: 1,

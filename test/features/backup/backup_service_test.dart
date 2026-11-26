@@ -22,6 +22,8 @@ import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/recurrence.dart';
 import 'package:knightly/features/tasks/domain/task.dart';
 import 'package:knightly/features/water/data/water_repository.dart';
+import 'package:knightly/features/workouts/data/workout_repository.dart';
+import 'package:knightly/features/workouts/domain/exercise.dart';
 
 void main() {
   final now = DateTime(2026, 11, 26, 18, 30);
@@ -468,6 +470,26 @@ void main() {
     expect(
       (night.date, night.duration, night.quality),
       (today, const Duration(hours: 8), SleepQuality.great),
+    );
+  });
+
+  test('workouts and their sets are backed up and restored', () async {
+    final source = openDb();
+    final repo = WorkoutRepository(source, clock: () => now);
+    final id = await repo.start(name: 'Push day');
+    await repo.addExercise(id, Exercise(id: 'Pushups', name: 'Pushups', primary: const ['chest']));
+    final set = (await repo.find(id))!.sets.single;
+    await repo.updateSet(set.id, reps: 20, weightKg: 12.5, done: true);
+    await repo.finish(id);
+    final json = await serviceFor(source).exportJson();
+    expect(serviceFor(source).validate(json).workouts, 1);
+
+    final target = openDb();
+    await serviceFor(target).restore(json);
+    final w = (await WorkoutRepository(target, clock: () => now).watchWorkouts().first).single;
+    expect(
+      (w.name, w.isActive, w.sets.single.reps, w.sets.single.weightKg, w.sets.single.done),
+      ('Push day', false, 20, 12.5, true),
     );
   });
 }

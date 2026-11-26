@@ -17,6 +17,15 @@ abstract final class AppRoutes {
   static const routineRun = '/routines/:id/run';
   static String routineRunFor(int id) => '/routines/$id/run';
 
+  /// The exercise library; [exercisePickFor] opens it to add to a workout.
+  static const exercises = '/exercises';
+  static String exercisePickFor(int workoutId) => '/exercises?workout=$workoutId';
+
+  /// A workout (live or finished). Build with [workoutFor].
+  static const workoutLog = '/workouts';
+  static const workout = '/workouts/:id';
+  static String workoutFor(int id) => '/workouts/$id';
+
   // Development tools. Registered only in debug builds.
   static const devBuildStatus = '/dev/build-status';
   static const devGallery = '/dev/gallery';

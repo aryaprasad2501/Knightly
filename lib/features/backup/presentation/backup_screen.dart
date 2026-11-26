@@ -106,7 +106,7 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   static String _contents(BackupSummary s) {
     String n(int count, String one) => '$count ${count == 1 ? one : '${one}s'}';
     return '${n(s.missions, 'mission')}, ${n(s.projects, 'project')}, ${n(s.habits, 'habit')}, '
-        '${n(s.checkIns, 'check-in')}, ${n(s.events, 'event')}, ${n(s.routines, 'routine')}, ${n(s.waterLogs, 'water log')} and ${n(s.sleepLogs, 'night')} of sleep';
+        '${n(s.checkIns, 'check-in')}, ${n(s.events, 'event')}, ${n(s.routines, 'routine')}, ${n(s.waterLogs, 'water log')}, ${n(s.sleepLogs, 'night')} of sleep and ${n(s.workouts, 'workout')}';
   }
 
   static String _formatWhen(BuildContext context, DateTime at) {

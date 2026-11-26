@@ -59,5 +59,11 @@ void _registerFontLicenses() {
       final text = await rootBundle.loadString('assets/fonts/$path/OFL.txt');
       yield LicenseEntryWithLineBreaks([family], text);
     }
+    // The bundled exercise library; public domain, credited with thanks.
+    yield const LicenseEntryWithLineBreaks(
+      ['free-exercise-db (exercise library)'],
+      'Exercise data from free-exercise-db by yuhonas (github.com/yuhonas/free-exercise-db), '
+      'released under The Unlicense: dedicated to the public domain.',
+    );
   });
 }

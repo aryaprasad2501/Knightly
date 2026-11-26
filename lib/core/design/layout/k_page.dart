@@ -207,11 +207,18 @@ class _KPageState extends State<KPage> {
 /// Pushed detail page: compact app bar with a glyph back button, then a
 /// padded scrolling column.
 class KSubpage extends StatelessWidget {
-  const KSubpage({super.key, required this.title, required this.children, this.actions = const []});
+  const KSubpage({super.key, required this.title, required this.children, this.actions = const []})
+    : body = null;
+
+  /// The same page with any [body] (e.g. a lazily built list) in place of the
+  /// padded column. The body handles its own padding and scrolling.
+  const KSubpage.custom({super.key, required this.title, required Widget this.body, this.actions = const []})
+    : children = const [];
 
   final String title;
   final List<Widget> actions;
   final List<Widget> children;
+  final Widget? body;
 
   @override
   Widget build(BuildContext context) {
@@ -234,15 +241,17 @@ class KSubpage extends StatelessWidget {
           const SizedBox(width: KSpacing.sm),
         ],
       ),
-      body: ListView(
-        padding: EdgeInsets.fromLTRB(
-          KSpacing.gutter,
-          KSpacing.lg,
-          KSpacing.gutter,
-          insets.bottom + KSpacing.xxl,
-        ),
-        children: children,
-      ),
+      body:
+          body ??
+          ListView(
+            padding: EdgeInsets.fromLTRB(
+              KSpacing.gutter,
+              KSpacing.lg,
+              KSpacing.gutter,
+              insets.bottom + KSpacing.xxl,
+            ),
+            children: children,
+          ),
     );
   }
 }

@@ -62,6 +62,8 @@ class BackupService {
       final runs = await (_db.select(_db.routineRuns)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final water = await (_db.select(_db.waterLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final sleep = await (_db.select(_db.sleepLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final workouts = await (_db.select(_db.workouts)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final sets = await (_db.select(_db.workoutSets)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -212,6 +214,36 @@ class BackupService {
               'updatedAt': _time(s.updatedAt),
             },
         ],
+        'workouts': [
+          for (final w in workouts)
+            {
+              'id': w.id,
+              'uuid': w.uuid,
+              'name': w.name,
+              'startedAt': _time(w.startedAt),
+              'finishedAt': _time(w.finishedAt),
+              'notes': w.notes,
+              'updatedAt': _time(w.updatedAt),
+              'deletedAt': _time(w.deletedAt),
+            },
+        ],
+        'workoutSets': [
+          for (final s in sets)
+            {
+              'id': s.id,
+              'uuid': s.uuid,
+              'workoutId': s.workoutId,
+              'exerciseId': s.exerciseId,
+              'exerciseName': s.exerciseName,
+              'exerciseOrder': s.exerciseOrder,
+              'setOrder': s.setOrder,
+              'reps': s.reps,
+              'weightKg': s.weightKg,
+              'durationSeconds': s.durationSeconds,
+              'done': s.done,
+              'updatedAt': _time(s.updatedAt),
+            },
+        ],
       };
     });
 
@@ -307,6 +339,8 @@ class BackupService {
       runs: [for (final r in tables['routineRuns']!) _runRow(r)],
       water: [for (final r in tables['waterLogs']!) _waterRow(r)],
       sleep: [for (final r in tables['sleepLogs']!) _sleepRow(r)],
+      workouts: [for (final r in tables['workouts']!) _workoutRow(r)],
+      workoutSets: [for (final r in tables['workoutSets']!) _workoutSetRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -368,6 +402,14 @@ class BackupService {
     unique(p.sleep.map((r) => r.id.value));
     unique(p.sleep.map((r) => r.uuid.value));
     unique(p.sleep.map((r) => r.date.value));
+    unique(p.workouts.map((r) => r.id.value));
+    unique(p.workouts.map((r) => r.uuid.value));
+    unique(p.workoutSets.map((r) => r.id.value));
+    unique(p.workoutSets.map((r) => r.uuid.value));
+    final workoutIds = {for (final r in p.workouts) r.id.value};
+    for (final s in p.workoutSets) {
+      if (!workoutIds.contains(s.workoutId.value)) throw _damaged;
+    }
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -379,6 +421,8 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.workoutSets).go();
+      await _db.delete(_db.workouts).go();
       await _db.delete(_db.sleepLogs).go();
       await _db.delete(_db.waterLogs).go();
       await _db.delete(_db.routineRuns).go();
@@ -404,6 +448,8 @@ class BackupService {
         b.insertAll(_db.routineRuns, parsed.runs);
         b.insertAll(_db.waterLogs, parsed.water);
         b.insertAll(_db.sleepLogs, parsed.sleep);
+        b.insertAll(_db.workouts, parsed.workouts);
+        b.insertAll(_db.workoutSets, parsed.workoutSets);
       });
     });
     return parsed.summary;
@@ -583,6 +629,36 @@ class BackupService {
     );
   }
 
+  WorkoutsCompanion _workoutRow(Map<String, Object?> r) => WorkoutsCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    name: _string(r, 'name', min: 1, max: 60),
+    startedAt: _requiredTime(r, 'startedAt'),
+    finishedAt: Value(_optionalTime(r, 'finishedAt')),
+    notes: Value(_string(r, 'notes')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    deletedAt: Value(_optionalTime(r, 'deletedAt')),
+  );
+
+  WorkoutSetsCompanion _workoutSetRow(Map<String, Object?> r) {
+    final weight = r['weightKg'];
+    if (weight != null && weight is! num) throw _damaged;
+    return WorkoutSetsCompanion.insert(
+      id: Value(_int(r, 'id')),
+      uuid: Value(_uuid(r)),
+      workoutId: _int(r, 'workoutId'),
+      exerciseId: _string(r, 'exerciseId', min: 1),
+      exerciseName: _string(r, 'exerciseName', min: 1),
+      exerciseOrder: _int(r, 'exerciseOrder'),
+      setOrder: _int(r, 'setOrder'),
+      reps: Value(_optionalInt(r, 'reps')),
+      weightKg: Value((weight as num?)?.toDouble()),
+      durationSeconds: Value(_optionalInt(r, 'durationSeconds')),
+      done: Value(r['done'] is bool ? r['done']! as bool : throw _damaged),
+      updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    );
+  }
+
   static int _int(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is int) return v;
@@ -647,6 +723,8 @@ class _Parsed {
     required this.runs,
     required this.water,
     required this.sleep,
+    required this.workouts,
+    required this.workoutSets,
   });
 
   final BackupSummary summary;
@@ -662,6 +740,8 @@ class _Parsed {
   final List<RoutineRunsCompanion> runs;
   final List<WaterLogsCompanion> water;
   final List<SleepLogsCompanion> sleep;
+  final List<WorkoutsCompanion> workouts;
+  final List<WorkoutSetsCompanion> workoutSets;
 }
 
 final backupServiceProvider = Provider<BackupService>(

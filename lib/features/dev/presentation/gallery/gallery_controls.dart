@@ -5,6 +5,7 @@ import '../../../../core/design/components/k_check_circle.dart';
 import '../../../../core/design/components/k_chip.dart';
 import '../../../../core/design/components/k_dropdown.dart';
 import '../../../../core/design/components/k_icon_button.dart';
+import '../../../../core/design/components/k_number_field.dart';
 import '../../../../core/design/components/k_text_field.dart';
 import '../../../../core/design/icons/k_glyphs.dart';
 import '../../../../core/design/theme/k_tone.dart';
@@ -123,6 +124,18 @@ class _InputsState extends State<_Inputs> {
         ),
         const SizedBox(height: KSpacing.lg),
         const KTextField(label: 'Search', hint: 'Search everything', glyph: KGlyphs.search),
+        const SizedBox(height: KSpacing.md),
+        Row(
+          children: [
+            Expanded(
+              child: KNumberField(value: 62.5, decimal: true, semanticLabel: 'Weight', onChanged: (_) {}),
+            ),
+            const SizedBox(width: KSpacing.sm),
+            Expanded(
+              child: KNumberField(value: 8, semanticLabel: 'Reps', onChanged: (_) {}),
+            ),
+          ],
+        ),
         const SizedBox(height: KSpacing.lg),
         const KTextField(
           label: 'Daily water target',

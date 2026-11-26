@@ -114,7 +114,7 @@ void main() {
     expect(find.text('Replace all your data?'), findsOneWidget);
     expect(
       find.textContaining(
-        '1 mission, 0 projects, 0 habits, 0 check-ins, 0 events, 0 routines, 0 water logs and 0 nights of sleep',
+        '1 mission, 0 projects, 0 habits, 0 check-ins, 0 events, 0 routines, 0 water logs, 0 nights of sleep and 0 workouts',
       ),
       findsOneWidget,
     );

@@ -113,6 +113,7 @@ class _SleepPanel extends StatelessWidget {
                   ),
                 ] else
                   Semantics(
+                    container: true,
                     label:
                         'Last night: ${formatSleep(last.duration)}, '
                         '${_clock(context, last.bedtime)} to ${_clock(context, last.wakeTime)}'

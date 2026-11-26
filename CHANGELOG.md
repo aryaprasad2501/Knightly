@@ -5,6 +5,22 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 7 — 2026-11-27 — Workouts
+
+### Added
+- **Exercise library** with 876 exercises for the whole body (free-exercise-db, public domain,
+  bundled — works offline): browse by Full body, Chest, Back, Shoulders, Biceps, Triceps, Forearms,
+  Abs, Quads, Hamstrings, Glutes, Calves, Hips, Neck, Cardio or Stretching; search any muscle,
+  exercise or equipment; filter by equipment, level, type and compound/isolation. Each exercise
+  shows its muscles, how to do it, your best set, estimated 1RM and a log of every session.
+- **Workout logging**: start a workout, add exercises, log kg and reps (or seconds for holds and
+  cardio) per set with last time's numbers alongside, tick sets as done, add or remove sets; a live
+  timer, sets and volume. Finish to save, or discard.
+- **Track › Workouts**: this week's workouts, sets and volume with training days marked, recent
+  workouts and the full **workout log** (by month, with totals). Home: **Start / Resume workout**.
+- Workouts go to the Recycle Bin, are included in backups and can be switched off in Settings ›
+  Modules.
+
 ### Changed
 - Water and Sleep panels open with scene art from your wallpapers, one per theme: the fortress
   waterfall / the moon garden pond for Water, the moon over the spires / the moonlit window for Sleep.

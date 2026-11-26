@@ -12,6 +12,8 @@ import '../../../sleep/presentation/sleep_editor_sheet.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
 import '../../../water/domain/water.dart';
 import '../../../water/presentation/water_section.dart';
+import '../../../workouts/application/workouts_providers.dart';
+import '../../../workouts/presentation/workouts_section.dart';
 
 /// One-tap capture shortcuts for the modules that are on. Actions whose
 /// module does not exist yet are shown disabled and labelled "Soon".
@@ -23,7 +25,8 @@ class QuickActionsGrid extends ConsumerWidget {
       on.contains(AppModule.missions) ||
       on.contains(AppModule.water) ||
       on.contains(AppModule.routines) ||
-      on.contains(AppModule.sleep);
+      on.contains(AppModule.sleep) ||
+      on.contains(AppModule.workouts);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,6 +50,12 @@ class QuickActionsGrid extends ConsumerWidget {
           glyph: KGlyphs.routine,
           label: 'Start routine',
           onTap: () => showStartRoutineSheet(context),
+        ),
+      if (on.contains(AppModule.workouts))
+        _ActionTile(
+          glyph: KGlyphs.dumbbell,
+          label: ref.watch(activeWorkoutProvider) == null ? 'Start workout' : 'Resume workout',
+          onTap: () => startOrResumeWorkout(context, ref),
         ),
       if (on.contains(AppModule.sleep))
         _ActionTile(

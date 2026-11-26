@@ -22,7 +22,7 @@ enum AppModule {
   routines('Routines', 'Step-by-step morning and evening routines', built: true),
   sleep('Sleep', 'Bedtime, wake time and sleep history', built: true),
   water('Water', 'Glasses of water against a daily goal', built: true),
-  workouts('Workouts', 'Exercises, sets, reps and weights'),
+  workouts('Workouts', 'Exercises, sets, reps and weights', built: true),
   nutrition('Nutrition', 'Meals and calories'),
   homeCare('Home, garden & pets', 'Chores, plant care and pet care with reminders');
 

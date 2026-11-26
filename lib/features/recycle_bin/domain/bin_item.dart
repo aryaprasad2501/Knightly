@@ -4,7 +4,8 @@ enum BinKind {
   project('Project'),
   habit('Habit'),
   event('Event'),
-  routine('Routine');
+  routine('Routine'),
+  workout('Workout');
 
   const BinKind(this.label);
 

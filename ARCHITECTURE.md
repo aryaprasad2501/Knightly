@@ -115,6 +115,7 @@ of re-implementing them:
 | routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
 | sleep | `SleepSection` (`sleep_section.dart`) | Track tab |
 | sleep | `showSleepEditor()` (`sleep_editor_sheet.dart`) | Home "Log sleep" quick action |
+| workouts | `WorkoutsSection`, `startOrResumeWorkout()` (`workouts_section.dart`) | Track tab; Home "Start workout" |
 | water | `WaterSection` (`water_section.dart`) | Track tab |
 | water | `logWaterWithUndo()` (`water_section.dart`) | Home "Log water" quick action |
 | notifications | `ReminderHost` (`reminder_host.dart`) | App root (`knightly_app.dart`) |
@@ -195,7 +196,10 @@ Anything else in a feature's `presentation/` is private to that feature.
   `routine_id` → `ON DELETE CASCADE` · v7 `water_logs` (uuid, date, logged_at,
   amount_ml, updated_at; index on `date`) · v8 `sleep_logs` (uuid, date = the
   morning the night ended (unique), bedtime, wake_time, quality 1–5 nullable,
-  updated_at).
+  updated_at) · v9 `workouts` (uuid, name, started_at, finished_at, notes,
+  deleted_at; index on `started_at`) and `workout_sets` (workout_id → `ON DELETE
+  CASCADE`, exercise_id + exercise_name snapshot, exercise/set order, reps,
+  weight_kg, duration_seconds, done; indexes on `workout_id`, `exercise_id`).
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -429,3 +433,7 @@ codegen not needed yet).
 | D72 | 2026-11-27 | Sleep (schema v8): one entry per night, keyed by the morning it ended (unique `date`; saving the same night again edits it). The editor takes clock times; bedtime counts as the evening before when it is later in the day than the wake time. Nights over 16 h are refused. Goal is a setting (`sleep.goal_minutes`, default 8 h). Removed with Undo, like water | Matches how people think about "last night"; no overlapping or duplicate nights to reconcile. |
 | D73 | 2026-11-27 | Trackers share one visual language on Track: a header link for the goal, a big figure with a status pill, a 7-day column chart (goal days in success green), compact rows. Water keeps the tactical ring gauge (user preferred it to a drawn glass) | Consistency across modules; the ring fits the theme. |
 | D74 | 2026-11-27 | Tracker panels open with scene art (`KArtHeader`): wide crops of the user's own wallpapers (`assets/panels/`, made by `tool/backdrops/prepare_backdrops.py` › PANELS, franchise logos kept out of frame), one per theme, fading into the panel. Static images only | Gives each tracker its own world without breaking the 60 fps rule (one decoded image, no motion, no blur). |
+| D75 | 2026-11-27 | Workouts use a bundled exercise library: free-exercise-db (876 exercises, The Unlicense / public domain), downloaded once with the user's approval and converted by `tool/exercises/build_library.py` into `assets/data/exercises.json` (no photos). The app never fetches it. Sets store the library id plus the name at the time | Works offline with no API or account; history reads right even if the library is updated. Credited on the licences page. |
+| D76 | 2026-11-27 | Library browse follows gym apps: muscle-group chips (Full body, Chest … Neck, Cardio, Stretching), search over names, muscles, equipment, level and movement, and a filters sheet (equipment, level, type, compound/isolation). "Full body" = Olympic lifting, strongman, or compound work reaching 4+ muscle groups | Searching a muscle lists every exercise for it; filters combine. |
+| D77 | 2026-11-27 | One workout in progress at a time; sets are ticked as done and only ticked sets are kept on Finish. Weights in kg (user's choice). Volume = Σ reps × kg of done sets; estimated 1RM by Epley. Finished workouts are editable and go to the Recycle Bin when deleted | Matches Strong/Hevy-style logging; no half-finished sessions piling up. |
+| D78 | 2026-11-27 | `KSubpage.custom` (any body) for long lazily built lists; `KNumberField` component for compact numeric cells | The library has 876 rows; set tables need small inputs. |

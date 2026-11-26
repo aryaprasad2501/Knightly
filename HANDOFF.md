@@ -1,8 +1,20 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-27 · Phase 2 step 6 (Sleep) complete_
+_Last updated: 2026-11-27 · Phase 2 step 7 (Workouts) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 7 — Workouts, 2026-11-27):** schema v9 (`features/workouts/data/workouts_tables.dart`,
+migration v8→v9 + test). Library: `assets/data/exercises.json` built by `tool/exercises/build_library.py` from
+free-exercise-db (approved download; source kept only in the session scratchpad). `domain/exercise.dart`
+(`MuscleGroup` incl. Full body, `ExerciseLibrary.filter`), `domain/workout.dart` (volume, Epley, `ExerciseHistory`
+with log), `workout_repository.dart`, `workouts_providers.dart`. Screens: `exercise_library_screen.dart`
+(`/exercises`, pick mode `?workout=`), `exercise_sheet.dart`, `workout_screen.dart` (`/workouts/:id`),
+`workout_history_screen.dart` (`/workouts`), `workouts_section.dart` (Track). New core: `KSubpage.custom`,
+`KNumberField`. Panel art `dk/sc_workouts`. Bin, backup (since 9), module built, Home quick action.
+323 tests. Verified on the Pixel 8 AVD (release build — the emulator's storage is nearly full; debug APK
+no longer fits): v8→v9 upgrade, library, Full body, filters, log a set, finish. **Next:** Nutrition.
+
 
 **Latest (panel art, 2026-11-27):** `KArtHeader` (core component, in gallery + components test) shows
 `assets/panels/{dk,sc}_{water,sleep}.webp` (from `prepare_backdrops.py` PANELS: DK-06 waterfall, SC-07, DK-H, SC-06;

@@ -7,6 +7,7 @@ import '../../features/routines/data/routines_tables.dart';
 import '../../features/sleep/data/sleep_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
 import '../../features/water/data/water_tables.dart';
+import '../../features/workouts/data/workouts_tables.dart';
 import 'ids.dart';
 import 'app_database.steps.dart';
 
@@ -33,7 +34,7 @@ class AppSettings extends Table {
 /// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
-/// routine_runs · v7 water_logs · v8 sleep_logs.
+/// routine_runs · v7 water_logs · v8 sleep_logs · v9 workouts, workout_sets.
 @DriftDatabase(
   tables: [
     AppSettings,
@@ -48,13 +49,15 @@ class AppSettings extends Table {
     RoutineRuns,
     WaterLogs,
     SleepLogs,
+    Workouts,
+    WorkoutSets,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 8;
+  int get schemaVersion => 9;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -138,6 +141,14 @@ class AppDatabase extends _$AppDatabase {
     // Sleep: one new table; nothing existing changes.
     from7To8: (m, schema) async {
       await m.createTable(schema.sleepLogs);
+    },
+    // Workouts: two new tables; nothing existing changes.
+    from8To9: (m, schema) async {
+      await m.createTable(schema.workouts);
+      await m.createTable(schema.workoutSets);
+      await m.createIndex(schema.workoutsStarted);
+      await m.createIndex(schema.workoutSetsWorkout);
+      await m.createIndex(schema.workoutSetsExercise);
     },
   );
 

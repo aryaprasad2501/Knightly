@@ -13,6 +13,7 @@ import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/habit_schedule.dart';
+import '../../notifications/presentation/reminder_status_note.dart';
 import '../../tasks/presentation/time_format.dart';
 import '../application/routines_providers.dart';
 import '../data/routine_repository.dart';
@@ -324,14 +325,7 @@ class _RoutineEditorState extends ConsumerState<_RoutineEditor> {
                         KDropdownOption(value: m, label: _reminderLabel(m), glyph: KGlyphs.bell),
                     ],
                   ),
-                  if (_reminder != _noReminder)
-                    Padding(
-                      padding: const EdgeInsets.only(top: KSpacing.xs),
-                      child: Text(
-                        'Saved now. Alerts start when notifications are added in a coming update.',
-                        style: text.bodySmall?.copyWith(color: p.textMuted),
-                      ),
-                    ),
+                  if (_reminder != _noReminder) const ReminderStatusNote(),
                 ],
                 label('Steps · ${_steps.length}'),
                 for (final (i, step) in _steps.indexed)

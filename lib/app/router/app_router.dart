@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/calendar/presentation/calendar_screen.dart';
 import '../../features/backup/presentation/backup_screen.dart';
 import '../../features/dev/dev_routes.dart';
+import '../../features/notifications/presentation/notifications_screen.dart';
 import '../../features/recycle_bin/presentation/recycle_bin_screen.dart';
 import '../../features/routines/presentation/routine_run_screen.dart';
 import '../../features/settings/presentation/modules_screen.dart';
@@ -47,6 +48,7 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
       GoRoute(path: AppRoutes.recycleBin, builder: (context, state) => const RecycleBinScreen()),
       GoRoute(path: AppRoutes.backup, builder: (context, state) => const BackupScreen()),
       GoRoute(path: AppRoutes.modules, builder: (context, state) => const ModulesScreen()),
+      GoRoute(path: AppRoutes.notifications, builder: (context, state) => const NotificationsScreen()),
       GoRoute(
         path: AppRoutes.routineRun,
         builder: (context, state) =>

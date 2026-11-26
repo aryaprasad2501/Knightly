@@ -5,6 +5,19 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 4 — 2026-11-26 — Notifications
+
+### Added
+- **Reminders arrive**: the reminders you set on events and routines are now delivered as
+  notifications, on this device only. Tapping a routine reminder opens its run; an event reminder
+  opens Calendar.
+- **Settings › Notifications**: switch reminders on or off, allow notifications when Android blocks
+  them, allow exact timing ("Alarms & reminders"), send a test notification, and see what is coming
+  up in the next 14 days.
+- Reminders follow your data: done or skipped occurrences, routines already done today, and modules
+  you switch off are not reminded. They survive a phone restart.
+- The event and routine editors say when a reminder would stay silent (reminders off or blocked).
+
 ## Phase 2 · step 3 — 2026-11-26 — Routines
 
 ### Added

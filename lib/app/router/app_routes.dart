@@ -11,6 +11,7 @@ abstract final class AppRoutes {
   static const recycleBin = '/recycle-bin';
   static const backup = '/backup';
   static const modules = '/modules';
+  static const notifications = '/notifications';
 
   /// A routine's run-through mode. Build with [routineRunFor].
   static const routineRun = '/routines/:id/run';

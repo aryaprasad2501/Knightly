@@ -8,8 +8,10 @@ import '../core/design/brand/k_emblems.dart';
 import '../core/design/theme/knightly_style.dart';
 import '../core/design/theme/knightly_theme.dart';
 import '../core/design/theme/knightly_themes.dart';
+import '../features/notifications/presentation/reminder_host.dart';
 import '../features/settings/application/theme_controller.dart';
 import 'router/app_router.dart';
+import 'router/app_routes.dart';
 
 /// Root widget. Owns the theme-switch transition: when the saved theme
 /// changes, a curtain in the new theme's language covers the screen, the
@@ -59,6 +61,21 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
     super.dispose();
   }
 
+  /// A tapped reminder opens what it is about: a routine's run, or Calendar.
+  void _openReminder(String payload) {
+    final router = ref.read(appRouterProvider);
+    final (kind, value) = switch (payload.split(':')) {
+      [final k, final v] => (k, v),
+      _ => ('', ''),
+    };
+    final id = int.tryParse(value);
+    if (kind == 'routine' && id != null) {
+      router.push(AppRoutes.routineRunFor(id));
+    } else if (kind == 'event') {
+      router.go(AppRoutes.calendar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(activeThemeProvider, (_, next) => _switchTo(next));
@@ -76,7 +93,10 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
       // add frames (and re-bake header scenes for every in-between palette).
       themeAnimationDuration: Duration.zero,
       routerConfig: ref.watch(appRouterProvider),
-      builder: (context, child) => KBootSequence(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => ReminderHost(
+        onOpen: _openReminder,
+        child: KBootSequence(child: child ?? const SizedBox.shrink()),
+      ),
     );
 
     // The Stack is permanent so the router keeps its state; only the curtain

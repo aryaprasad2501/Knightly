@@ -113,6 +113,8 @@ of re-implementing them:
 | routines | `RoutinesSection` (`routines_section.dart`) | Track tab |
 | routines | `showRoutineEditor()` (`routine_editor_sheet.dart`) | App shell dock "New routine" (Track, habits off); Calendar agenda |
 | routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
+| notifications | `ReminderHost` (`reminder_host.dart`) | App root (`knightly_app.dart`) |
+| notifications | `ReminderStatusNote` (`reminder_status_note.dart`) | Event and routine editors |
 | routines | `showStartRoutineSheet()` (`start_routine_sheet.dart`) | Home "Start routine" quick action |
 
 **Public application providers** used by other features (allowed by the
@@ -324,6 +326,8 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 | `drift_dev` | ^2.31.0 | dev | Drift code generator. |
 | `build_runner` | ^2.15.1 | dev | Runs code generation. |
 | `flutter_lints` | ^5.0.0 | dev | Baseline lint set (plus project rules in `analysis_options.yaml`). |
+| `flutter_local_notifications` | ^20.1.0 | runtime | Local reminders (event and routine) through Android's alarm manager and notification channels, incl. boot re-scheduling. Writing this ourselves would mean a large Kotlin plugin. No network. Needs core library desugaring (`desugar_jdk_libs` 2.1.4). |
+| `timezone` | ^0.10.1 | runtime | Required by `zonedSchedule`. Only `tz.UTC` is used (plans are absolute instants), so the time-zone database is never loaded. |
 | `path_provider` | ^2.1.5 | runtime | App-private folder for restore safety copies. Already resolved (same version) as a dependency of `drift_flutter`; now declared because Knightly calls it directly. |
 
 Files the user picks (backup save/open) go through Android's system file
@@ -411,3 +415,6 @@ codegen not needed yet).
 | D65 | 2026-11-26 | Routines (schema v6): a routine is an ordered list of steps with optional timers, a time of day, an optional start time and a weekly schedule reusing `HabitSchedule` (moved to `core/time/`, re-exported from habits). Each run is a stored `routine_runs` row; a day counts as done only when a finished run did every step | Same schedule semantics as habits; run history is real data (Home progress, Calendar, later analytics) rather than a derived flag. |
 | D66 | 2026-11-26 | Run-through mode is a pushed route (`/routines/:id/run`). Progress is written after every step, so leaving resumes today's unfinished run; a run left before any step is done is deleted. Timers are wall-clock based (time in other apps still counts) and the UI ticks only while the app is visible; no sounds, a haptic when time is up, no auto-advance | Respects the 60 fps rule (no ticking when hidden), never loses progress, and never moves on without the user. |
 | D67 | 2026-11-26 | Routine reminders are stored now (minutes before the start time) and labelled as delivered with notifications, like event reminders (D64) | Notifications are the next step; storing now avoids a later migration. |
+| D68 | 2026-11-26 | Notifications are planned, not tracked: `planReminders()` (pure) computes every reminder for the next 14 days (max 60) from events, routines and module switches; `ReminderSync` cancels all and schedules the new plan whenever it changes, and the plan is rebuilt when Knightly returns to the foreground. Ids are a stable hash of kind + record + date | No reminder table to keep in sync with edits, deletes, module switches or restores; the device always matches the data. The 14-day window keeps well under Android's alarm limits and refreshes on every open. |
+| D69 | 2026-11-26 | Exact timing when the user allows "Alarms & reminders" (`SCHEDULE_EXACT_ALARM`), otherwise inexact (Android may deliver within its window). Not `USE_EXACT_ALARM` | User's choice ("exact, ask if needed"); `USE_EXACT_ALARM` is reserved for alarm-clock apps by Play policy. |
+| D70 | 2026-11-26 | The platform plugin sits behind `NotificationGateway`; the default provider is a silent `NoNotifications`, and `main.dart` overrides it with `LocalNotifications`. Untimed events are reminded relative to 09:00; a routine is not reminded on a day it is already done or resting | Widget tests and non-Android runs never call the plugin; reminders stay quiet when there is nothing to do. |

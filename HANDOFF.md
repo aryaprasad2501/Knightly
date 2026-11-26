@@ -1,8 +1,21 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-26 · Phase 2 step 3 (Routines) complete_
+_Last updated: 2026-11-26 · Phase 2 step 4 (Notifications) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 4 — Notifications, 2026-11-26):** `flutter_local_notifications` 20.1.0 + `timezone`
+(approved; only two tiny Linux/Windows helper packages were downloaded, the rest was cached). Android:
+desugaring, `POST_NOTIFICATIONS` / `SCHEDULE_EXACT_ALARM` / `RECEIVE_BOOT_COMPLETED`, plugin receivers,
+status icon `drawable-*/ic_stat_knightly.png` (`tool/brand/make_notification_icon.py`). Code in
+`features/notifications/`: `domain/reminder_plan.dart` (pure planner), `data/notification_gateway.dart`
+(`LocalNotifications`, silent default `NoNotifications`), `application/notifications_providers.dart`
+(setting, access, plan, `ReminderSync`), `presentation/` (`ReminderHost` at the app root, Settings ›
+Notifications screen at `/notifications`, `ReminderStatusNote` in editors). 265 tests. Verified on the Pixel 8
+AVD: permission prompt, test notification shown with the crescent icon, reminder alarm registered
+(inexact window, since exact timing is not granted there). **Not verified:** a scheduled reminder actually
+firing on time (would need waiting or granting exact alarms). **Next:** trackers (Water, Sleep, …).
+
 
 **Latest (Phase 2 step 3 — Routines, 2026-11-26):** schema v6 (`features/routines/data/routines_tables.dart`,
 migration v5→v6 + test), domain `routine.dart` (`RoutineDraft` validation, `RoutineToday`, `RoutineSummary`),

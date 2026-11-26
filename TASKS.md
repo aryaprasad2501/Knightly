@@ -118,7 +118,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [ ] Nutrition
 - [ ] Home management
 - [ ] Insights & weekly review
-- [ ] Local notifications/reminders (needed by several modules; introduce with Habits or Water)
+- [x] Local notifications/reminders (events and routines; 2026-11-26)
 - [ ] Data export/import (JSON) and local backup
 - [ ] Localisation (`intl`), units settings
 - [ ] Home-screen widgets

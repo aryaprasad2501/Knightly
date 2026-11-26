@@ -7,6 +7,7 @@ account, no cloud.** This page records how the app keeps it.
 |---|---|---|
 | Missions, projects, habits, check-ins, settings | SQLite database in the app's private files (`app_flutter/knightly.sqlite`) | Never by itself |
 | Safety copies (written before each restore; newest 3 kept) | App's private support folder, `safety-copies/` | Never by itself |
+| Scheduled reminders (title, time, short text for the next 14 days) | Android's alarm and notification system on this device | Never |
 | Backup files | Wherever the user saves them in the system file picker | Only if the user picks a cloud folder themselves |
 
 - **No network code.** The app has no internet permission requests, analytics,
@@ -18,5 +19,10 @@ account, no cloud.** This page records how the app keeps it.
 - **Manual backup** (Settings › Data › Backup & restore) writes one JSON file
   through Android's file picker (Storage Access Framework). No storage
   permission is needed. See ARCHITECTURE.md › Backup format.
+- **Reminders** are local notifications scheduled with Android's alarm manager
+  (`flutter_local_notifications`). No push service, no server. Permissions:
+  `POST_NOTIFICATIONS` (asked when reminders are switched on, Android 13+),
+  `SCHEDULE_EXACT_ALARM` (optional, granted by the user in system settings),
+  `RECEIVE_BOOT_COMPLETED` (re-schedules after a restart).
 - **Uninstalling** removes the database and safety copies. Users are told on
   the Backup screen to keep a backup file somewhere safe.

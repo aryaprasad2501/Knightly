@@ -13,6 +13,7 @@ import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../../../core/time/recurrence.dart';
+import '../../notifications/presentation/reminder_status_note.dart';
 import '../../tasks/domain/due_format.dart';
 import '../../tasks/presentation/time_format.dart';
 import '../../tasks/presentation/widgets/custom_repeat_sheet.dart';
@@ -419,14 +420,7 @@ class _EventEditorState extends ConsumerState<_EventEditor> {
                       KDropdownOption(value: m, label: _reminderLabel(m), glyph: KGlyphs.bell),
                   ],
                 ),
-                if (_reminder != _noReminder)
-                  Padding(
-                    padding: const EdgeInsets.only(top: KSpacing.xs),
-                    child: Text(
-                      'Saved now. Alerts start when notifications are added in a coming update.',
-                      style: text.bodySmall?.copyWith(color: p.textMuted),
-                    ),
-                  ),
+                if (_reminder != _noReminder) const ReminderStatusNote(),
                 const SizedBox(height: KSpacing.sm),
                 KTextField(label: 'Notes', controller: _notes, hint: 'Optional details', maxLines: 3),
               ],

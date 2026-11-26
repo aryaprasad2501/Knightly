@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/knightly_app.dart';
 import 'core/design/ambient/k_ambient_scene.dart';
 import 'core/perf/frame_probe.dart';
+import 'features/notifications/data/notification_gateway.dart';
 import 'features/settings/application/live_backdrop_controller.dart';
 import 'features/settings/application/theme_controller.dart';
 
@@ -24,8 +25,17 @@ Future<void> main() async {
     ),
   );
 
+  // Reminders: the real device notifications (tests use a silent stand-in).
+  final notifications = LocalNotifications();
+  try {
+    await notifications.init();
+  } catch (e) {
+    debugPrint('Knightly: notifications unavailable: $e');
+  }
+
   final container = ProviderContainer(
     overrides: [
+      notificationGatewayProvider.overrideWithValue(notifications),
       // Core's live header scene follows the user's "Live backdrop" setting.
       liveSceneEnabledProvider.overrideWith((ref) => ref.watch(liveBackdropProvider)),
     ],

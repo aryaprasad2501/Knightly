@@ -15,6 +15,7 @@ import '../../../core/design/theme/knightly_themes.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/modules/app_module.dart';
+import '../../notifications/application/notifications_providers.dart';
 import '../../recycle_bin/application/recycle_bin_providers.dart';
 import '../application/live_backdrop_controller.dart';
 import '../application/theme_controller.dart';
@@ -29,6 +30,7 @@ class SettingsScreen extends ConsumerWidget {
     final live = ref.watch(liveBackdropProvider);
     final binCount = ref.watch(binItemsProvider).valueOrNull?.length ?? 0;
     final modulesOn = ref.watch(enabledModulesProvider);
+    final remindersOn = ref.watch(remindersEnabledProvider).valueOrNull ?? true;
     final chevron = KIcon(KGlyphs.chevronRight, size: 20, color: context.palette.textMuted);
 
     return KPage(
@@ -56,6 +58,14 @@ class SettingsScreen extends ConsumerWidget {
             semanticLabel: 'Live backdrop',
             onChanged: (on) => _setLive(context, ref, on),
           ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
+          glyph: KGlyphs.bell,
+          title: 'Notifications',
+          subtitle: remindersOn ? 'Reminders on · permission, timing and what is coming up' : 'Reminders off',
+          trailing: chevron,
+          onTap: () => context.push(AppRoutes.notifications),
         ),
         const SizedBox(height: KSpacing.md),
         KCard(

@@ -83,10 +83,11 @@ Future<AppDatabase> pumpSeededKnightlyApp(
   WidgetTester tester, {
   required DateTime now,
   required Future<void> Function(AppDatabase db) seed,
+  List<Override> overrides = const [],
 }) async {
   final db = testDatabase();
   await tester.runAsync(() => seed(db));
-  return pumpKnightlyApp(tester, db: db, now: now);
+  return pumpKnightlyApp(tester, db: db, now: now, overrides: overrides);
 }
 
 /// Lets real database I/O finish (it runs outside the fake test clock), then

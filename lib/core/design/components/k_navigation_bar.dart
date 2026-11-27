@@ -12,7 +12,6 @@ import 'k_button.dart';
 import 'k_ornaments.dart';
 import '../theme/knightly_style.dart';
 import '../theme/knightly_palette.dart';
-import '../theme/k_shapes.dart';
 import '../tokens/k_motion.dart';
 import '../tokens/k_spacing.dart';
 import '../brand/k_emblems.dart';
@@ -37,7 +36,7 @@ class KDockAction {
   final VoidCallback onPressed;
 }
 
-/// Floating command dock: five destinations with an emblem indicator that
+/// Floating command dock (a shaded capsule): five destinations with an emblem indicator that
 /// glides to the selected one, and a contextual [action] that changes with the
 /// screen (it swaps in and out above the dock's trailing end).
 ///
@@ -69,10 +68,13 @@ class KNavigationBar extends StatelessWidget {
     final style = context.style;
     final tactical = style.isTactical;
     final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    // Tactical: an armour bar with chamfered ends. Feline: a floating pill.
-    final shape = tactical ? const KChamferBorder(cut: 16, minorRadius: 3) : const StadiumBorder();
+    // A floating capsule in both themes, shaded like a cylinder.
+    const shape = StadiumBorder();
     final edge = shape.copyWith(
-      side: BorderSide(color: p.outline, width: KStroke.hairline),
+      side: BorderSide(
+        color: p.accent.withValues(alpha: tactical ? 0.45 : 0.4),
+        width: KStroke.hairline,
+      ),
     );
 
     return MediaQuery.withClampedTextScaling(
@@ -131,7 +133,11 @@ class KNavigationBar extends StatelessWidget {
     ShapeBorder shape,
     ShapeBorder edge,
   ) {
-    return DecoratedBox(
+    // Lit from above: a bright top, the body colour through the middle and a
+    // dark underside, with the rounded ends falling into shadow.
+    final top = Color.lerp(p.surfaceRaised, p.textPrimary, tactical ? 0.1 : 0.12)!;
+    final bottom = Color.lerp(p.surfaceRaised, p.canvas, 0.75)!;
+    final dock = DecoratedBox(
       // Solid and unblurred on purpose: a frosted (BackdropFilter) dock
       // re-blurs the screen behind it every frame and cost ~65 % of
       // raster time on low-end GPUs (see PERFORMANCE.md).
@@ -146,21 +152,27 @@ class KNavigationBar extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
-              colors: [Color.alphaBlend(p.pressedOverlay, p.surfaceRaised), p.surfaceRaised],
+              colors: [top, p.surfaceRaised, p.surfaceRaised, bottom],
+              stops: const [0, 0.32, 0.62, 1],
             ),
           ),
           child: SizedBox(
             height: barHeight,
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final itemWidth = constraints.maxWidth / destinations.length;
+                // Keep the end tabs clear of the capsule's rounded ends.
+                const endPad = 10.0;
+                final itemWidth = (constraints.maxWidth - endPad * 2) / destinations.length;
                 const inset = KSpacing.xs + KSpacing.xxs;
                 return Stack(
                   children: [
+                    // The cylinder's rounded ends and its light: drawn under
+                    // the icons, so the selected highlight stays as it was.
+                    const Positioned.fill(child: IgnorePointer(child: _CylinderShading())),
                     AnimatedPositioned(
                       duration: style.glide,
                       curve: style.glideCurve,
-                      left: itemWidth * selectedIndex + inset,
+                      left: endPad + itemWidth * selectedIndex + inset,
                       width: itemWidth - inset * 2,
                       top: KSpacing.sm,
                       bottom: KSpacing.sm,
@@ -170,21 +182,24 @@ class KNavigationBar extends StatelessWidget {
                     ),
                     // A light that sweeps across the dock now and then.
                     Positioned.fill(child: _DockGlint(tactical: tactical)),
-                    Row(
-                      children: [
-                        for (var i = 0; i < destinations.length; i++)
-                          Expanded(
-                            child: _NavItem(
-                              destination: destinations[i],
-                              selected: i == selectedIndex,
-                              position: '${i + 1} of ${destinations.length}',
-                              onTap: () {
-                                HapticFeedback.selectionClick();
-                                onSelected(i);
-                              },
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: endPad),
+                      child: Row(
+                        children: [
+                          for (var i = 0; i < destinations.length; i++)
+                            Expanded(
+                              child: _NavItem(
+                                destination: destinations[i],
+                                selected: i == selectedIndex,
+                                position: '${i + 1} of ${destinations.length}',
+                                onTap: () {
+                                  HapticFeedback.selectionClick();
+                                  onSelected(i);
+                                },
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 );
@@ -194,7 +209,112 @@ class KNavigationBar extends StatelessWidget {
         ),
       ),
     );
+    // Floating: a soft shadow on the screen below, painted (no blur).
+    return CustomPaint(
+      painter: _FloatShadow(color: p.canvas, glow: p.accent),
+      child: dock,
+    );
   }
+}
+
+/// The shadow and faint glow a floating dock casts on the page under it.
+class _FloatShadow extends CustomPainter {
+  _FloatShadow({required this.color, required this.glow});
+
+  final Color color;
+  final Color glow;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final under = Rect.fromCenter(
+      center: Offset(s.width / 2, s.height + 2),
+      width: s.width * 0.96,
+      height: 26,
+    );
+    c.drawOval(
+      under,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [color.withValues(alpha: 0.9), color.withValues(alpha: 0)],
+        ).createShader(under),
+    );
+    final halo = Rect.fromCenter(center: Offset(s.width / 2, s.height - 4), width: s.width * 0.7, height: 14);
+    c.drawOval(
+      halo,
+      Paint()
+        ..shader = RadialGradient(
+          colors: [glow.withValues(alpha: 0.14), glow.withValues(alpha: 0)],
+        ).createShader(halo),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_FloatShadow old) => old.color != color || old.glow != glow;
+}
+
+/// Rounded ends falling into shadow, a specular streak along the top and a
+/// thin reflected line along the bottom: what makes the dock read as a
+/// cylinder rather than a flat strip.
+class _CylinderShading extends StatelessWidget {
+  const _CylinderShading();
+
+  @override
+  Widget build(BuildContext context) => CustomPaint(
+    painter: _CylinderPainter(
+      shade: context.palette.canvas,
+      light: context.palette.textPrimary,
+      rim: context.palette.accentStrong,
+    ),
+  );
+}
+
+class _CylinderPainter extends CustomPainter {
+  _CylinderPainter({required this.shade, required this.light, required this.rim});
+
+  final Color shade;
+  final Color light;
+  final Color rim;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final rect = Offset.zero & s;
+    final r = s.height / 2;
+    // Ends turning away from the light.
+    c.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          colors: [
+            shade.withValues(alpha: 0.55),
+            shade.withValues(alpha: 0),
+            shade.withValues(alpha: 0),
+            shade.withValues(alpha: 0.55),
+          ],
+          stops: [0, r / s.width * 1.2, 1 - r / s.width * 1.2, 1],
+        ).createShader(rect),
+    );
+    // A specular streak along the top.
+    final streak = Rect.fromLTWH(r * 0.8, 3, s.width - r * 1.6, 5);
+    c.drawRRect(
+      RRect.fromRectAndRadius(streak, const Radius.circular(3)),
+      Paint()
+        ..shader = LinearGradient(
+          colors: [light.withValues(alpha: 0), light.withValues(alpha: 0.16), light.withValues(alpha: 0)],
+        ).createShader(streak),
+    );
+    // A thin reflected rim near the bottom.
+    final reflect = Rect.fromLTWH(r, s.height - 3, s.width - r * 2, 1);
+    c.drawRect(
+      reflect,
+      Paint()
+        ..shader = LinearGradient(
+          colors: [rim.withValues(alpha: 0), rim.withValues(alpha: 0.35), rim.withValues(alpha: 0)],
+        ).createShader(reflect),
+    );
+  }
+
+  @override
+  bool shouldRepaint(_CylinderPainter old) => old.shade != shade || old.light != light || old.rim != rim;
 }
 
 /// Every few seconds a light passes along the dock and over its icons: a

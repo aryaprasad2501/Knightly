@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:knightly/core/design/components/k_dropdown.dart';
 import 'package:knightly/core/design/components/k_button.dart';
 import 'package:knightly/core/design/components/k_check_circle.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
@@ -65,6 +66,33 @@ void main() {
     expect(find.text('Plan the week').hitTestable(), findsOneWidget);
     expect(find.text('TODAY · 1'), findsOneWidget);
     expect(find.text('Today'), findsWidgets); // due label
+  });
+
+  testWidgets('a project can be created from inside the mission editor', (tester) async {
+    usePhoneViewport(tester);
+    // A tall phone, so the project field clears the sheet's pinned buttons.
+    tester.view.physicalSize = const Size(1170, 3300);
+    await pumpKnightlyApp(tester, now: now);
+    await goToTab(tester, 'Tasks');
+    await tester.tap(find.widgetWithText(InkWell, 'New mission').hitTestable().first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'Pay rent');
+
+    final project = find.byWidgetPredicate((w) => w is KDropdown<int> && w.label == 'Project');
+    await tapVisible(tester, find.descendant(of: project, matching: find.byType(InkWell)));
+    await tester.pumpAndSettle();
+    await tapVisible(tester, find.text('New project…'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'Home');
+    await tapVisible(tester, find.widgetWithText(KButton, 'Create project'));
+    await settleWithDatabase(tester);
+
+    // Back in the editor with the new project chosen.
+    expect(find.text('Home'), findsWidgets);
+    expect(find.text('No project'), findsNothing);
+    await tapVisible(tester, find.text('Add mission'));
+    await settleWithDatabase(tester);
+    expect(find.text('Pay rent').hitTestable(), findsOneWidget);
   });
 
   testWidgets('complete with the check, see it in Done, undo restores it', (tester) async {

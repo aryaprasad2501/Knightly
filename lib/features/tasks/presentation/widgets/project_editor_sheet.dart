@@ -10,20 +10,23 @@ import '../../application/tasks_providers.dart';
 import '../../data/task_repository.dart';
 import '../../domain/task.dart';
 
-/// Creates a project, or renames/deletes [project].
-Future<void> showProjectEditor(BuildContext context, {Project? project}) {
-  return showKBottomSheet<void>(
+/// Creates a project, or renames/deletes [project]. Returns a new project's
+/// id. [showOnBoard] also filters the Tasks board to the new project (off when
+/// creating one from inside the mission editor).
+Future<int?> showProjectEditor(BuildContext context, {Project? project, bool showOnBoard = true}) {
+  return showKBottomSheet<int>(
     context: context,
     title: project == null ? 'New project' : 'Edit project',
     subtitle: project == null ? 'Group related missions, like "Work" or "Home".' : null,
-    child: _ProjectEditor(project: project),
+    child: _ProjectEditor(project: project, showOnBoard: showOnBoard),
   );
 }
 
 class _ProjectEditor extends ConsumerStatefulWidget {
-  const _ProjectEditor({this.project});
+  const _ProjectEditor({this.project, this.showOnBoard = true});
 
   final Project? project;
+  final bool showOnBoard;
 
   @override
   ConsumerState<_ProjectEditor> createState() => _ProjectEditorState();
@@ -45,7 +48,9 @@ class _ProjectEditorState extends ConsumerState<_ProjectEditor> {
     try {
       if (widget.project == null) {
         final id = await actions.createProject(_name.text);
-        ref.read(projectFilterProvider.notifier).select(id);
+        if (widget.showOnBoard) ref.read(projectFilterProvider.notifier).select(id);
+        navigator.pop(id);
+        return;
       } else {
         await actions.renameProject(widget.project!.id, _name.text);
       }

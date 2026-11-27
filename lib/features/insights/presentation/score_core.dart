@@ -342,18 +342,39 @@ class _BloomPainter extends CustomPainter {
   void paint(Canvas c, Size s) {
     final center = s.center(Offset.zero);
     final outer = s.width / 2;
+    // A dark glass disc so the rings read over any backdrop, with violet
+    // light pooled in the middle and a soft rose rim.
+    final disc = Rect.fromCircle(center: center, radius: outer - 6);
     c.drawCircle(
       center,
-      outer,
+      outer - 6,
       Paint()
         ..shader = RadialGradient(
           colors: [
-            hud.primary.withValues(alpha: 0.28),
-            hud.secondary.withValues(alpha: 0.08),
-            hud.primary.withValues(alpha: 0),
+            Color.alphaBlend(hud.primary.withValues(alpha: 0.3), hud.deep).withValues(alpha: 0.92),
+            hud.deep.withValues(alpha: 0.86),
           ],
-          stops: const [0, 0.6, 1],
-        ).createShader(Rect.fromCircle(center: center, radius: outer)),
+        ).createShader(disc),
+    );
+    if (rich) {
+      c.drawCircle(
+        center,
+        outer - 6,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 8
+          ..color = hud.secondary.withValues(alpha: 0.12),
+      );
+    }
+    c.drawCircle(
+      center,
+      outer - 6,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.2
+        ..shader = SweepGradient(
+          colors: [hud.secondaryBright, hud.primary, hud.secondary, hud.secondaryBright],
+        ).createShader(disc),
     );
 
     final n = rates.length;
@@ -369,7 +390,7 @@ class _BloomPainter extends CustomPainter {
         Paint()
           ..style = PaintingStyle.stroke
           ..strokeWidth = 3
-          ..color = hud.grid.withValues(alpha: 0.7),
+          ..color = Color.lerp(hud.grid, hud.primary, 0.25)!,
       );
       final sweepAngle = math.pi * 2 * rates[i].rate * sweep;
       if (sweepAngle <= 0) continue;

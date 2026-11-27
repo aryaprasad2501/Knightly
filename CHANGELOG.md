@@ -17,8 +17,10 @@ versions follow `pubspec.yaml`.
   figures runs along the top. A short activation plays the first time you open it.
 - **Settings** now open from a gear at the top right of every tab (Insights took its place in
   the dock): a machined gear in Dark Knight, a flower gear with a cat's eye in Shadow Cat.
-- **Dock**: a light now sweeps across it every few seconds (a steel scan line in Dark Knight, a
+- **Dock** is now a floating capsule shaded like a cylinder (lit top, shaded ends, a soft
+  shadow beneath); a light sweeps across it every few seconds (a steel scan line in Dark Knight, a
   rose sheen with sparkles in Shadow Cat); the selected-tab emblem and transitions are unchanged.
+- **New project from the mission editor**: the Project list ends with "New project…".
 - **Low mode** (lighter effects for older phones) and **Reduce motion** in Settings.
 - **Welcome** on first launch: try both themes.
 

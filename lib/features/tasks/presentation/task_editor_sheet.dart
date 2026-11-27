@@ -13,6 +13,7 @@ import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
+import 'widgets/project_editor_sheet.dart';
 import '../application/tasks_providers.dart';
 import '../data/task_repository.dart';
 import '../domain/due_format.dart';
@@ -52,6 +53,9 @@ class _TaskEditor extends ConsumerStatefulWidget {
 
 class _TaskEditorState extends ConsumerState<_TaskEditor> {
   static const _noProject = 0;
+
+  /// Not a project: picking it opens the new-project sheet.
+  static const _newProject = -1;
 
   late final _title = TextEditingController(text: widget.task?.title ?? '');
   late final _notes = TextEditingController(text: widget.task?.notes ?? '');
@@ -288,11 +292,19 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
                   label: 'Project',
                   value: _projectId,
                   sheetTitle: 'Choose a project',
-                  onChanged: (value) => setState(() => _projectId = value),
+                  onChanged: (value) async {
+                    if (value != _newProject) {
+                      setState(() => _projectId = value);
+                      return;
+                    }
+                    final id = await showProjectEditor(context, showOnBoard: false);
+                    if (id != null && mounted) setState(() => _projectId = id);
+                  },
                   options: [
                     const KDropdownOption(value: _noProject, label: 'No project'),
                     for (final p in projects)
                       KDropdownOption(value: p.id, label: p.name, glyph: KGlyphs.flag),
+                    const KDropdownOption(value: _newProject, label: 'New project…', glyph: KGlyphs.plus),
                   ],
                 ),
                 const SizedBox(height: KSpacing.lg),

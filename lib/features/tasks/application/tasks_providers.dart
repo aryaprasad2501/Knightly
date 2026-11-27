@@ -31,13 +31,23 @@ final trashedProjectsProvider = StreamProvider<List<Project>>(
   (ref) => ref.watch(taskRepositoryProvider).watchTrashedProjects(),
 );
 
+/// Every mission's checklist, by mission id.
+final taskChecksProvider = StreamProvider<Map<int, List<TaskCheck>>>(
+  (ref) => ref.watch(taskRepositoryProvider).watchChecks(),
+);
+
 /// Everything the mission list needs, loaded together.
 class TaskBoard {
-  const TaskBoard({required this.open, required this.done, required this.projects});
+  const TaskBoard({required this.open, required this.done, required this.projects, this.checks = const {}});
 
   final List<Task> open;
   final List<Task> done;
   final List<Project> projects;
+
+  /// Checklists by mission id (missing = no checklist).
+  final Map<int, List<TaskCheck>> checks;
+
+  List<TaskCheck> checksOf(int taskId) => checks[taskId] ?? const [];
 
   bool get isEmpty => open.isEmpty && done.isEmpty;
 
@@ -54,12 +64,18 @@ final taskBoardProvider = Provider<AsyncValue<TaskBoard>>((ref) {
   final open = ref.watch(openTasksProvider);
   final done = ref.watch(completedTasksProvider);
   final projects = ref.watch(projectsProvider);
-  for (final value in <AsyncValue<Object>>[open, done, projects]) {
+  final checks = ref.watch(taskChecksProvider);
+  for (final value in <AsyncValue<Object>>[open, done, projects, checks]) {
     if (value.hasError) return AsyncError(value.error!, value.stackTrace ?? StackTrace.current);
   }
-  if (!open.hasValue || !done.hasValue || !projects.hasValue) return const AsyncLoading();
+  if (!open.hasValue || !done.hasValue || !projects.hasValue || !checks.hasValue) return const AsyncLoading();
   return AsyncData(
-    TaskBoard(open: open.requireValue, done: done.requireValue, projects: projects.requireValue),
+    TaskBoard(
+      open: open.requireValue,
+      done: done.requireValue,
+      projects: projects.requireValue,
+      checks: checks.requireValue,
+    ),
   );
 });
 
@@ -77,6 +93,18 @@ class SelectedTaskView extends Notifier<TaskView> {
 
   void select(TaskView view) => state = view;
 }
+
+/// The mission search: null while closed, else the text typed so far.
+class TaskSearch extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void open() => state = '';
+  void type(String query) => state = query;
+  void close() => state = null;
+}
+
+final taskSearchProvider = NotifierProvider<TaskSearch, String?>(TaskSearch.new);
 
 final selectedTaskViewProvider = NotifierProvider<SelectedTaskView, TaskView>(SelectedTaskView.new);
 
@@ -105,8 +133,10 @@ class TaskActions {
 
   final TaskRepository _repo;
 
-  Future<int> create(TaskDraft draft) => _repo.create(draft);
-  Future<void> update(int id, TaskDraft draft) => _repo.update(id, draft);
+  Future<int> create(TaskDraft draft, {List<TaskCheckDraft>? checks}) => _repo.create(draft, checks: checks);
+  Future<void> update(int id, TaskDraft draft, {List<TaskCheckDraft>? checks}) =>
+      _repo.update(id, draft, checks: checks);
+  Future<void> setCheckDone(int checkId, {required bool done}) => _repo.setCheckDone(checkId, done: done);
 
   /// Moves a mission to the Recycle Bin (see `TaskRepository.trash`).
   Future<void> trash(int id, {bool onlyThisOccurrence = false}) =>

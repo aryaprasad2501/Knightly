@@ -4,6 +4,7 @@ import 'package:knightly/core/design/components/k_dropdown.dart';
 import 'package:knightly/core/design/components/k_button.dart';
 import 'package:knightly/core/design/components/k_check_circle.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
+import 'package:knightly/core/design/components/k_text_field.dart';
 import 'package:knightly/core/time/calendar_date.dart';
 import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/recurrence.dart';
@@ -27,6 +28,10 @@ Future<void> scrollAndTap(WidgetTester tester, Finder finder) async {
   await tester.pumpAndSettle();
   await tester.tap(finder);
 }
+
+/// The text box of the [KTextField] labelled [label].
+Finder fieldOf(String label) =>
+    find.descendant(of: find.widgetWithText(KTextField, label), matching: find.byType(TextField));
 
 /// Scrolls [finder] into view (e.g. inside a bottom sheet) and taps it.
 Future<void> tapVisible(WidgetTester tester, Finder finder) async {
@@ -336,5 +341,64 @@ void main() {
     await scrollToTop(tester);
     expect(find.text('1/1'), findsWidgets);
     expect(find.text('100% done'), findsOneWidget);
+  });
+
+  testWidgets('checklist: steps added in the editor show on the card and tick off', (tester) async {
+    usePhoneViewport(tester);
+    await pumpSeededApp(tester, (repo) => repo.create(TaskDraft(title: 'Trip', dueDate: today)));
+    await goToTab(tester, 'Tasks');
+
+    await tester.tap(find.text('Trip').hitTestable());
+    await tester.pumpAndSettle();
+    final step = fieldOf('Add a step');
+    await tapVisible(tester, step);
+    await tester.enterText(step, 'Book train');
+    await tester.testTextInput.receiveAction(TextInputAction.next);
+    await tester.pumpAndSettle();
+    await tester.enterText(step, 'Pack');
+    await tapVisible(tester, find.text('Save changes'));
+    await settleWithDatabase(tester);
+
+    expect(find.text('0/2').hitTestable(), findsOneWidget);
+
+    // Ticking in the editor is stored straight away.
+    await tester.tap(find.text('Trip').hitTestable());
+    await tester.pumpAndSettle();
+    await tapVisible(
+      tester,
+      find.byWidgetPredicate((w) => w is KCheckCircle && w.semanticLabel == 'Book train'),
+    );
+    await settleWithDatabase(tester);
+    expect(find.text('Checklist · 1/2'), findsOneWidget);
+    await tapVisible(tester, find.text('Save changes'));
+    await settleWithDatabase(tester);
+    expect(find.text('1/2').hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('search finds open and completed missions', (tester) async {
+    usePhoneViewport(tester);
+    await pumpSeededApp(tester, (repo) async {
+      await repo.create(TaskDraft(title: 'Call the bank', dueDate: today));
+      await repo.create(const TaskDraft(title: 'Buy paint'));
+      await repo.complete(await repo.create(TaskDraft(title: 'Call mum', dueDate: today)));
+    });
+    await goToTab(tester, 'Tasks');
+
+    await tester.tap(find.byTooltip('Search missions').hitTestable());
+    await tester.pumpAndSettle();
+    await tester.enterText(fieldOf('Search missions'), 'call');
+    await tester.pumpAndSettle();
+    expect(find.text('OPEN · 1'), findsOneWidget);
+    expect(find.text('DONE · 1'), findsOneWidget);
+    expect(find.text('Buy paint').hitTestable(), findsNothing);
+
+    await tester.enterText(fieldOf('Search missions'), 'zebra');
+    await tester.pumpAndSettle();
+    expect(find.text('No matching missions'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Close search').hitTestable());
+    await tester.pumpAndSettle();
+    expect(find.text('Buy paint').hitTestable(), findsNothing); // back on Today
+    expect(find.text('Call the bank').hitTestable(), findsOneWidget);
   });
 }

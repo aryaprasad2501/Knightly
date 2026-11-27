@@ -67,6 +67,10 @@ void main() {
     );
     final stretch = await tasks.create(
       TaskDraft(title: 'Stretch', dueDate: today, recurrence: DailyRecurrence()),
+      checks: const [
+        TaskCheckDraft(title: 'Neck'),
+        TaskCheckDraft(title: 'Back', done: true),
+      ],
     );
     await tasks.complete(stretch); // creates the next occurrence, linked
     final binned = await tasks.create(const TaskDraft(title: 'Old idea'));
@@ -110,6 +114,10 @@ void main() {
         db.habitCheckIns,
       )..orderBy([(c) => OrderingTerm.asc(c.habitId), (c) => OrderingTerm.asc(c.date)])).get())
         (c.habitId, c.date, c.count),
+    ],
+    [
+      for (final c in await db.select(db.taskChecks).get())
+        (c.id, c.uuid, c.taskId, c.position, c.title, c.done),
     ],
   ];
 

@@ -35,6 +35,33 @@ class Project {
   int get hashCode => Object.hash(id, name, deletedAt);
 }
 
+/// One line of a mission's checklist.
+class TaskCheck {
+  const TaskCheck({required this.id, required this.title, this.done = false});
+
+  final int id;
+  final String title;
+  final bool done;
+
+  @override
+  bool operator ==(Object other) =>
+      other is TaskCheck && other.id == id && other.title == title && other.done == done;
+
+  @override
+  int get hashCode => Object.hash(id, title, done);
+}
+
+/// A checklist line being edited: [id] is null for a new one.
+class TaskCheckDraft {
+  const TaskCheckDraft({this.id, required this.title, this.done = false});
+
+  static const maxTitleLength = 120;
+
+  final int? id;
+  final String title;
+  final bool done;
+}
+
 /// A mission (task). Immutable; changes go through the repository.
 class Task {
   const Task({

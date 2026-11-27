@@ -6,6 +6,10 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Mission checklists**: add steps in the mission editor; the card shows "2/5"; ticks save straight
+  away; a repeating mission's next occurrence starts with the checklist unticked. Included in backups.
+- **Search missions** (search icon on Missions): matches title, notes, checklist and project, across open
+  and completed missions.
 - **Home care "When I get home"** (Home care › Reminders): set home where you stand; arriving home
   brings a notification of the jobs still due. Uses Android geofencing (location "Allow all the
   time"); your location never leaves the phone.

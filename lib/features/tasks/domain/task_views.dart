@@ -142,3 +142,33 @@ class MissionSummary {
     );
   }
 }
+
+/// Missions matching [query] (case-insensitive, every word must appear in the
+/// title, notes, checklist or project name): open ones first in list order,
+/// then completed ones newest first. Empty for a blank query.
+List<TaskSection> searchTasks(
+  String query, {
+  required List<Task> open,
+  required List<Task> done,
+  Map<int, List<TaskCheck>> checks = const {},
+  String? Function(int? projectId)? projectName,
+}) {
+  final words = query.toLowerCase().split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+  if (words.isEmpty) return const [];
+  bool matches(Task t) {
+    final haystack = [
+      t.title,
+      t.notes,
+      for (final c in checks[t.id] ?? const <TaskCheck>[]) c.title,
+      projectName?.call(t.projectId) ?? '',
+    ].join('\n').toLowerCase();
+    return words.every(haystack.contains);
+  }
+
+  final openHits = open.where(matches).toList()..sort(compareOpenTasks);
+  final doneHits = done.where(matches).toList();
+  return [
+    if (openHits.isNotEmpty) TaskSection('Open', openHits),
+    if (doneHits.isNotEmpty) TaskSection('Done', doneHits),
+  ];
+}

@@ -37,12 +37,13 @@ class AppSettings extends Table {
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
 /// routine_runs · v7 water_logs · v8 sleep_logs · v9 workouts, workout_sets · v10 foods,
-/// meal_entries · v11 care_jobs, care_logs · v12 care_jobs.category.
+/// meal_entries · v11 care_jobs, care_logs · v12 care_jobs.category · v13 task_checks.
 @DriftDatabase(
   tables: [
     AppSettings,
     Projects,
     Tasks,
+    TaskChecks,
     Habits,
     HabitCheckIns,
     Events,
@@ -64,7 +65,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -172,6 +173,11 @@ class AppDatabase extends _$AppDatabase {
     // Home care custom categories: one new nullable column.
     from11To12: (m, schema) async {
       await m.addColumn(schema.careJobs, schema.careJobs.category);
+    },
+    // Mission checklists: one new table; nothing existing changes.
+    from12To13: (m, schema) async {
+      await m.createTable(schema.taskChecks);
+      await m.createIndex(schema.taskChecksTask);
     },
   );
 

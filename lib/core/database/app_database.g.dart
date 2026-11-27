@@ -1274,6 +1274,389 @@ class TasksCompanion extends UpdateCompanion<TaskRow> {
   }
 }
 
+class $TaskChecksTable extends TaskChecks with TableInfo<$TaskChecksTable, TaskCheckRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TaskChecksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+  );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    clientDefault: newUuid,
+  );
+  static const VerificationMeta _taskIdMeta = const VerificationMeta('taskId');
+  @override
+  late final GeneratedColumn<int> taskId = GeneratedColumn<int>(
+    'task_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES tasks (id) ON DELETE CASCADE'),
+  );
+  static const VerificationMeta _positionMeta = const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 120),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _doneMeta = const VerificationMeta('done');
+  @override
+  late final GeneratedColumn<bool> done = GeneratedColumn<bool>(
+    'done',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("done" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, uuid, taskId, position, title, done, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'task_checks';
+  @override
+  VerificationContext validateIntegrity(Insertable<TaskCheckRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(_uuidMeta, uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta));
+    }
+    if (data.containsKey('task_id')) {
+      context.handle(_taskIdMeta, taskId.isAcceptableOrUnknown(data['task_id']!, _taskIdMeta));
+    } else if (isInserting) {
+      context.missing(_taskIdMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta, position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(_titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('done')) {
+      context.handle(_doneMeta, done.isAcceptableOrUnknown(data['done']!, _doneMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TaskCheckRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TaskCheckRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      uuid: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}uuid'])!,
+      taskId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}task_id'])!,
+      position: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      title: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      done: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}done'])!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $TaskChecksTable createAlias(String alias) {
+    return $TaskChecksTable(attachedDatabase, alias);
+  }
+}
+
+class TaskCheckRow extends DataClass implements Insertable<TaskCheckRow> {
+  final int id;
+
+  /// Stable id across devices and backups (see `newUuid`).
+  final String uuid;
+
+  /// Permanently deleting a mission deletes its checklist.
+  final int taskId;
+  final int position;
+  final String title;
+  final bool done;
+  final DateTime updatedAt;
+  const TaskCheckRow({
+    required this.id,
+    required this.uuid,
+    required this.taskId,
+    required this.position,
+    required this.title,
+    required this.done,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['uuid'] = Variable<String>(uuid);
+    map['task_id'] = Variable<int>(taskId);
+    map['position'] = Variable<int>(position);
+    map['title'] = Variable<String>(title);
+    map['done'] = Variable<bool>(done);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  TaskChecksCompanion toCompanion(bool nullToAbsent) {
+    return TaskChecksCompanion(
+      id: Value(id),
+      uuid: Value(uuid),
+      taskId: Value(taskId),
+      position: Value(position),
+      title: Value(title),
+      done: Value(done),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory TaskCheckRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TaskCheckRow(
+      id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String>(json['uuid']),
+      taskId: serializer.fromJson<int>(json['taskId']),
+      position: serializer.fromJson<int>(json['position']),
+      title: serializer.fromJson<String>(json['title']),
+      done: serializer.fromJson<bool>(json['done']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String>(uuid),
+      'taskId': serializer.toJson<int>(taskId),
+      'position': serializer.toJson<int>(position),
+      'title': serializer.toJson<String>(title),
+      'done': serializer.toJson<bool>(done),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  TaskCheckRow copyWith({
+    int? id,
+    String? uuid,
+    int? taskId,
+    int? position,
+    String? title,
+    bool? done,
+    DateTime? updatedAt,
+  }) => TaskCheckRow(
+    id: id ?? this.id,
+    uuid: uuid ?? this.uuid,
+    taskId: taskId ?? this.taskId,
+    position: position ?? this.position,
+    title: title ?? this.title,
+    done: done ?? this.done,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  TaskCheckRow copyWithCompanion(TaskChecksCompanion data) {
+    return TaskCheckRow(
+      id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      taskId: data.taskId.present ? data.taskId.value : this.taskId,
+      position: data.position.present ? data.position.value : this.position,
+      title: data.title.present ? data.title.value : this.title,
+      done: data.done.present ? data.done.value : this.done,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskCheckRow(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('taskId: $taskId, ')
+          ..write('position: $position, ')
+          ..write('title: $title, ')
+          ..write('done: $done, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, uuid, taskId, position, title, done, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TaskCheckRow &&
+          other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.taskId == this.taskId &&
+          other.position == this.position &&
+          other.title == this.title &&
+          other.done == this.done &&
+          other.updatedAt == this.updatedAt);
+}
+
+class TaskChecksCompanion extends UpdateCompanion<TaskCheckRow> {
+  final Value<int> id;
+  final Value<String> uuid;
+  final Value<int> taskId;
+  final Value<int> position;
+  final Value<String> title;
+  final Value<bool> done;
+  final Value<DateTime> updatedAt;
+  const TaskChecksCompanion({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.taskId = const Value.absent(),
+    this.position = const Value.absent(),
+    this.title = const Value.absent(),
+    this.done = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  TaskChecksCompanion.insert({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    required int taskId,
+    required int position,
+    required String title,
+    this.done = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : taskId = Value(taskId),
+       position = Value(position),
+       title = Value(title);
+  static Insertable<TaskCheckRow> custom({
+    Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<int>? taskId,
+    Expression<int>? position,
+    Expression<String>? title,
+    Expression<bool>? done,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (taskId != null) 'task_id': taskId,
+      if (position != null) 'position': position,
+      if (title != null) 'title': title,
+      if (done != null) 'done': done,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  TaskChecksCompanion copyWith({
+    Value<int>? id,
+    Value<String>? uuid,
+    Value<int>? taskId,
+    Value<int>? position,
+    Value<String>? title,
+    Value<bool>? done,
+    Value<DateTime>? updatedAt,
+  }) {
+    return TaskChecksCompanion(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      taskId: taskId ?? this.taskId,
+      position: position ?? this.position,
+      title: title ?? this.title,
+      done: done ?? this.done,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (taskId.present) {
+      map['task_id'] = Variable<int>(taskId.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (done.present) {
+      map['done'] = Variable<bool>(done.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TaskChecksCompanion(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('taskId: $taskId, ')
+          ..write('position: $position, ')
+          ..write('title: $title, ')
+          ..write('done: $done, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $HabitsTable extends Habits with TableInfo<$HabitsTable, HabitRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -8737,6 +9120,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final $TasksTable tasks = $TasksTable(this);
+  late final $TaskChecksTable taskChecks = $TaskChecksTable(this);
   late final $HabitsTable habits = $HabitsTable(this);
   late final $HabitCheckInsTable habitCheckIns = $HabitCheckInsTable(this);
   late final $EventsTable events = $EventsTable(this);
@@ -8760,6 +9144,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final Index tasksDeletedAt = Index(
     'tasks_deleted_at',
     'CREATE INDEX tasks_deleted_at ON tasks (deleted_at)',
+  );
+  late final Index taskChecksTask = Index(
+    'task_checks_task',
+    'CREATE INDEX task_checks_task ON task_checks (task_id)',
   );
   late final Index habitCheckInsDate = Index(
     'habit_check_ins_date',
@@ -8806,6 +9194,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     appSettings,
     projects,
     tasks,
+    taskChecks,
     habits,
     habitCheckIns,
     events,
@@ -8824,6 +9213,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     tasksDueDate,
     tasksCompletedAt,
     tasksDeletedAt,
+    taskChecksTask,
     habitCheckInsDate,
     eventsStartDate,
     routineStepsRoutine,
@@ -8840,6 +9230,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName('projects', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('tasks', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('tasks', limitUpdateKind: UpdateKind.delete),
+      result: [TableUpdate('task_checks', kind: UpdateKind.delete)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName('habits', limitUpdateKind: UpdateKind.delete),
@@ -9296,6 +9690,22 @@ final class $$TasksTableReferences extends BaseReferences<_$AppDatabase, $TasksT
     if (item == null) return manager;
     return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
   }
+
+  static MultiTypedResultKey<$TaskChecksTable, List<TaskCheckRow>> _taskChecksRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.taskChecks,
+        aliasName: $_aliasNameGenerator(db.tasks.id, db.taskChecks.taskId),
+      );
+
+  $$TaskChecksTableProcessedTableManager get taskChecksRefs {
+    final manager = $$TaskChecksTableTableManager(
+      $_db,
+      $_db.taskChecks,
+    ).filter((f) => f.taskId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_taskChecksRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
 }
 
 class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
@@ -9361,6 +9771,24 @@ class $$TasksTableFilterComposer extends Composer<_$AppDatabase, $TasksTable> {
           ),
     );
     return composer;
+  }
+
+  Expression<bool> taskChecksRefs(Expression<bool> Function($$TaskChecksTableFilterComposer f) f) {
+    final $$TaskChecksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taskChecks,
+      getReferencedColumn: (t) => t.taskId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TaskChecksTableFilterComposer(
+            $db: $db,
+            $table: $db.taskChecks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
   }
 }
 
@@ -9490,6 +9918,26 @@ class $$TasksTableAnnotationComposer extends Composer<_$AppDatabase, $TasksTable
     );
     return composer;
   }
+
+  Expression<T> taskChecksRefs<T extends Object>(
+    Expression<T> Function($$TaskChecksTableAnnotationComposer a) f,
+  ) {
+    final $$TaskChecksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.taskChecks,
+      getReferencedColumn: (t) => t.taskId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TaskChecksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.taskChecks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
 }
 
 class $$TasksTableTableManager
@@ -9505,7 +9953,7 @@ class $$TasksTableTableManager
           $$TasksTableUpdateCompanionBuilder,
           (TaskRow, $$TasksTableReferences),
           TaskRow,
-          PrefetchHooks Function({bool projectId})
+          PrefetchHooks Function({bool projectId, bool taskChecksRefs})
         > {
   $$TasksTableTableManager(_$AppDatabase db, $TasksTable table)
     : super(
@@ -9581,10 +10029,10 @@ class $$TasksTableTableManager
               ),
           withReferenceMapper: (p0) =>
               p0.map((e) => (e.readTable(table), $$TasksTableReferences(db, table, e))).toList(),
-          prefetchHooksCallback: ({projectId = false}) {
+          prefetchHooksCallback: ({projectId = false, taskChecksRefs = false}) {
             return PrefetchHooks(
               db: db,
-              explicitlyWatchedTables: [],
+              explicitlyWatchedTables: [if (taskChecksRefs) db.taskChecks],
               addJoins:
                   <
                     T extends TableManagerState<
@@ -9615,7 +10063,17 @@ class $$TasksTableTableManager
                     return state;
                   },
               getPrefetchedDataCallback: (items) async {
-                return [];
+                return [
+                  if (taskChecksRefs)
+                    await $_getPrefetchedData<TaskRow, $TasksTable, TaskCheckRow>(
+                      currentTable: table,
+                      referencedTable: $$TasksTableReferences._taskChecksRefsTable(db),
+                      managerFromTypedResult: (p0) => $$TasksTableReferences(db, table, p0).taskChecksRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.taskId == item.id),
+                      typedResults: items,
+                    ),
+                ];
               },
             );
           },
@@ -9635,7 +10093,293 @@ typedef $$TasksTableProcessedTableManager =
       $$TasksTableUpdateCompanionBuilder,
       (TaskRow, $$TasksTableReferences),
       TaskRow,
-      PrefetchHooks Function({bool projectId})
+      PrefetchHooks Function({bool projectId, bool taskChecksRefs})
+    >;
+typedef $$TaskChecksTableCreateCompanionBuilder =
+    TaskChecksCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      required int taskId,
+      required int position,
+      required String title,
+      Value<bool> done,
+      Value<DateTime> updatedAt,
+    });
+typedef $$TaskChecksTableUpdateCompanionBuilder =
+    TaskChecksCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      Value<int> taskId,
+      Value<int> position,
+      Value<String> title,
+      Value<bool> done,
+      Value<DateTime> updatedAt,
+    });
+
+final class $$TaskChecksTableReferences
+    extends BaseReferences<_$AppDatabase, $TaskChecksTable, TaskCheckRow> {
+  $$TaskChecksTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $TasksTable _taskIdTable(_$AppDatabase db) =>
+      db.tasks.createAlias($_aliasNameGenerator(db.taskChecks.taskId, db.tasks.id));
+
+  $$TasksTableProcessedTableManager get taskId {
+    final $_column = $_itemColumn<int>('task_id')!;
+
+    final manager = $$TasksTableTableManager($_db, $_db.tasks).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_taskIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$TaskChecksTableFilterComposer extends Composer<_$AppDatabase, $TaskChecksTable> {
+  $$TaskChecksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get done =>
+      $composableBuilder(column: $table.done, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$TasksTableFilterComposer get taskId {
+    final $$TasksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TasksTableFilterComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskChecksTableOrderingComposer extends Composer<_$AppDatabase, $TaskChecksTable> {
+  $$TaskChecksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get done =>
+      $composableBuilder(column: $table.done, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$TasksTableOrderingComposer get taskId {
+    final $$TasksTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TasksTableOrderingComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskChecksTableAnnotationComposer extends Composer<_$AppDatabase, $TaskChecksTable> {
+  $$TaskChecksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid => $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
+
+  GeneratedColumn<String> get title => $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<bool> get done => $composableBuilder(column: $table.done, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$TasksTableAnnotationComposer get taskId {
+    final $$TasksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.taskId,
+      referencedTable: $db.tasks,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$TasksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.tasks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TaskChecksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TaskChecksTable,
+          TaskCheckRow,
+          $$TaskChecksTableFilterComposer,
+          $$TaskChecksTableOrderingComposer,
+          $$TaskChecksTableAnnotationComposer,
+          $$TaskChecksTableCreateCompanionBuilder,
+          $$TaskChecksTableUpdateCompanionBuilder,
+          (TaskCheckRow, $$TaskChecksTableReferences),
+          TaskCheckRow,
+          PrefetchHooks Function({bool taskId})
+        > {
+  $$TaskChecksTableTableManager(_$AppDatabase db, $TaskChecksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$TaskChecksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$TaskChecksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$TaskChecksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                Value<int> taskId = const Value.absent(),
+                Value<int> position = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<bool> done = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => TaskChecksCompanion(
+                id: id,
+                uuid: uuid,
+                taskId: taskId,
+                position: position,
+                title: title,
+                done: done,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                required int taskId,
+                required int position,
+                required String title,
+                Value<bool> done = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => TaskChecksCompanion.insert(
+                id: id,
+                uuid: uuid,
+                taskId: taskId,
+                position: position,
+                title: title,
+                done: done,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$TaskChecksTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({taskId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (taskId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.taskId,
+                                referencedTable: $$TaskChecksTableReferences._taskIdTable(db),
+                                referencedColumn: $$TaskChecksTableReferences._taskIdTable(db).id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TaskChecksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TaskChecksTable,
+      TaskCheckRow,
+      $$TaskChecksTableFilterComposer,
+      $$TaskChecksTableOrderingComposer,
+      $$TaskChecksTableAnnotationComposer,
+      $$TaskChecksTableCreateCompanionBuilder,
+      $$TaskChecksTableUpdateCompanionBuilder,
+      (TaskCheckRow, $$TaskChecksTableReferences),
+      TaskCheckRow,
+      PrefetchHooks Function({bool taskId})
     >;
 typedef $$HabitsTableCreateCompanionBuilder =
     HabitsCompanion Function({
@@ -14231,6 +14975,7 @@ class $AppDatabaseManager {
   $$AppSettingsTableTableManager get appSettings => $$AppSettingsTableTableManager(_db, _db.appSettings);
   $$ProjectsTableTableManager get projects => $$ProjectsTableTableManager(_db, _db.projects);
   $$TasksTableTableManager get tasks => $$TasksTableTableManager(_db, _db.tasks);
+  $$TaskChecksTableTableManager get taskChecks => $$TaskChecksTableTableManager(_db, _db.taskChecks);
   $$HabitsTableTableManager get habits => $$HabitsTableTableManager(_db, _db.habits);
   $$HabitCheckInsTableTableManager get habitCheckIns =>
       $$HabitCheckInsTableTableManager(_db, _db.habitCheckIns);

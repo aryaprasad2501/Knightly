@@ -80,15 +80,50 @@ class TaskRepository {
     return row == null ? null : _toTask(row);
   }
 
-  // ---- Missions ------------------------------------------------------------
-
-  Future<int> create(TaskDraft draft) {
-    final clean = _checked(draft);
-    return _db.into(_db.tasks).insert(_companionFor(clean, createdAt: _clock()));
+  /// Every mission's checklist, by mission id, in order.
+  Stream<Map<int, List<TaskCheck>>> watchChecks() {
+    final query = _db.select(_db.taskChecks)
+      ..orderBy([(c) => OrderingTerm.asc(c.taskId), (c) => OrderingTerm.asc(c.position)]);
+    return query.watch().map((rows) {
+      final byTask = <int, List<TaskCheck>>{};
+      for (final r in rows) {
+        (byTask[r.taskId] ??= []).add(TaskCheck(id: r.id, title: r.title, done: r.done));
+      }
+      return byTask;
+    });
   }
 
-  Future<void> update(int id, TaskDraft draft) async {
+  // ---- Missions ------------------------------------------------------------
+
+  /// Creates a mission, with its checklist when [checks] is given.
+  Future<int> create(TaskDraft draft, {List<TaskCheckDraft>? checks}) {
     final clean = _checked(draft);
+    final lines = _checkedLines(checks);
+    return _db.transaction(() async {
+      final id = await _db.into(_db.tasks).insert(_companionFor(clean, createdAt: _clock()));
+      if (lines != null) await _saveChecks(id, lines);
+      return id;
+    });
+  }
+
+  /// Updates a mission. A non-null [checks] replaces its checklist (lines
+  /// keep their ids; ones left out are deleted).
+  Future<void> update(int id, TaskDraft draft, {List<TaskCheckDraft>? checks}) {
+    final clean = _checked(draft);
+    final lines = _checkedLines(checks);
+    return _db.transaction(() async {
+      await _update(id, clean);
+      if (lines != null) await _saveChecks(id, lines);
+    });
+  }
+
+  /// Ticks or unticks one checklist line.
+  Future<void> setCheckDone(int checkId, {required bool done}) =>
+      (_db.update(_db.taskChecks)..where((c) => c.id.equals(checkId))).write(
+        TaskChecksCompanion(done: Value(done), updatedAt: Value(_clock())),
+      );
+
+  Future<void> _update(int id, TaskDraft clean) async {
     await (_db.update(_db.tasks)..where((t) => t.id.equals(id))).write(
       TasksCompanion(
         title: Value(clean.title),
@@ -101,6 +136,61 @@ class TaskRepository {
         updatedAt: Value(_clock()),
       ),
     );
+  }
+
+  /// Trimmed lines with blanks dropped; null stays null (checklist unchanged).
+  static List<TaskCheckDraft>? _checkedLines(List<TaskCheckDraft>? checks) {
+    if (checks == null) return null;
+    final lines = [
+      for (final c in checks)
+        if (c.title.trim().isNotEmpty) TaskCheckDraft(id: c.id, title: c.title.trim(), done: c.done),
+    ];
+    if (lines.any((c) => c.title.length > TaskCheckDraft.maxTitleLength)) {
+      throw const TaskValidationException(
+        'Keep each checklist line under ${TaskCheckDraft.maxTitleLength} characters.',
+      );
+    }
+    return lines;
+  }
+
+  Future<void> _saveChecks(int taskId, List<TaskCheckDraft> lines) async {
+    final now = _clock();
+    final kept = {for (final c in lines) ?c.id};
+    await (_db.delete(_db.taskChecks)..where((c) => c.taskId.equals(taskId) & c.id.isNotIn(kept))).go();
+    for (final (i, c) in lines.indexed) {
+      final values = TaskChecksCompanion(
+        taskId: Value(taskId),
+        position: Value(i),
+        title: Value(c.title),
+        done: Value(c.done),
+        updatedAt: Value(now),
+      );
+      final id = c.id;
+      if (id == null) {
+        await _db.into(_db.taskChecks).insert(values);
+      } else {
+        await (_db.update(
+          _db.taskChecks,
+        )..where((x) => x.id.equals(id) & x.taskId.equals(taskId))).write(values);
+      }
+    }
+  }
+
+  /// Inserts the next occurrence of [task], due [due], with its checklist
+  /// copied unticked.
+  Future<int> _insertNext(Task task, CalendarDate due, DateTime now) async {
+    final nextId = await _db.into(_db.tasks).insert(_companionFor(_copyDue(task, due), createdAt: now));
+    final lines =
+        await (_db.select(_db.taskChecks)
+              ..where((c) => c.taskId.equals(task.id))
+              ..orderBy([(c) => OrderingTerm.asc(c.position)]))
+            .get();
+    for (final c in lines) {
+      await _db
+          .into(_db.taskChecks)
+          .insert(TaskChecksCompanion.insert(taskId: nextId, position: c.position, title: c.title));
+    }
+    return nextId;
   }
 
   /// Moves a mission to the Recycle Bin.
@@ -126,7 +216,7 @@ class TaskRepository {
         while (next.isBefore(today)) {
           next = recurrence.nextAfter(next);
         }
-        nextId = await _db.into(_db.tasks).insert(_companionFor(_copyDue(task, next), createdAt: now));
+        nextId = await _insertNext(task, next, now);
       }
 
       await (_db.update(_db.tasks)..where((t) => t.id.equals(id))).write(
@@ -205,7 +295,7 @@ class TaskRepository {
       int? nextId;
       if (task.recurrence != null && task.dueDate != null) {
         final nextDue = task.recurrence!.nextOccurrence(due: task.dueDate!, today: CalendarDate.of(now));
-        nextId = await _db.into(_db.tasks).insert(_companionFor(_copyDue(task, nextDue), createdAt: now));
+        nextId = await _insertNext(task, nextDue, now);
       }
 
       await (_db.update(_db.tasks)..where((t) => t.id.equals(id))).write(

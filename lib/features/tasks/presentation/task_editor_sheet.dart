@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_button.dart';
+import '../../../core/design/components/k_check_circle.dart';
 import '../../../core/design/components/k_chip.dart';
 import '../../../core/design/components/k_dropdown.dart';
 import '../../../core/design/components/k_icon_button.dart';
@@ -67,6 +68,15 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
 
   /// The repeat built in the custom sheet ("every 2 days", "Tue, Thu").
   late Recurrence? _custom = _repeat == _Repeat.custom ? widget.task?.recurrence : null;
+
+  /// The checklist as edited here; saved with the mission.
+  late final List<_Line> _lines = [
+    if (widget.task != null)
+      for (final c
+          in ref.read(taskBoardProvider).valueOrNull?.checksOf(widget.task!.id) ?? const <TaskCheck>[])
+        _Line(id: c.id, title: c.title, done: c.done),
+  ];
+  final _newLine = TextEditingController();
   String? _error;
   bool _saving = false;
 
@@ -76,6 +86,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
   void dispose() {
     _title.dispose();
     _notes.dispose();
+    _newLine.dispose();
     super.dispose();
   }
 
@@ -129,6 +140,23 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
     });
   }
 
+  void _addLine() {
+    final title = _newLine.text.trim();
+    if (title.isEmpty) return;
+    setState(() {
+      _lines.add(_Line(title: title));
+      _newLine.clear();
+    });
+  }
+
+  /// Ticks a line. On a saved mission a saved line is stored straight away,
+  /// so the checklist works as a checklist without pressing Save.
+  void _tick(_Line line, bool done) {
+    setState(() => line.done = done);
+    final id = line.id;
+    if (!_isNew && id != null) ref.read(taskActionsProvider).setCheckDone(id, done: done);
+  }
+
   Future<void> _pickDate(CalendarDate today) async {
     final initial = _due ?? today;
     final picked = await showDatePicker(
@@ -159,6 +187,9 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
       dueTime: _due == null ? null : _time,
       recurrence: _recurrence(),
     );
+    // A line typed but not yet added still counts.
+    if (_newLine.text.trim().isNotEmpty) _addLine();
+    final checks = [for (final l in _lines) TaskCheckDraft(id: l.id, title: l.title, done: l.done)];
     final problem = draft.validate();
     if (problem != null) {
       setState(() => _error = problem);
@@ -169,9 +200,9 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
     final navigator = Navigator.of(context);
     try {
       if (_isNew) {
-        await actions.create(draft);
+        await actions.create(draft, checks: checks);
       } else {
-        await actions.update(widget.task!.id, draft);
+        await actions.update(widget.task!.id, draft, checks: checks);
       }
       navigator.pop();
     } on TaskValidationException catch (e) {
@@ -228,6 +259,58 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
                 ),
                 const SizedBox(height: KSpacing.sm),
                 KTextField(label: 'Notes', controller: _notes, hint: 'Optional details', maxLines: 3),
+                label(
+                  _lines.isEmpty
+                      ? 'Checklist'
+                      : 'Checklist · ${_lines.where((l) => l.done).length}/${_lines.length}',
+                ),
+                for (final line in _lines)
+                  Semantics(
+                    container: true,
+                    child: Row(
+                      children: [
+                        KCheckCircle(
+                          checked: line.done,
+                          semanticLabel: line.title,
+                          onChanged: (done) => _tick(line, done),
+                        ),
+                        Expanded(
+                          child: Text(
+                            line.title,
+                            style: text.bodyMedium?.copyWith(
+                              color: line.done ? context.palette.textMuted : null,
+                              decoration: line.done ? TextDecoration.lineThrough : null,
+                            ),
+                          ),
+                        ),
+                        KIconButton(
+                          glyph: KGlyphs.close,
+                          tooltip: 'Remove ${line.title}',
+                          onPressed: () => setState(() => _lines.remove(line)),
+                        ),
+                      ],
+                    ),
+                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: KTextField(
+                        label: 'Add a step',
+                        controller: _newLine,
+                        hint: 'e.g. Book tickets',
+                        maxLength: TaskCheckDraft.maxTitleLength,
+                        textInputAction: TextInputAction.next,
+                        onSubmitted: (_) => _addLine(),
+                      ),
+                    ),
+                    const SizedBox(width: KSpacing.sm),
+                    Padding(
+                      padding: const EdgeInsets.only(top: KSpacing.lg),
+                      child: KIconButton(glyph: KGlyphs.plus, tooltip: 'Add step', onPressed: _addLine),
+                    ),
+                  ],
+                ),
                 label('When'),
                 Wrap(
                   spacing: KSpacing.sm,
@@ -364,6 +447,15 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
       ],
     );
   }
+}
+
+/// One checklist line in the editor; [id] is null until saved.
+class _Line {
+  _Line({this.id, required this.title, this.done = false});
+
+  final int? id;
+  final String title;
+  bool done;
 }
 
 /// Tone used for a priority marker.

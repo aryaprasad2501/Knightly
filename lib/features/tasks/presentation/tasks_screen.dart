@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/design/ambient/k_backdrop.dart';
 import '../../../core/design/components/k_button.dart';
 import '../../../core/design/components/k_empty_state.dart';
+import '../../../core/design/components/k_icon_button.dart';
 import '../../../core/design/components/k_loading_indicator.dart';
 import '../../../core/design/components/k_section_header.dart';
 import '../../../core/design/components/k_surface.dart';
+import '../../../core/design/components/k_text_field.dart';
 import '../../../core/design/icons/k_glyph.dart';
 import '../../../core/design/icons/k_glyphs.dart';
 import '../../../core/design/layout/k_page.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../application/tasks_providers.dart';
 import '../domain/task_views.dart';
@@ -28,6 +31,7 @@ class TasksScreen extends ConsumerWidget {
     final view = ref.watch(selectedTaskViewProvider);
     final projectId = ref.watch(effectiveProjectFilterProvider);
     final today = ref.watch(todayProvider);
+    final search = ref.watch(taskSearchProvider);
 
     void compose() => composeMission(context, ref);
 
@@ -38,6 +42,14 @@ class TasksScreen extends ConsumerWidget {
       eyebrow: eyebrow,
       title: context.byStyle('Case files', 'Targets'),
       backdrop: KBackdrop.missions,
+      actions: [
+        if (search == null)
+          KIconButton(
+            glyph: KGlyphs.search,
+            tooltip: 'Search missions',
+            onPressed: () => ref.read(taskSearchProvider.notifier).open(),
+          ),
+      ],
       children: board.when(
         loading: () => const [
           Padding(
@@ -53,6 +65,7 @@ class TasksScreen extends ConsumerWidget {
           ),
         ],
         data: (board) {
+          if (search != null) return [_SearchResults(board: board, query: search, today: today)];
           final sections = sectionsFor(
             view,
             open: board.open,
@@ -72,7 +85,12 @@ class TasksScreen extends ConsumerWidget {
                 for (final task in section.tasks) ...[
                   KSurface(
                     padding: EdgeInsets.zero,
-                    child: TaskTile(task: task, today: today, projectName: board.projectName(task.projectId)),
+                    child: TaskTile(
+                      task: task,
+                      today: today,
+                      projectName: board.projectName(task.projectId),
+                      checks: board.checksOf(task.id),
+                    ),
                   ),
                   const SizedBox(height: KSpacing.sm),
                 ],
@@ -82,6 +100,88 @@ class TasksScreen extends ConsumerWidget {
           ];
         },
       ),
+    );
+  }
+}
+
+/// The search field and what matches it, in place of the usual views.
+class _SearchResults extends ConsumerWidget {
+  const _SearchResults({required this.board, required this.query, required this.today});
+
+  final TaskBoard board;
+  final String query;
+  final CalendarDate today;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sections = searchTasks(
+      query,
+      open: board.open,
+      done: board.done,
+      checks: board.checks,
+      projectName: board.projectName,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: KTextField(
+                label: 'Search missions',
+                hint: 'Title, notes, checklist or project',
+                glyph: KGlyphs.search,
+                autofocus: true,
+                textInputAction: TextInputAction.search,
+                onChanged: ref.read(taskSearchProvider.notifier).type,
+              ),
+            ),
+            const SizedBox(width: KSpacing.sm),
+            Padding(
+              padding: const EdgeInsets.only(top: KSpacing.lg),
+              child: KIconButton(
+                glyph: KGlyphs.close,
+                tooltip: 'Close search',
+                onPressed: () => ref.read(taskSearchProvider.notifier).close(),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: KSpacing.lg),
+        if (query.trim().isEmpty)
+          Text(
+            'Type to search open and completed missions.',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          )
+        else if (sections.isEmpty)
+          const KSurface(
+            padding: EdgeInsets.fromLTRB(KSpacing.xl, KSpacing.xxl, KSpacing.xl, KSpacing.xl),
+            child: KEmptyState(
+              glyph: KGlyphs.search,
+              title: 'No matching missions',
+              message: 'Try fewer or different words.',
+            ),
+          )
+        else
+          for (final section in sections) ...[
+            KSectionHeader('${section.title} · ${section.tasks.length}'),
+            for (final task in section.tasks) ...[
+              KSurface(
+                padding: EdgeInsets.zero,
+                child: TaskTile(
+                  task: task,
+                  today: today,
+                  projectName: board.projectName(task.projectId),
+                  checks: board.checksOf(task.id),
+                ),
+              ),
+              const SizedBox(height: KSpacing.sm),
+            ],
+            const SizedBox(height: KSpacing.lg),
+          ],
+      ],
     );
   }
 }

@@ -57,3 +57,20 @@ class Tasks extends Table {
   /// Set when the mission is in the Recycle Bin.
   DateTimeColumn get deletedAt => dateTime().nullable()();
 }
+
+/// A mission's checklist, in [position] order. Added in schema v13.
+@DataClassName('TaskCheckRow')
+@TableIndex(name: 'task_checks_task', columns: {#taskId})
+class TaskChecks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+
+  /// Stable id across devices and backups (see `newUuid`).
+  TextColumn get uuid => text().clientDefault(newUuid).unique()();
+
+  /// Permanently deleting a mission deletes its checklist.
+  IntColumn get taskId => integer().references(Tasks, #id, onDelete: KeyAction.cascade)();
+  IntColumn get position => integer()();
+  TextColumn get title => text().withLength(min: 1, max: 120)();
+  BoolColumn get done => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}

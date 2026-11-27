@@ -70,6 +70,7 @@ class BackupService {
       final meals = await (_db.select(_db.mealEntries)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final careJobs = await (_db.select(_db.careJobs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final careLogs = await (_db.select(_db.careLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final taskChecks = await (_db.select(_db.taskChecks)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -317,6 +318,18 @@ class BackupService {
               'updatedAt': _time(l.updatedAt),
             },
         ],
+        'taskChecks': [
+          for (final c in taskChecks)
+            {
+              'id': c.id,
+              'uuid': c.uuid,
+              'taskId': c.taskId,
+              'position': c.position,
+              'title': c.title,
+              'done': c.done,
+              'updatedAt': _time(c.updatedAt),
+            },
+        ],
       };
     });
 
@@ -418,6 +431,7 @@ class BackupService {
       meals: [for (final r in tables['mealEntries']!) _mealRow(r)],
       careJobs: [for (final r in tables['careJobs']!) _careJobRow(r)],
       careLogs: [for (final r in tables['careLogs']!) _careLogRow(r)],
+      taskChecks: [for (final r in tables['taskChecks']!) _taskCheckRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -504,6 +518,12 @@ class BackupService {
     for (final l in p.careLogs) {
       if (!careJobIds.contains(l.jobId.value)) throw _damaged;
     }
+    unique(p.taskChecks.map((r) => r.id.value));
+    unique(p.taskChecks.map((r) => r.uuid.value));
+    final taskIds = {for (final r in p.tasks) r.id.value};
+    for (final c in p.taskChecks) {
+      if (!taskIds.contains(c.taskId.value)) throw _damaged;
+    }
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -515,6 +535,7 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.taskChecks).go();
       await _db.delete(_db.careLogs).go();
       await _db.delete(_db.careJobs).go();
       await _db.delete(_db.mealEntries).go();
@@ -552,6 +573,7 @@ class BackupService {
         b.insertAll(_db.mealEntries, parsed.meals);
         b.insertAll(_db.careJobs, parsed.careJobs);
         b.insertAll(_db.careLogs, parsed.careLogs);
+        b.insertAll(_db.taskChecks, parsed.taskChecks);
       });
     });
     return parsed.summary;
@@ -842,6 +864,16 @@ class BackupService {
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
   );
 
+  TaskChecksCompanion _taskCheckRow(Map<String, Object?> r) => TaskChecksCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    taskId: _int(r, 'taskId'),
+    position: _int(r, 'position'),
+    title: _string(r, 'title', min: 1, max: 120),
+    done: Value(r['done'] is bool ? r['done']! as bool : throw _damaged),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+  );
+
   static double _double(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is num && v.isFinite && v >= 0) return v.toDouble();
@@ -918,6 +950,7 @@ class _Parsed {
     required this.meals,
     required this.careJobs,
     required this.careLogs,
+    required this.taskChecks,
   });
 
   final BackupSummary summary;
@@ -939,6 +972,7 @@ class _Parsed {
   final List<MealEntriesCompanion> meals;
   final List<CareJobsCompanion> careJobs;
   final List<CareLogsCompanion> careLogs;
+  final List<TaskChecksCompanion> taskChecks;
 }
 
 final backupServiceProvider = Provider<BackupService>(

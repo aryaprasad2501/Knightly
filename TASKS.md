@@ -49,9 +49,9 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 
 ### Tasks follow-ups (not built — deliberately out of Stage 2 scope)
 
-- [ ] Subtasks / checklist inside a mission (promised on the old coming-soon page)
+- [x] Subtasks / checklist inside a mission (2026-11-28)
 - [ ] Manual drag-to-reorder within a day
-- [ ] Search across missions
+- [x] Search across missions (2026-11-28)
 - [x] Reminders for timed missions (2026-11-28, Settings › Notifications)
 - [ ] "Edit this occurrence vs. whole series" for repeating missions (today: edits apply to the open occurrence; future ones copy it)
 - [ ] Completed history beyond the latest 200 (pagination) — only matters for Insights later

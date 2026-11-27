@@ -17,11 +17,20 @@ import '../time_format.dart';
 /// One mission row. Tap to edit, tick to complete, swipe right to complete
 /// (or reopen), swipe left to delete.
 class TaskTile extends ConsumerWidget {
-  const TaskTile({super.key, required this.task, required this.today, this.projectName});
+  const TaskTile({
+    super.key,
+    required this.task,
+    required this.today,
+    this.projectName,
+    this.checks = const [],
+  });
 
   final Task task;
   final CalendarDate today;
   final String? projectName;
+
+  /// The mission's checklist; shown as "2/5" when it has one.
+  final List<TaskCheck> checks;
 
   Future<bool> _onSwipe(BuildContext context, WidgetRef ref, DismissDirection direction) async {
     if (direction == DismissDirection.startToEnd) {
@@ -101,7 +110,7 @@ class TaskTile extends ConsumerWidget {
                                 decorationColor: p.textMuted,
                               ),
                             ),
-                            _Meta(task: task, today: today, projectName: projectName),
+                            _Meta(task: task, today: today, projectName: projectName, checks: checks),
                           ],
                         ),
                       ),
@@ -128,11 +137,12 @@ class TaskTile extends ConsumerWidget {
 }
 
 class _Meta extends StatelessWidget {
-  const _Meta({required this.task, required this.today, this.projectName});
+  const _Meta({required this.task, required this.today, this.projectName, this.checks = const []});
 
   final Task task;
   final CalendarDate today;
   final String? projectName;
+  final List<TaskCheck> checks;
 
   @override
   Widget build(BuildContext context) {
@@ -179,6 +189,14 @@ class _Meta extends StatelessWidget {
         ),
         glyph: KGlyphs.calendar,
         color: color,
+      );
+    }
+    if (checks.isNotEmpty) {
+      final ticked = checks.where((c) => c.done).length;
+      add(
+        '$ticked/${checks.length}',
+        glyph: KGlyphs.check,
+        color: ticked == checks.length ? p.success : null,
       );
     }
     if (task.recurrence != null) add(task.recurrence!.describe(), glyph: KGlyphs.repeat);

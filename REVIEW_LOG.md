@@ -15,6 +15,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 1 | Workouts details page | 36cbf0a | Track > tap the Workouts picture: 7/30/90 days, stats, most trained, sessions |
 | 2 | Reminders: missions, water, wind-down, habits | 53c7d06 | Settings > Notifications > What to remind; Coming up list shows them |
 | 3 | Swipe tabs, exit confirm, Home + panel, 4 gauges | 924f73b | Swipe on any tab; Back on Home; tap + on Home; briefing gauges |
+| 4 | CRUD gaps: past-day habits, water by day | c23346c | Track > habit week dots (past days); Water details > tap a day |
 
 ### CRUD audit (2026-11-28)
 

@@ -17,6 +17,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 3 | Swipe tabs, exit confirm, Home + panel, 4 gauges | 924f73b | Swipe on any tab; Back on Home; tap + on Home; briefing gauges |
 | 4 | CRUD gaps: past-day habits, water by day | c23346c | Track > habit week dots (past days); Water details > tap a day |
 
+| 5 | Dock styles + Home in the middle + rotation | 13798b6 | Settings > Dock style (try each + both random modes); dock order |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

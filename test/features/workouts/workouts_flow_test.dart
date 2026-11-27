@@ -5,6 +5,7 @@ import 'package:knightly/core/design/components/k_check_circle.dart';
 import 'package:knightly/core/design/components/k_chip.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
 import 'package:knightly/core/design/components/k_number_field.dart';
+import 'package:knightly/features/workouts/presentation/body_stats_card.dart';
 import 'package:knightly/features/workouts/presentation/exercise_library_screen.dart';
 import 'package:knightly/features/workouts/presentation/workout_screen.dart';
 import 'package:knightly/features/workouts/presentation/workouts_section.dart';
@@ -105,5 +106,31 @@ void main() {
     await tapShown(tester, inSection(find.widgetWithText(KButton, 'Full log')));
     await tester.pumpAndSettle();
     expect(find.text('Barbell Bench Press - Medium Grip · 1 × 60 kg × 8'), findsOneWidget);
+  });
+
+  testWidgets('enter weight and height on Track › Workouts and see the BMI', (tester) async {
+    usePhoneViewport(tester);
+    await pumpKnightlyApp(tester, now: now);
+    await goToTab(tester, 'Track');
+    await scrollTo(tester, find.byType(BodyStatsCard));
+    await settle(tester);
+    expect(find.text('Add your weight and height to see your BMI'), findsOneWidget);
+
+    await tapShown(tester, find.byType(BodyStatsCard));
+    await tester.pumpAndSettle();
+    final fields = find.descendant(of: find.byType(KNumberField), matching: find.byType(TextField));
+    await tester.enterText(fields.at(0), '72.5');
+    await tester.enterText(fields.at(1), '178');
+    await tester.pumpAndSettle();
+    expect(find.text('BMI 22.9 · Healthy weight'), findsOneWidget);
+    await tapShown(tester, find.widgetWithText(KButton, 'Save'));
+    await settle(tester);
+
+    expect(find.descendant(of: find.byType(BodyStatsCard), matching: find.text('22.9')), findsOneWidget);
+    expect(find.descendant(of: find.byType(BodyStatsCard), matching: find.text('72.5 kg')), findsOneWidget);
+    expect(
+      find.descendant(of: find.byType(BodyStatsCard), matching: find.text('Healthy weight')),
+      findsOneWidget,
+    );
   });
 }

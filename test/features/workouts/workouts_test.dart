@@ -5,6 +5,7 @@ import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/database/app_database.dart';
 import 'package:knightly/features/workouts/data/workout_repository.dart';
+import 'package:knightly/features/workouts/domain/body_stats.dart';
 import 'package:knightly/features/workouts/domain/exercise.dart';
 import 'package:knightly/features/workouts/domain/workout.dart';
 
@@ -159,6 +160,26 @@ void main() {
       await repo.discard(other);
       expect(await repo.find(other), isNull);
       expect(await db.select(db.workoutSets).get(), isEmpty, reason: 'first workout had no ticked sets');
+    });
+  });
+
+  group('body stats', () {
+    test('BMI is kg / m² to one decimal, with WHO bands', () {
+      expect(const BodyStats(weightKg: 72.5, heightCm: 178).bmi, 22.9);
+      expect(const BodyStats(weightKg: 72.5, heightCm: 178).band, BmiBand.healthy);
+      expect(BmiBand.of(18.4), BmiBand.underweight);
+      expect(BmiBand.of(25), BmiBand.overweight);
+      expect(BmiBand.of(30), BmiBand.obese);
+      expect(const BodyStats(weightKg: 70).bmi, isNull);
+    });
+
+    test('stored as "kg,cm"; bad or missing parts are unknown', () {
+      const s = BodyStats(weightKg: 72.5, heightCm: 178);
+      expect(s.encode(), '72.5,178');
+      expect(BodyStats.parse(s.encode()), s);
+      expect(BodyStats.parse(',165'), const BodyStats(heightCm: 165));
+      expect(BodyStats.parse('5,999'), BodyStats.empty);
+      expect(BodyStats.parse(null).isEmpty, isTrue);
     });
   });
 }

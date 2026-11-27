@@ -5,6 +5,11 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+### Added
+- **Body stats in Workouts**: enter your current weight and height on Track › Workouts and see
+  your BMI with its band (underweight, healthy, overweight, obese). Saved on the phone and in
+  backups.
+
 ## Phase 2 · step 8 — 2026-11-27 — Nutrition
 
 ### Added

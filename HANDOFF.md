@@ -4,6 +4,11 @@ _Last updated: 2026-11-27 · Phase 2 step 8 (Nutrition) complete_
 
 ## Where things stand
 
+**Latest (body stats, 2026-11-27):** user request. `workouts/domain/body_stats.dart` (BMI, WHO bands),
+`bodyStatsProvider` (setting `body.stats` = "kg,cm", so backups carry it; no schema change),
+`presentation/body_stats_card.dart` (card under the Workouts buttons + edit sheet). 356 tests. Verified on
+the Pixel 8 AVD. Weight history over time is not built (current value only). **Next:** Home care.
+
 **Latest (Phase 2 step 8 — Nutrition, 2026-11-27):** schema v10 (`features/nutrition/data/nutrition_tables.dart`:
 `foods` with bin, `meal_entries` with name/totals snapshot and `food_id` → SET NULL; migration v9→v10).
 Food list: `assets/data/foods.json` (7,448 foods, 919 KB) built by `tool/nutrition/build_foods.py` from the

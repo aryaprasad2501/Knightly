@@ -14,6 +14,7 @@ import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../application/workouts_providers.dart';
 import '../domain/workout.dart';
+import 'body_stats_card.dart';
 
 /// Starts a workout (or resumes the one in progress) and opens it. Public
 /// entry point (Track, Home quick action).
@@ -138,6 +139,8 @@ class WorkoutsSection extends ConsumerWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: KSpacing.md),
+                    const BodyStatsCard(),
                     if (recent.isNotEmpty) ...[
                       const SizedBox(height: KSpacing.lg),
                       Row(

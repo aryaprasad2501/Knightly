@@ -6,7 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../../../core/time/habit_schedule.dart' show weekStartOf;
+import '../../settings/data/settings_repository.dart';
 import '../data/workout_repository.dart';
+import '../domain/body_stats.dart';
 import '../domain/exercise.dart';
 import '../domain/workout.dart';
 
@@ -121,3 +123,26 @@ class WorkoutActions {
 final workoutActionsProvider = Provider<WorkoutActions>(
   (ref) => WorkoutActions(ref.watch(workoutRepositoryProvider)),
 );
+
+/// The person's current weight and height (a setting, "kg,cm"). Public:
+/// the Workouts section shows them with the BMI.
+class BodyStatsNotifier extends AsyncNotifier<BodyStats> {
+  static const storageKey = 'body.stats';
+
+  @override
+  Future<BodyStats> build() async =>
+      BodyStats.parse(await ref.watch(settingsRepositoryProvider).read(storageKey));
+
+  Future<void> set(BodyStats stats) async {
+    final previous = state;
+    state = AsyncData(stats);
+    try {
+      await ref.read(settingsRepositoryProvider).write(storageKey, stats.encode());
+    } catch (_) {
+      state = previous;
+      rethrow;
+    }
+  }
+}
+
+final bodyStatsProvider = AsyncNotifierProvider<BodyStatsNotifier, BodyStats>(BodyStatsNotifier.new);

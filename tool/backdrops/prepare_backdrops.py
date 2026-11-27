@@ -13,6 +13,9 @@ with a feathered copy of nearby texture (PATCHES, in source pixels).
 Panels: wide header art for tracker panels on Track (1080 x 450, WebP), cropped
 from the same wallpapers, again with every franchise logo out of frame.
 
+Graded backdrops: a crop re-lit in the theme's HUD colours (GRADED) — the
+Insights cave is DK-02 graded into steel blue and ice so it carries little gold.
+
 Logos: the two approved app icons, resized to 384 px for in-app use.
 
 The Shadow Cat Home backdrop (sc_today) is fixed by the user: do not reframe it.
@@ -78,6 +81,30 @@ PATCHES = {
     'DK-06_Dark_Fortress.png': [((470, 682, 536, 778), -74)],
 }
 
+# Re-lit backdrops: name -> (source file, crop, colour ramp from shadow to highlight, share of the original kept)
+GRADED = {
+    # The cave command centre, in steel blue and ice for Insights (user: less yellow).
+    'dk_insights': (
+        'DK-02_Command_Center.png',
+        (0.025, 0.0, 0.975),
+        [(0.0, (4, 9, 17)), (0.25, (18, 42, 76)), (0.55, (70, 130, 198)), (0.82, (160, 212, 248)), (1.0, (236, 248, 255))],
+        0.12,
+    ),
+}
+
+
+def ramp(stops):
+    lut = []
+    for i in range(256):
+        x = i / 255
+        for (a, ca), (b, cb) in zip(stops, stops[1:]):
+            if a <= x <= b:
+                t = (x - a) / (b - a)
+                lut.append(tuple(round(ca[k] + (cb[k] - ca[k]) * t) for k in range(3)))
+                break
+    return lut
+
+
 LOGO_FILES = {'dk_logo': 'DK-APP-ICON-APPROVED.png', 'sc_logo': 'SC-APP-ICON-APPROVED.png'}
 
 
@@ -112,6 +139,21 @@ def main(only: list[str]):
         path = OUT / f'{name}.webp'
         crop.save(path, 'WEBP', quality=78, method=6)
         print(f'{name:<12} {file:<38} {path.stat().st_size // 1024} KB')
+    for name, (file, (l, t, r), stops, keep) in GRADED.items():
+        if only and name not in only:
+            continue
+        im = Image.open(SRC / 'wallpapers' / file).convert('RGB')
+        for box, dy in PATCHES.get(file, []):
+            patch(im, box, dy)
+        crop = im.crop(crop_box(im, l, t, r)).resize((W, H), Image.LANCZOS)
+        lut = ramp(stops)
+        grey = ImageEnhance.Contrast(crop.convert('L')).enhance(1.1)
+        graded = Image.merge('RGB', [grey.point([c[k] for c in lut]) for k in range(3)])
+        crop = Image.blend(graded, crop, keep)
+        crop = ImageEnhance.Sharpness(crop).enhance(1.12)
+        path = OUT / f'{name}.webp'
+        crop.save(path, 'WEBP', quality=78, method=6)
+        print(f'{name:<12} {file:<38} {path.stat().st_size // 1024} KB (graded)')
     PANEL_OUT.mkdir(parents=True, exist_ok=True)
     for name, (file, (l, t, r)) in PANELS.items():
         if only and name not in only:

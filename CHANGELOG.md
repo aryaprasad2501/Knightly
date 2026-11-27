@@ -10,8 +10,9 @@ versions follow `pubspec.yaml`.
   productivity score with a breakdown and how it is calculated, activity by day / week / month,
   missions (done, pending, overdue, on time, by project and priority), habit consistency and
   streaks, areas compared, trends against the previous period, personal records and when you get
-  things done. Dark Knight: a holographic HUD in steel blue and ice — turning instrument rings
-  behind a hexagonal score reactor, data streams, circuit traces and a grid floor. Shadow Cat: a
+  things done. Dark Knight: a holographic HUD in steel blue and ice over a cave command centre —
+  turning instrument rings behind a hexagonal score reactor, bats crossing the cave, data streams
+  and circuit traces. Shadow Cat: a
   violet nebula with orbits and rising motes around a glowing ring bloom. A live ticker of your
   figures runs along the top. A short activation plays the first time you open it.
 - **Settings** now open from the gear at the top right of every tab (Insights took its place in

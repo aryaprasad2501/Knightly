@@ -111,8 +111,45 @@ class _InsightsEnvironmentState extends State<InsightsEnvironment> {
   final _cache = _Baked();
   final _rings = _Baked();
 
+  /// The cave (Dark Knight only), decoded once.
+  static const _caveAsset = AssetImage('assets/backdrops/dk_insights.webp');
+  ui.Image? _cave;
+  ImageStream? _stream;
+  ImageStreamListener? _listener;
+
+  void _loadCave(bool tactical) {
+    if (!tactical) {
+      _release();
+      return;
+    }
+    if (_stream != null) return;
+    final stream = _caveAsset.resolve(createLocalImageConfiguration(context));
+    final listener = ImageStreamListener((info, _) {
+      if (!mounted) {
+        info.dispose();
+        return;
+      }
+      setState(() {
+        _cave?.dispose();
+        _cave = info.image;
+      });
+    });
+    stream.addListener(listener);
+    _stream = stream;
+    _listener = listener;
+  }
+
+  void _release() {
+    if (_listener != null) _stream?.removeListener(_listener!);
+    _stream = null;
+    _listener = null;
+    _cave?.dispose();
+    _cave = null;
+  }
+
   @override
   void dispose() {
+    _release();
     _cache.clear();
     _rings.clear();
     super.dispose();
@@ -125,13 +162,14 @@ class _InsightsEnvironmentState extends State<InsightsEnvironment> {
     final canvas = context.palette.canvas;
     final dpr = math.min(MediaQuery.devicePixelRatioOf(context), 2.0);
     final rich = widget.effects != KEffects.low;
+    _loadCave(family == KStyleFamily.tactical);
     return IgnorePointer(
       child: ExcludeSemantics(
         child: RepaintBoundary(
           child: CustomPaint(
             size: Size.infinite,
             painter: family == KStyleFamily.tactical
-                ? _HudPainter(widget.time, widget.scroll, hud, canvas, _cache, _rings, dpr, rich: rich)
+                ? _HudPainter(widget.time, widget.scroll, hud, canvas, _cache, _rings, dpr, _cave, rich: rich)
                 : _NebulaPainter(widget.time, widget.scroll, hud, canvas, _cache, dpr, rich: rich),
           ),
         ),
@@ -189,9 +227,13 @@ class _HudPainter extends CustomPainter {
     this.canvas,
     this.cache,
     this.rings,
-    this.dpr, {
+    this.dpr,
+    this.cave, {
     required this.rich,
   }) : super(repaint: Listenable.merge([time, scroll]));
+
+  /// The cave photo behind the HUD; null while it loads (a drawn room shows).
+  final ui.Image? cave;
 
   final ValueListenable<double> time;
   final ValueListenable<double> scroll;
@@ -211,6 +253,10 @@ class _HudPainter extends CustomPainter {
   void _still(Canvas c, Size size) {
     final w = size.width, h = size.height;
     final rect = Offset.zero & size;
+    if (cave != null) {
+      _overlay(c, size);
+      return;
+    }
     c.drawRect(
       rect,
       Paint()
@@ -266,6 +312,122 @@ class _HudPainter extends CustomPainter {
         c.drawCircle(Offset(fx(end), y0 + 18), 2.4, node);
       }
     }
+  }
+
+  /// Over the cave: a hex mesh and circuit traces only (the cave is the room).
+  void _overlay(Canvas c, Size size) {
+    if (!rich) return;
+    final w = size.width, h = size.height;
+    final mesh = _stroke(0.6, hud.bright.withValues(alpha: 0.035));
+    const r = 16.0;
+    final dx = r * math.sqrt(3);
+    for (var row = 0; row * r * 1.5 < h * 0.3; row++) {
+      final y = row * r * 1.5;
+      for (var x = (row.isOdd ? dx / 2 : 0.0); x < w + dx; x += dx) {
+        final hex = Path();
+        for (var k = 0; k < 6; k++) {
+          final a = math.pi / 6 + k * math.pi / 3;
+          final p = Offset(x + math.cos(a) * r, y + math.sin(a) * r);
+          k == 0 ? hex.moveTo(p.dx, p.dy) : hex.lineTo(p.dx, p.dy);
+        }
+        c.drawPath(hex..close(), mesh);
+      }
+    }
+    final trace = _stroke(1, hud.secondary.withValues(alpha: 0.4));
+    final node = Paint()..color = hud.secondaryBright.withValues(alpha: 0.8);
+    for (final left in [true, false]) {
+      double fx(double x) => left ? x : w - x;
+      for (var i = 0; i < 3; i++) {
+        final y0 = h * (0.22 + i * 0.09);
+        final run = 22.0 + i * 12;
+        final end = run + 16 + 18.0 * (i % 2 + 1);
+        c.drawPath(
+          Path()
+            ..moveTo(fx(0), y0)
+            ..lineTo(fx(run), y0)
+            ..lineTo(fx(run + 16), y0 + 16)
+            ..lineTo(fx(end), y0 + 16),
+          trace,
+        );
+        c.drawCircle(Offset(fx(end), y0 + 16), 2.2, node);
+      }
+    }
+  }
+
+  /// The cave, slightly larger than the screen so it can drift left and right
+  /// and rise with the scroll; darkened where the cards sit.
+  void _drawCave(Canvas c, Size size, ui.Image image, double t, double lift) {
+    final w = size.width, h = size.height;
+    final iw = image.width.toDouble(), ih = image.height.toDouble();
+    final cover = math.max(w / iw, h / ih) * 1.1;
+    final dw = iw * cover, dh = ih * cover;
+    final sway = rich ? math.sin(t * 0.09) * (dw - w) * 0.45 : 0.0;
+    final dx = (w - dw) / 2 + sway;
+    final dy = (h - dh) / 2 - (lift * 0.06).clamp(0.0, (dh - h) / 2 + 40);
+    c.drawImageRect(
+      image,
+      Rect.fromLTWH(0, 0, iw, ih),
+      Rect.fromLTWH(dx, dy, dw, dh),
+      Paint()..filterQuality = FilterQuality.medium,
+    );
+    final rect = Offset.zero & size;
+    c.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            canvas.withValues(alpha: 0.35),
+            canvas.withValues(alpha: 0.1),
+            canvas.withValues(alpha: 0.35),
+            canvas.withValues(alpha: 0.7),
+          ],
+          stops: const [0, 0.3, 0.6, 1],
+        ).createShader(rect),
+    );
+  }
+
+  /// Bats crossing the cave now and then, wings beating.
+  void _bats(Canvas c, Size s, double t, double lift) {
+    final w = s.width, h = s.height;
+    final body = Paint()..color = hud.deep;
+    final rim = _stroke(0.8, hud.bright.withValues(alpha: 0.35));
+    for (var i = 0; i < 4; i++) {
+      final cycle = (t * (0.03 + i * 0.006) + i * 0.29) % 1.5;
+      if (cycle > 1.2) continue;
+      final dir = i.isEven ? 1.0 : -1.0;
+      final x = dir > 0 ? (cycle - 0.1) * w : w - (cycle - 0.1) * w;
+      final y = h * (0.08 + i * 0.07) + math.sin(t * 1.3 + i) * 14 - lift * 0.05;
+      final bat = _flyingBat(Offset(x, y), 10.0 - i * 1.4, math.sin(t * 11 + i * 2));
+      c.drawPath(bat, body);
+      c.drawPath(bat, rim);
+    }
+  }
+
+  /// An original bat in flight: a small body and two scalloped wings.
+  static Path _flyingBat(Offset at, double span, double flap) {
+    final lift = flap * span * 0.45;
+    final p = Path()..addOval(Rect.fromCenter(center: at, width: span * 0.35, height: span * 0.5));
+    for (final side in [-1.0, 1.0]) {
+      p
+        ..moveTo(at.dx, at.dy)
+        ..quadraticBezierTo(
+          at.dx + side * span * 0.5,
+          at.dy - lift - span * 0.3,
+          at.dx + side * span,
+          at.dy - lift,
+        )
+        ..quadraticBezierTo(
+          at.dx + side * span * 0.75,
+          at.dy - lift * 0.4 + span * 0.12,
+          at.dx + side * span * 0.55,
+          at.dy + span * 0.05,
+        )
+        ..quadraticBezierTo(at.dx + side * span * 0.35, at.dy + span * 0.02, at.dx, at.dy + span * 0.12)
+        ..close();
+    }
+    return p;
   }
 
   /// The HUD rings, baked once side by side in one image (each drawn later at
@@ -363,7 +525,10 @@ class _HudPainter extends CustomPainter {
     if (w <= 0 || h <= 0) return;
     final t = time.value;
     final lift = scroll.value;
-    _drawBaked(c, cache.get((size, hud, canvas, rich, 'hud'), size, dpr, _still), size);
+    final image = cave;
+    if (image != null) _drawCave(c, size, image, t, lift);
+    _drawBaked(c, cache.get((size, hud, canvas, rich, 'hud', image != null), size, dpr, _still), size);
+    if (image != null && rich) _bats(c, size, t, lift);
 
     // The ring system behind the reactor, following it up as you scroll.
     const d = _ringMax * 2;
@@ -392,6 +557,14 @@ class _HudPainter extends CustomPainter {
       ring(3, -t * 0.03);
     }
 
+    if (image == null) _floor(c, size, t, lift);
+
+    if (!rich) return;
+    _streams(c, size, t);
+  }
+
+  void _floor(Canvas c, Size size, double t, double lift) {
+    final w = size.width, h = size.height;
     // Perspective floor: lines run to a vanishing point on the horizon and
     // the cross lines roll towards you.
     final horizon = h * 0.66 - (lift * 0.08).clamp(0, h * 0.2);
@@ -438,8 +611,10 @@ class _HudPainter extends CustomPainter {
         ).createShader(band)
         ..strokeWidth = 1.2,
     );
+  }
 
-    if (!rich) return;
+  void _streams(Canvas c, Size size, double t) {
+    final w = size.width, h = size.height;
     // Data streams falling down the edges.
     final stream = _stroke(1, hud.primary.withValues(alpha: 0.22));
     final bit = Paint()..color = hud.secondaryBright;
@@ -471,7 +646,7 @@ class _HudPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_HudPainter old) =>
-      old.hud != hud || old.rich != rich || old.canvas != canvas || old.dpr != dpr;
+      old.hud != hud || old.rich != rich || old.canvas != canvas || old.dpr != dpr || old.cave != cave;
 }
 
 class _NebulaPainter extends CustomPainter {

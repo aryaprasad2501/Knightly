@@ -7,8 +7,9 @@ _Last updated: 2026-11-27 · Insights complete_
 **Latest (Insights, 2026-11-27):** `features/insights` — domain `insights.dart` (`InsightsSnapshot`, areas,
 rates, activity buckets, trends, records, 7×8 heat), `insights_providers.dart` (reads other modules via new
 `completedTasksSinceProvider`, `waterLogsSinceProvider`, `sleepNightsSinceProvider`, `mealEntriesSinceProvider`),
-presentation: `insights_screen.dart`, `insights_environment.dart` (DK: JARVIS-style HUD — baked ring sheet
-rotated per frame, hex mesh, circuit traces, data streams, grid floor; SC: baked nebula + orbits + motes),
+presentation: `insights_screen.dart`, `insights_environment.dart` (DK: JARVIS-style HUD over the cave backdrop
+`dk_insights.webp` — DK-02 graded to steel blue by `prepare_backdrops.py` GRADED — baked ring sheet rotated per
+frame, flying bats, circuit traces, data streams; grid floor only while the cave loads; SC: baked nebula + orbits + motes),
 `score_core.dart` (hexagon reactor / ring bloom; rings baked, trim live). The user tried a Batcave
 room + hologram city + round holo-table and preferred the first hexagon design with a JARVIS background and
 little yellow (`KHudColors.tactical` is blue/ice; gold only a rare accent), `holo_panel.dart` (3D side entrance, baked

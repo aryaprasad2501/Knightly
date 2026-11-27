@@ -64,7 +64,11 @@ void main() {
     await goToTab(tester, 'Home');
     expect(find.text('File taxes').hitTestable(), findsNothing);
     expect(find.bySemanticsLabel(RegExp('^Missions done')), findsNothing);
-    expect(find.bySemanticsLabel(RegExp('^Habits done')), findsOneWidget, reason: 'other modules keep working');
+    expect(
+      find.bySemanticsLabel(RegExp('^Habits done')),
+      findsOneWidget,
+      reason: 'other modules keep working',
+    );
     expect(find.text('New mission'), findsNothing, reason: 'no quick action and no dock command');
 
     await toggleModules(tester, ['Missions']);

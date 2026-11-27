@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Workouts details page**: tap the Workouts picture on Track for 7/30/90 days — volume by day,
+  training days, week streak, sets, time spent, biggest day, most-trained exercises with best set
+  and estimated 1RM, and every session.
 - **Home briefing** right under the greeting: a live console with a dial of today's missions,
   habits and routines (in a turning instrument ring / petal halo), a status line from your real
   numbers, and round gauges for missions, habits, water, last night's sleep, calories, Home care

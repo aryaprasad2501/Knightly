@@ -22,6 +22,7 @@ import '../../features/sleep/presentation/sleep_details_screen.dart';
 import '../../features/water/presentation/water_details_screen.dart';
 import '../../features/nutrition/presentation/nutrition_day_screen.dart';
 import '../../features/workouts/presentation/exercise_library_screen.dart';
+import '../../features/workouts/presentation/workout_details_screen.dart';
 import '../../features/workouts/presentation/workout_history_screen.dart';
 import '../../features/workouts/presentation/workout_screen.dart';
 import '../../features/today/presentation/today_screen.dart';
@@ -89,6 +90,7 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
       ),
       GoRoute(path: AppRoutes.waterDetails, builder: (context, state) => const WaterDetailsScreen()),
       GoRoute(path: AppRoutes.sleepDetails, builder: (context, state) => const SleepDetailsScreen()),
+      GoRoute(path: AppRoutes.workoutDetails, builder: (context, state) => const WorkoutDetailsScreen()),
       GoRoute(path: AppRoutes.homeCare, builder: (context, state) => const HomeCareScreen()),
       GoRoute(
         path: AppRoutes.careJob,

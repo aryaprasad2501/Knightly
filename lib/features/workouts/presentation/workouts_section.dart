@@ -56,6 +56,7 @@ class WorkoutsSection extends ConsumerWidget {
                   context.byStyle('assets/panels/dk_workouts.webp', 'assets/panels/sc_workouts.webp'),
                 ),
                 height: 190,
+                onTap: () => context.push(AppRoutes.workoutDetails),
                 child: Semantics(
                   container: true,
                   label:

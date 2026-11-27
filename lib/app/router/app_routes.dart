@@ -39,6 +39,7 @@ abstract final class AppRoutes {
   /// Tracker details pages (history, charts and stats).
   static const waterDetails = '/water';
   static const sleepDetails = '/sleep';
+  static const workoutDetails = '/training';
   static const nutritionInsights = '/nutrition/insights';
 
   /// Home care: every job, and one job with its history ([careJobFor]).

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_description">Today at a glance: commitments done, water and the next mission.</string>
+    <string name="widget_missions_description">Missions: done today and the next one.</string>
+    <string name="widget_habits_description">Habits: how many are done today.</string>
+    <string name="widget_water_description">Water: how much you have had today.</string>
+    <string name="widget_event_description">Calendar: your next event today.</string>
 </resources>

@@ -3,4 +3,4 @@
      shrinker to drop: keep them in release builds. Without this, reminders fail with
      "invalid_icon" in release. -->
 <resources xmlns:tools="http://schemas.android.com/tools"
-    tools:keep="@drawable/ic_stat_knightly,@drawable/splash_blank,@layout/knightly_widget,@drawable/widget_background" />
+    tools:keep="@drawable/ic_stat_knightly,@drawable/splash_blank,@layout/knightly_widget,@layout/knightly_widget_module,@drawable/widget_background" />

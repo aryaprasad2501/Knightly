@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Module widgets**: four small home-screen widgets, Missions, Habits, Water and Next event, next to
+  "Knightly · Today". Place only the ones you want; tapping one opens that module.
 - **Yearly events** (birthdays, anniversaries): "Every year" repeat in Calendar and missions, and a
   "Birthday · yearly" chip in the event editor (all day, every year, reminder that morning).
 - **Mission checklists**: add steps in the mission editor; the card shows "2/5"; ticks save straight

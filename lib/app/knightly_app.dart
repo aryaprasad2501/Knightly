@@ -116,6 +116,7 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
         return MediaQuery(
           data: media.copyWith(disableAnimations: media.disableAnimations || reduceMotion),
           child: HomeWidgetSync(
+            onOpen: _openReminder,
             child: ReminderHost(
               onOpen: _openReminder,
               child: KBootSequence(child: child ?? const SizedBox.shrink()),

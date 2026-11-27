@@ -13,3 +13,4 @@ git diff review-start-2026-11-28..HEAD --stat
 | # | Stage | Commit | What to check in the app |
 |---|---|---|---|
 | 1 | Workouts details page | 36cbf0a | Track > tap the Workouts picture: 7/30/90 days, stats, most trained, sessions |
+| 2 | Reminders: missions, water, wind-down, habits | 53c7d06 | Settings > Notifications > What to remind; Coming up list shows them |

@@ -24,6 +24,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 9 | Floating Home +, About card | 40f8f42 | Home: + floats over the page; Settings > About |
 | 10 | Draggable Home + (remembers place) | 06110e0 | Drag the + on Home, restart: it stays |
 | 11 | Briefing gauges clipped + scroll hint | 2c9f1a0 | Home briefing: dots + chevron, swipe the gauges |
+| 12 | Yearly events / birthdays | 1d3e0b6 | Calendar > New event > Birthday · yearly |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

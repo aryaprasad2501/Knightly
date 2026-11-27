@@ -2,6 +2,7 @@ import 'dart:ui' show PathMetric;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../sound/k_sounds.dart';
 
 import '../theme/k_tone.dart';
 import '../theme/theme_context.dart';
@@ -41,6 +42,7 @@ class KCheckCircle extends StatelessWidget {
 
   void _toggle() {
     HapticFeedback.lightImpact();
+    if (!checked) KSounds.play(KSound.confirm);
     onChanged!(!checked);
   }
 

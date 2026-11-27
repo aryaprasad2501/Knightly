@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'dart:async';
+import '../../sound/k_sounds.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -253,6 +254,7 @@ class KNavigationBar extends StatelessWidget {
                     position: '${i + 1} of ${destinations.length}',
                     onTap: () {
                       HapticFeedback.selectionClick();
+                      if (i != selectedIndex) KSounds.play(KSound.tab);
                       onSelected(i);
                     },
                   ),

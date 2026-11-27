@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../sound/k_sounds.dart';
 
 import '../theme/k_shapes.dart';
 import '../theme/theme_context.dart';
@@ -29,6 +30,7 @@ class KToggle extends StatelessWidget {
 
     void toggle() {
       HapticFeedback.selectionClick();
+      KSounds.play(KSound.toggle);
       onChanged!(!value);
     }
 

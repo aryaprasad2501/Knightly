@@ -95,6 +95,21 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: KSpacing.md),
         KCard(
+          glyph: KGlyphs.bell,
+          title: 'Sounds',
+          subtitle: ref.watch(soundsProvider)
+              ? "Soft clicks for tabs, done and switches — in each theme's own voice."
+              : 'Off. Knightly stays silent.',
+          onTap: () =>
+              _setSwitch(context, ref.read(soundsControllerProvider.notifier).set, !ref.read(soundsProvider)),
+          trailing: KToggle(
+            value: ref.watch(soundsProvider),
+            semanticLabel: 'Sounds',
+            onChanged: (on) => _setSwitch(context, ref.read(soundsControllerProvider.notifier).set, on),
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
           glyph: KGlyphs.bolt,
           title: 'Low mode',
           subtitle: low

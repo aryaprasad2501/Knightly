@@ -40,6 +40,21 @@ class ReduceMotionController extends _Switch {
   String get storageKey => 'appearance.reduce_motion';
 }
 
+/// Interface sounds (tab switch, done, toggles). On by default.
+class SoundsController extends _Switch {
+  @override
+  String get storageKey => 'appearance.sounds';
+
+  @override
+  Future<bool> build() async => await ref.watch(settingsRepositoryProvider).read(storageKey) != 'off';
+}
+
+final soundsControllerProvider = AsyncNotifierProvider<SoundsController, bool>(SoundsController.new);
+final soundsProvider = Provider<bool>((ref) => ref.watch(soundsControllerProvider).valueOrNull ?? true);
+
+/// Whether sounds may play at all (tests switch it off: no audio there).
+final soundsAllowedProvider = Provider<bool>((ref) => true);
+
 final lowModeControllerProvider = AsyncNotifierProvider<LowModeController, bool>(LowModeController.new);
 final reduceMotionControllerProvider = AsyncNotifierProvider<ReduceMotionController, bool>(
   ReduceMotionController.new,

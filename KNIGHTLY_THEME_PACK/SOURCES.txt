@@ -34,3 +34,7 @@ External assets
   Chakra Petch SemiBold/Bold — ofl/chakrapetch
   Cormorant Garamond (variable, upright only) — ofl/cormorantgaramond
   JetBrains Mono (variable, upright only) — ofl/jetbrainsmono
+
+2026-11-28 sounds (user-approved D4): Kenney Interface Sounds 1.0, kenney.nl/assets/interface-sounds, CC0.
+  Used: dk tab=switch_003 tap=click_002 confirm=confirmation_001 toggle=toggle_001;
+        sc tab=select_003 tap=pluck_001 confirm=glass_002 toggle=drop_002. Licence in assets/sounds/LICENSE.txt.

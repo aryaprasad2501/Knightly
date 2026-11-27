@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Sounds**: soft clicks for switching tabs, ticking things done and toggles — mechanical in Dark
+  Knight, airy in Shadow Cat (Kenney Interface Sounds, CC0). Settings › Sounds turns them off.
 - **Theme fonts**: Dark Knight titles in Chakra Petch with JetBrains Mono readouts; Shadow Cat
   titles in Cormorant Garamond. Inter stays for reading. (Open Font License, bundled.)
 - **App version** under Settings › About and on the licences page.

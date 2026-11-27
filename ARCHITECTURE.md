@@ -352,6 +352,7 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 | `path_provider` | ^2.1.5 | runtime | App-private folder for restore safety copies. Already resolved (same version) as a dependency of `drift_flutter`; now declared because Knightly calls it directly. |
 | `sensors_plus` | ^7.1.1 | runtime | Accelerometer for the Insights tilt (user request, 2026-11-27). Read only while Insights is on screen with full effects; off in Low mode / Reduce motion. No network, no permission. |
 | `package_info_plus` | ^9.0.1 | runtime | App version shown in Settings and on the licences page (user-approved 2026-11-28). No network, no permission. |
+| `just_audio` | ^0.10.6 | runtime | Short interface sounds from bundled assets (`core/sound/k_sounds.dart`), user-approved 2026-11-28. Players are created lazily per sound; failures are ignored. |
 
 Files the user picks (backup save/open) go through Android's system file
 picker via a small `knightly/documents` method channel in `MainActivity.kt`

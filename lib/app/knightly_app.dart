@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/design/brand/k_boot_sequence.dart';
+import '../core/sound/k_sounds.dart';
 import '../core/design/brand/k_emblems.dart';
 import '../core/design/theme/knightly_style.dart';
 import '../core/design/theme/knightly_theme.dart';
@@ -91,6 +92,10 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
     final theme = buildKnightlyTheme(_shown);
     final incoming = _incoming;
     final reduceMotion = ref.watch(reduceMotionProvider);
+    KSounds.configure(
+      enabled: ref.watch(soundsProvider) && ref.watch(soundsAllowedProvider),
+      tactical: _shown == KnightlyThemeId.darkKnight,
+    );
 
     // Dark-only: the same theme is used regardless of the system setting.
     final app = MaterialApp.router(

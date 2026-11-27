@@ -17,6 +17,7 @@ import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/modules/app_module.dart';
 import '../../notifications/application/notifications_providers.dart';
 import '../../recycle_bin/application/recycle_bin_providers.dart';
+import '../application/display_controllers.dart';
 import '../application/live_backdrop_controller.dart';
 import '../application/theme_controller.dart';
 import 'widgets/theme_option.dart';
@@ -28,6 +29,8 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final active = ref.watch(activeThemeProvider);
     final live = ref.watch(liveBackdropProvider);
+    final low = ref.watch(lowModeProvider);
+    final still = ref.watch(reduceMotionProvider);
     final binCount = ref.watch(binItemsProvider).valueOrNull?.length ?? 0;
     final modulesOn = ref.watch(enabledModulesProvider);
     final remindersOn = ref.watch(remindersEnabledProvider).valueOrNull ?? true;
@@ -57,6 +60,34 @@ class SettingsScreen extends ConsumerWidget {
             value: live,
             semanticLabel: 'Live backdrop',
             onChanged: (on) => _setLive(context, ref, on),
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
+          glyph: KGlyphs.bolt,
+          title: 'Low mode',
+          subtitle: low
+              ? 'On · lighter effects for older phones. Everything still works.'
+              : 'Full effects. Turn on if screens feel slow on an older phone.',
+          onTap: () => _setSwitch(context, ref.read(lowModeControllerProvider.notifier).set, !low),
+          trailing: KToggle(
+            value: low,
+            semanticLabel: 'Low mode',
+            onChanged: (on) => _setSwitch(context, ref.read(lowModeControllerProvider.notifier).set, on),
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
+          glyph: KGlyphs.moon,
+          title: 'Reduce motion',
+          subtitle: still
+              ? 'On · no intros, entrances or moving backgrounds.'
+              : 'Intros, entrances and moving backgrounds play.',
+          onTap: () => _setSwitch(context, ref.read(reduceMotionControllerProvider.notifier).set, !still),
+          trailing: KToggle(
+            value: still,
+            semanticLabel: 'Reduce motion',
+            onChanged: (on) => _setSwitch(context, ref.read(reduceMotionControllerProvider.notifier).set, on),
           ),
         ),
         const SizedBox(height: KSpacing.md),
@@ -135,6 +166,17 @@ class SettingsScreen extends ConsumerWidget {
         ],
       ],
     );
+  }
+
+  Future<void> _setSwitch(BuildContext context, Future<void> Function(bool) set, bool on) async {
+    try {
+      await set(on);
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not save the setting. Please try again.')));
+    }
   }
 
   Future<void> _setLive(BuildContext context, WidgetRef ref, bool on) async {

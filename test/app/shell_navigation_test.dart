@@ -25,7 +25,7 @@ void main() {
       'Calendar': 'Week',
       'Tasks': 'No missions yet',
       'Track': 'No habits yet',
-      'Settings': 'SHADOW CAT',
+      'Insights': 'SCORE',
       'Home': 'No mission scheduled',
     };
 
@@ -61,7 +61,7 @@ void main() {
     usePhoneViewport(tester);
     await pumpKnightlyApp(tester);
 
-    await _goTo(tester, 'Settings');
+    await openSettings(tester);
     await tester.runAsync(() async {
       await tester.tap(find.text('SHADOW CAT'));
       await Future<void>.delayed(const Duration(milliseconds: 50));
@@ -69,9 +69,10 @@ void main() {
     await tester.pumpAndSettle();
 
     final steel = KnightlyThemeId.shadowCat.palette.canvas;
-    expect(canvasOf(tester, find.byType(KNavigationBar)), steel);
+    expect(canvasOf(tester, find.text('SHADOW CAT')), steel);
 
-    await _goTo(tester, 'Home');
+    await backToTabs(tester);
+    expect(canvasOf(tester, find.byType(KNavigationBar)), steel);
     expect(canvasOf(tester, find.text('No mission scheduled')), steel);
   });
 

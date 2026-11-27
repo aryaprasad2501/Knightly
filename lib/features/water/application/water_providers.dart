@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../../settings/data/settings_repository.dart';
 import '../data/water_repository.dart';
@@ -29,6 +30,11 @@ class WaterGoal extends AsyncNotifier<int> {
 }
 
 final waterGoalProvider = AsyncNotifierProvider<WaterGoal, int>(WaterGoal.new);
+
+/// Logs from a day on. Public: Insights reads history.
+final waterLogsSinceProvider = StreamProvider.family<List<WaterLog>, CalendarDate>(
+  (ref, since) => ref.watch(waterRepositoryProvider).watchLogs(since: since),
+);
 
 /// The last 7 days of logs (today included).
 final waterLogsProvider = StreamProvider<List<WaterLog>>((ref) {

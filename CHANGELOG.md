@@ -6,6 +6,18 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Insights** (new tab in the dock): a command centre built only from what you record —
+  productivity score with a breakdown and how it is calculated, activity by day / week / month,
+  missions (done, pending, overdue, on time, by project and priority), habit consistency and
+  streaks, areas compared, trends against the previous period, personal records and when you get
+  things done. Dark Knight: a round command chamber with a skyline window, gold ring lights, a
+  hologram city of your last 14 days and a radar holo-table. Shadow Cat: a violet night garden
+  with crystal spires, petals and ripples. A short activation plays the first time you open it.
+- **Settings** now open from the gear at the top right of every tab (Insights took its place in
+  the dock).
+- **Low mode** (lighter effects for older phones) and **Reduce motion** in Settings.
+- **Welcome** on first launch: try both themes.
+
 - **Home care** (Home, Garden and Pets): recurring chores, plant care, pet and aquarium care and
   household maintenance. Repeat every few days, weeks or months (counted from when you last did it),
   on fixed weekdays, or on a day of the month. Each job shows when it is due, with Done, Done

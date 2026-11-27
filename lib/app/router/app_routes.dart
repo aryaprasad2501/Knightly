@@ -5,9 +5,11 @@ abstract final class AppRoutes {
   static const calendar = '/calendar';
   static const tasks = '/tasks';
   static const track = '/track';
-  static const settings = '/settings';
+  static const insights = '/insights';
 
   // Pushed pages (cover the dock).
+  /// Settings: opened from the gear at the top right of every tab.
+  static const settings = '/settings';
   static const recycleBin = '/recycle-bin';
   static const backup = '/backup';
   static const modules = '/modules';

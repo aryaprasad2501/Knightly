@@ -15,6 +15,7 @@ final now = DateTime(2026, 11, 25, 9); // Wednesday morning
 final today = CalendarDate.of(now);
 
 Future<void> goToTab(WidgetTester tester, String label) async {
+  await backToTabs(tester);
   await tester.tap(find.descendant(of: find.byType(KNavigationBar), matching: find.text(label)));
   await tester.pumpAndSettle();
 }
@@ -107,7 +108,7 @@ void main() {
     // Again, then restore from Settings › Recycle Bin.
     await tester.drag(find.text('Old idea').hitTestable(), const Offset(-500, 0));
     await settleWithDatabase(tester);
-    await goToTab(tester, 'Settings');
+    await openSettings(tester);
     await scrollAndTap(tester, find.text('Recycle Bin'));
     await settleWithDatabase(tester);
     expect(find.text('Old idea'), findsOneWidget);
@@ -160,7 +161,7 @@ void main() {
         await repo.trash(await repo.create(TaskDraft(title: title)));
       }
     });
-    await goToTab(tester, 'Settings');
+    await openSettings(tester);
     await scrollAndTap(tester, find.text('Recycle Bin'));
     await settleWithDatabase(tester);
     expect(find.text('3 deleted items · restore or delete for good'), findsNothing); // on the page now

@@ -155,3 +155,21 @@ Track / Tasks / Settings scenes, because each such draw makes the GPU copy the f
 
 Not yet re-measured on the Knightly_LowEnd AVD.
 
+
+## Insights command centre (2026-11-27)
+
+Static art (room layers, panel frames, settled score rings) is baked into bitmaps; per frame the room
+draws three images at parallax offsets plus a few moving shapes (bats, pulses, petals, motes) at 30 Hz.
+A first version that painted panel scanlines and glows live measured raster p50 ~25 ms while
+scrolling; baking removed that cost from idle frames.
+
+| Pixel 8 AVD, release + KNIGHTLY_PERF | Raster p50 | Raster p90 | Over budget per 5 s |
+|---|---|---|---|
+| Insights idle, full effects (room animating) | 3.3–3.4 ms | 7.7–11 ms | 1 |
+| Insights scrolling | 21–27 ms | 30–35 ms | 100–180 |
+| Track scrolling, same session (baseline) | 18–20 ms | 28–30 ms | 120–170 |
+
+The emulator was slower this session than in the table above (Track baseline ~19 ms instead of
+3–5 ms), so scroll numbers are only comparable with each other: Insights scrolls about 30 % heavier
+than Track. **Not measured on Knightly_LowEnd** — that AVD crashed on boot (exit 139) this session.
+Low mode exists for weak phones; measure it on real low-end hardware before release.

@@ -6,6 +6,7 @@ import '../../core/design/ambient/k_backdrop.dart';
 import '../../core/modules/app_module.dart';
 import '../../core/design/components/k_navigation_bar.dart';
 import '../../core/design/icons/k_glyphs.dart';
+import '../../core/design/layout/k_page.dart';
 import '../../core/design/theme/theme_context.dart';
 import '../../core/design/tokens/k_motion.dart';
 import '../../core/design/tokens/k_spacing.dart';
@@ -15,7 +16,9 @@ import '../../features/habits/presentation/habit_editor_sheet.dart';
 import '../../core/time/clock.dart';
 import '../../features/routines/presentation/routine_editor_sheet.dart';
 import '../../features/tasks/presentation/task_editor_sheet.dart';
+import '../../features/settings/presentation/welcome_sheet.dart';
 import '../../features/tasks/presentation/task_ui_actions.dart';
+import '../router/app_routes.dart';
 
 /// Top-level destinations, in bottom-bar order. Must match the branch order in
 /// `app_router.dart`.
@@ -24,20 +27,20 @@ const shellDestinations = [
   KNavDestination(glyph: KGlyphs.calendar, label: 'Calendar'),
   KNavDestination(glyph: KGlyphs.tasks, label: 'Tasks'),
   KNavDestination(glyph: KGlyphs.track, label: 'Track'),
-  KNavDestination(glyph: KGlyphs.settings, label: 'Settings'),
+  KNavDestination(glyph: KGlyphs.chart, label: 'Insights'),
 ];
 
 /// Hosts the five branch navigators under the Knightly command dock. Each
 /// branch keeps its own navigation stack. The dock's contextual action follows
 /// the selected screen.
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.navigationShell, required this.children});
 
   final StatefulNavigationShell navigationShell;
   final List<Widget> children;
 
   /// Whether branch [index] (in [shellDestinations] order) is shown, given
-  /// the modules that are on. Home and Settings are always there; Track stays
+  /// the modules that are on. Home and Insights are always there; Track stays
   /// while anything it shows is on.
   static bool isBranchVisible(int index, Set<AppModule> on) => switch (index) {
     1 => on.contains(AppModule.calendar),
@@ -50,15 +53,20 @@ class AppShell extends ConsumerWidget {
     _ => true,
   };
 
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
   void _onSelected(int index) {
     // Re-selecting the current tab returns it to its root.
-    navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
+    widget.navigationShell.goBranch(index, initialLocation: index == widget.navigationShell.currentIndex);
   }
 
   /// The command each screen puts on the dock, in [shellDestinations] order.
-  KDockAction? _actionFor(int index, BuildContext context, WidgetRef ref) => switch (index) {
+  KDockAction? _actionFor(int index, BuildContext context) => switch (index) {
     // From Home a new mission is for today; from Tasks it follows the board's view.
-    0 when _on(ref, AppModule.missions) => KDockAction(
+    0 when _on(AppModule.missions) => KDockAction(
       glyph: KGlyphs.plus,
       label: 'New mission',
       onPressed: () => showTaskEditor(context, initialDue: ref.read(todayProvider)),
@@ -73,12 +81,12 @@ class AppShell extends ConsumerWidget {
       label: 'New mission',
       onPressed: () => composeMission(context, ref),
     ),
-    3 when _on(ref, AppModule.habits) => KDockAction(
+    3 when _on(AppModule.habits) => KDockAction(
       glyph: KGlyphs.plus,
       label: 'New habit',
       onPressed: () => showHabitEditor(context),
     ),
-    3 when _on(ref, AppModule.routines) => KDockAction(
+    3 when _on(AppModule.routines) => KDockAction(
       glyph: KGlyphs.plus,
       label: 'New routine',
       onPressed: () => showRoutineEditor(context),
@@ -86,20 +94,29 @@ class AppShell extends ConsumerWidget {
     _ => null,
   };
 
-  static bool _on(WidgetRef ref, AppModule module) => ref.read(enabledModulesProvider).contains(module);
+  bool _on(AppModule module) => ref.read(enabledModulesProvider).contains(module);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  void initState() {
+    super.initState();
+    // The first time Knightly opens: a short welcome and the two themes.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) maybeShowWelcome(context, ref);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final canvas = context.palette.canvas;
     final modules = ref.watch(enabledModulesProvider);
     final visible = [
       for (var i = 0; i < shellDestinations.length; i++)
-        if (isBranchVisible(i, modules)) i,
+        if (AppShell.isBranchVisible(i, modules)) i,
     ];
-    final current = navigationShell.currentIndex;
+    final current = widget.navigationShell.currentIndex;
     if (!visible.contains(current)) {
       // The open tab's module was just switched off: go Home.
-      WidgetsBinding.instance.addPostFrameCallback((_) => navigationShell.goBranch(0));
+      WidgetsBinding.instance.addPostFrameCallback((_) => widget.navigationShell.goBranch(0));
     }
     // Decode the theme's page backdrops up front so every tab opens on its
     // picture, not on the drawn fallback. Cached, so repeat calls are free.
@@ -117,16 +134,22 @@ class AppShell extends ConsumerWidget {
 
     // Back on another tab returns to Home first; only Home's Back leaves the app.
     return PopScope(
-      canPop: navigationShell.currentIndex == 0,
+      canPop: widget.navigationShell.currentIndex == 0,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) navigationShell.goBranch(0);
+        if (!didPop) widget.navigationShell.goBranch(0);
       },
       child: Scaffold(
         extendBody: true,
         body: Stack(
           children: [
-            for (var i = 0; i < children.length; i++)
-              _BranchLayer(active: i == navigationShell.currentIndex, child: children[i]),
+            for (var i = 0; i < widget.children.length; i++)
+              _BranchLayer(
+                active: i == widget.navigationShell.currentIndex,
+                child: KPageChrome(
+                  onSettings: () => context.push(AppRoutes.settings),
+                  child: widget.children[i],
+                ),
+              ),
             // Fades content into the canvas behind the floating dock.
             Positioned(
               left: 0,
@@ -152,7 +175,7 @@ class AppShell extends ConsumerWidget {
           destinations: [for (final i in visible) shellDestinations[i]],
           selectedIndex: visible.contains(current) ? visible.indexOf(current) : 0,
           onSelected: (i) => _onSelected(visible[i]),
-          action: _actionFor(current, context, ref),
+          action: _actionFor(current, context),
         ),
       ),
     );

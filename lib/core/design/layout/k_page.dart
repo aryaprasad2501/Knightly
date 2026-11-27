@@ -9,6 +9,20 @@ import '../icons/k_glyphs.dart';
 import '../theme/theme_context.dart';
 import '../tokens/k_spacing.dart';
 
+/// Page chrome supplied by the app shell: [onSettings] puts a settings gear
+/// at the top right of every top-level page inside it.
+class KPageChrome extends InheritedWidget {
+  const KPageChrome({super.key, required this.onSettings, required super.child});
+
+  final VoidCallback onSettings;
+
+  static KPageChrome? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<KPageChrome>();
+
+  @override
+  bool updateShouldNotify(KPageChrome oldWidget) => oldWidget.onSettings != onSettings;
+}
+
 /// Standard top-level page: the theme's live scene behind a large title, then
 /// scrollable content whose cards arrive in a short stagger. Respects
 /// status-bar and bottom-dock insets.
@@ -79,6 +93,9 @@ class _KPageState extends State<KPage> {
     final statusBand = Color.alphaBlend(p.ambient.withValues(alpha: p.ambient.a * 0.5), p.canvas);
 
     final tactical = context.style.isTactical;
+    final chrome = KPageChrome.maybeOf(context);
+    // Pushed as its own route (Settings): a back button above the title.
+    final pushed = ModalRoute.of(context)?.canPop ?? false;
 
     // Tactical: a console header — status square, capitalised title, and a
     // lit underline segment. Feline: a quiet silver eyebrow, a title set in
@@ -153,7 +170,13 @@ class _KPageState extends State<KPage> {
             controller: _scroll,
             slivers: [
               SliverPadding(
-                padding: EdgeInsets.fromLTRB(KSpacing.gutter, insets.top + KSpacing.xl, KSpacing.gutter, 0),
+                padding: EdgeInsets.fromLTRB(
+                  KSpacing.gutter,
+                  insets.top + KSpacing.xl + (pushed ? 40 : 0),
+                  // Room for the gear at the top right.
+                  KSpacing.gutter + (chrome != null && header == null ? 40 : 0),
+                  0,
+                ),
                 sliver: SliverToBoxAdapter(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -198,6 +221,27 @@ class _KPageState extends State<KPage> {
               ),
             ),
           ),
+          if (pushed)
+            Positioned(
+              top: insets.top + KSpacing.xs,
+              left: KSpacing.gutter - KSpacing.sm,
+              child: KIconButton(
+                glyph: KGlyphs.back,
+                tooltip: 'Back',
+                onPressed: () => Navigator.of(context).maybePop(),
+              ),
+            ),
+          if (chrome != null)
+            Positioned(
+              top: insets.top + KSpacing.xs,
+              right: KSpacing.gutter - KSpacing.sm,
+              child: KIconButton(
+                glyph: KGlyphs.settings,
+                tooltip: 'Settings',
+                variant: KIconButtonVariant.tonal,
+                onPressed: chrome.onSettings,
+              ),
+            ),
         ],
       ),
     );

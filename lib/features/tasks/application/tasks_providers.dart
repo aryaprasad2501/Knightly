@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../data/task_repository.dart';
 import '../domain/task.dart';
@@ -9,6 +10,11 @@ final openTasksProvider = StreamProvider<List<Task>>((ref) => ref.watch(taskRepo
 
 final completedTasksProvider = StreamProvider<List<Task>>(
   (ref) => ref.watch(taskRepositoryProvider).watchCompleted(),
+);
+
+/// Missions completed from a day on. Public: Insights reads history.
+final completedTasksSinceProvider = StreamProvider.family<List<Task>, CalendarDate>(
+  (ref, since) => ref.watch(taskRepositoryProvider).watchCompletedSince(since.startOfDay),
 );
 
 final projectsProvider = StreamProvider<List<Project>>(

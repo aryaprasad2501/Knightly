@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/database/app_database.dart';
 import 'package:knightly/core/design/components/k_button.dart';
-import 'package:knightly/core/design/components/k_navigation_bar.dart';
 import 'package:knightly/core/design/components/k_toggle.dart';
 import 'package:knightly/core/modules/app_module.dart';
 import 'package:knightly/core/time/calendar_date.dart';
@@ -67,7 +66,7 @@ Future<void> seedWindDown(AppDatabase db) => RoutineRepository(db, clock: () => 
 );
 
 Future<void> openNotifications(WidgetTester tester) async {
-  await tester.tap(find.descendant(of: find.byType(KNavigationBar), matching: find.text('Settings')));
+  await tester.tap(find.byTooltip('Settings').hitTestable().first);
   await tester.pumpAndSettle();
   await scrollTo(tester, find.text('Notifications'));
   await tester.tap(find.text('Notifications'));

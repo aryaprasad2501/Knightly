@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../../settings/data/settings_repository.dart';
 import '../data/sleep_repository.dart';
@@ -52,6 +53,11 @@ final _sleepNightsProvider = StreamProvider<List<SleepLog>>((ref) {
   final today = ref.watch(todayProvider);
   return ref.watch(sleepRepositoryProvider).watchNights(since: today.addDays(-6));
 });
+
+/// Nights ending from a day on. Public: Insights reads history.
+final sleepNightsSinceProvider = StreamProvider.family<List<SleepLog>, CalendarDate>(
+  (ref, since) => ref.watch(sleepRepositoryProvider).watchNights(since: since),
+);
 
 /// User actions on the sleep log. Widgets never touch the repository directly.
 class SleepActions {

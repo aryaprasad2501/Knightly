@@ -44,6 +44,14 @@ class TaskRepository {
     return query.watch().map((rows) => rows.map(_toTask).toList());
   }
 
+  /// Missions completed from [since] on (not deleted), newest first.
+  Stream<List<Task>> watchCompletedSince(DateTime since) {
+    final query = _db.select(_db.tasks)
+      ..where((t) => t.completedAt.isBiggerOrEqualValue(since) & t.deletedAt.isNull())
+      ..orderBy([(t) => OrderingTerm.desc(t.completedAt)]);
+    return query.watch().map((rows) => rows.map(_toTask).toList());
+  }
+
   Stream<List<Project>> watchProjects() {
     final query = _db.select(_db.projects)
       ..where((p) => p.deletedAt.isNull())

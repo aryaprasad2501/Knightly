@@ -19,13 +19,14 @@ final today = CalendarDate.of(now);
 Finder tab(String label) => find.descendant(of: find.byType(KNavigationBar), matching: find.text(label));
 
 Future<void> goToTab(WidgetTester tester, String label) async {
+  await backToTabs(tester);
   await tester.tap(tab(label));
   await tester.pumpAndSettle();
 }
 
 /// Settings › Modules, then flips [modules] (by their visible names).
 Future<void> toggleModules(WidgetTester tester, List<String> modules) async {
-  await goToTab(tester, 'Settings');
+  await openSettings(tester);
   final row = find.text('Modules');
   await tester.scrollUntilVisible(row, 250, scrollable: find.byType(Scrollable).hitTestable().first);
   await tester.pumpAndSettle();
@@ -37,8 +38,7 @@ Future<void> toggleModules(WidgetTester tester, List<String> modules) async {
     await tester.tap(target);
     await settleWithDatabase(tester);
   }
-  await tester.pageBack();
-  await tester.pumpAndSettle();
+  await backToTabs(tester);
 }
 
 Future<void> seedMissionAndHabit(AppDatabase db) async {

@@ -63,3 +63,7 @@ app.*.map.json
 # show franchise logos, so they stay local; the app uses the cleaned copies in
 # assets/backdrops/ (made by tool/backdrops/prepare_backdrops.py).
 /KNIGHTLY_THEME_PACK/user_supplied/
+
+# Reference art from the user (contains franchise insignia): local only, never pushed.
+insight/
+/Dual-Themed Futuristic Command Center-2.png

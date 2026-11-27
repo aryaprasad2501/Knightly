@@ -3,6 +3,8 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:knightly/core/design/components/k_navigation_bar.dart';
+import 'package:knightly/features/settings/presentation/welcome_sheet.dart';
 import 'package:knightly/app/knightly_app.dart';
 import 'package:knightly/core/database/app_database.dart';
 import 'package:knightly/core/database/database_provider.dart';
@@ -66,6 +68,8 @@ Future<AppDatabase> pumpKnightlyApp(
         bootSequenceEnabledProvider.overrideWithValue(false),
         // Live header scenes repaint on a timer; tests need frames to settle.
         liveSceneEnabledProvider.overrideWithValue(false),
+        // The first-run welcome is tested on its own.
+        welcomeEnabledProvider.overrideWithValue(false),
         if (now != null) clockProvider.overrideWithValue(() => now),
         ...overrides,
       ],
@@ -112,4 +116,19 @@ Future<void> scrollTo(WidgetTester tester, Finder finder) async {
 Future<void> scrollToTop(WidgetTester tester) async {
   await tester.drag(find.byType(Scrollable).hitTestable().first, const Offset(0, 3000));
   await tester.pumpAndSettle();
+}
+
+/// Opens Settings from the gear at the top right of the current tab.
+Future<void> openSettings(WidgetTester tester) async {
+  await tester.tap(find.byTooltip('Settings').hitTestable().first);
+  await tester.pumpAndSettle();
+}
+
+/// Closes pushed pages (Settings and anything opened from it) until the tab
+/// dock is back.
+Future<void> backToTabs(WidgetTester tester) async {
+  for (var i = 0; i < 5 && find.byType(KNavigationBar).evaluate().isEmpty; i++) {
+    await tester.tap(find.byTooltip('Back').hitTestable().first);
+    await tester.pumpAndSettle();
+  }
 }

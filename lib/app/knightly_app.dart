@@ -9,6 +9,7 @@ import '../core/design/theme/knightly_style.dart';
 import '../core/design/theme/knightly_theme.dart';
 import '../core/design/theme/knightly_themes.dart';
 import '../features/notifications/presentation/reminder_host.dart';
+import '../features/settings/application/display_controllers.dart';
 import '../features/settings/application/theme_controller.dart';
 import 'router/app_router.dart';
 import 'router/app_routes.dart';
@@ -46,7 +47,8 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
 
   void _switchTo(KnightlyThemeId next) {
     if (next == _shown && _incoming == null) return;
-    final reduceMotion = PlatformDispatcher.instance.accessibilityFeatures.disableAnimations;
+    final reduceMotion =
+        PlatformDispatcher.instance.accessibilityFeatures.disableAnimations || ref.read(reduceMotionProvider);
     if (reduceMotion) {
       setState(() => _shown = next);
       return;
@@ -83,6 +85,7 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
     ref.listen(activeThemeProvider, (_, next) => _switchTo(next));
     final theme = buildKnightlyTheme(_shown);
     final incoming = _incoming;
+    final reduceMotion = ref.watch(reduceMotionProvider);
 
     // Dark-only: the same theme is used regardless of the system setting.
     final app = MaterialApp.router(
@@ -95,10 +98,18 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
       // add frames (and re-bake header scenes for every in-between palette).
       themeAnimationDuration: Duration.zero,
       routerConfig: ref.watch(appRouterProvider),
-      builder: (context, child) => ReminderHost(
-        onOpen: _openReminder,
-        child: KBootSequence(child: child ?? const SizedBox.shrink()),
-      ),
+      // The Reduce motion setting works like Android's "Remove animations":
+      // every widget that already honours that flag goes still.
+      builder: (context, child) {
+        final media = MediaQuery.of(context);
+        return MediaQuery(
+          data: media.copyWith(disableAnimations: media.disableAnimations || reduceMotion),
+          child: ReminderHost(
+            onOpen: _openReminder,
+            child: KBootSequence(child: child ?? const SizedBox.shrink()),
+          ),
+        );
+      },
     );
 
     // The Stack is permanent so the router keeps its state; only the curtain

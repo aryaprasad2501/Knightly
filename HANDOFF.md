@@ -1,8 +1,21 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-27 · Phase 2 step 9 (Home care) complete_
+_Last updated: 2026-11-27 · Insights complete_
 
 ## Where things stand
+
+**Latest (Insights, 2026-11-27):** `features/insights` — domain `insights.dart` (`InsightsSnapshot`, areas,
+rates, activity buckets, trends, records, 7×8 heat), `insights_providers.dart` (reads other modules via new
+`completedTasksSinceProvider`, `waterLogsSinceProvider`, `sleepNightsSinceProvider`, `mealEntriesSinceProvider`),
+presentation: `insights_screen.dart`, `insights_environment.dart` (baked parallax room, camera sway, bats /
+petals), `score_core.dart` (holo-table reactor + hologram towers), `holo_panel.dart` (3D side entrance, baked
+frames, expandable), `insights_charts.dart`, `insights_ticker.dart`, `insights_activation.dart` (1.3 s, first
+visit per launch). Dock: Insights replaced Settings; Settings = pushed `/settings` via gear (`KPageChrome`).
+Settings: Low mode, Reduce motion (`display_controllers.dart`); first-run `welcome_sheet.dart`. Core:
+`KHudColors`, `KEffects`, `KBakedPaint`. Reference art in `insight/` is git-ignored (contains franchise
+insignia; used only as reference). 402 tests. Verified on the Pixel 8 AVD in both themes. Perf: idle fine; the
+low-end AVD crashed on boot this session, so Low mode is not yet measured there. **Next:** Workouts details page
+(user asked), then the user's call.
 
 **Latest (Phase 2 step 9 — Home care, 2026-11-27):** schema v11 (`features/home_care/data/home_care_tables.dart`:
 `care_jobs`, `care_logs`). Domain `home_care/domain/care.dart` (`CareSchedule`: `EveryInterval` / `OnWeekdays` /

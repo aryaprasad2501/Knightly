@@ -36,7 +36,7 @@ class FakeDocumentFiles extends DocumentFiles {
 }
 
 Future<void> openBackupScreen(WidgetTester tester) async {
-  await tester.tap(find.descendant(of: find.byType(KNavigationBar), matching: find.text('Settings')));
+  await tester.tap(find.byTooltip('Settings').hitTestable().first);
   await tester.pumpAndSettle();
   final row = find.text('Backup & restore');
   await tester.scrollUntilVisible(row, 250, scrollable: find.byType(Scrollable).hitTestable().first);
@@ -139,8 +139,7 @@ void main() {
     expect(find.text('SAFETY COPIES'), findsOneWidget);
     expect(find.textContaining('1 mission, 0 projects'), findsWidgets); // the copy holds "On this phone"
 
-    await tester.pageBack();
-    await tester.pumpAndSettle();
+    await backToTabs(tester);
     await tester.tap(find.descendant(of: find.byType(KNavigationBar), matching: find.text('Tasks')));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Anytime 1'));

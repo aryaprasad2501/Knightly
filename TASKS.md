@@ -120,7 +120,9 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [ ] Wishlist & Purchase Planner (separate module; shopping lists live here, not in Home care)
 - [ ] Home care: location-based "back home" reminders (needs a geofencing package — ask first)
 - [ ] Workouts details page (charts and stats like Water / Sleep / Nutrition)
-- [ ] Insights & weekly review
+- [x] Insights command centre (2026-11-27)
+- [ ] Weekly review (a written summary on top of Insights)
+- [ ] Re-measure Insights in Low mode on the Knightly_LowEnd AVD (crashed on boot 2026-11-27)
 - [x] Local notifications/reminders (events and routines; 2026-11-26)
 - [ ] Data export/import (JSON) and local backup
 - [ ] Localisation (`intl`), units settings

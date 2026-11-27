@@ -78,6 +78,11 @@ final nutritionDayProvider = Provider.family<AsyncValue<NutritionDay>, CalendarD
 });
 
 /// Recently logged foods (distinct), newest first.
+/// Meal entries from a day on. Public: Insights reads history.
+final mealEntriesSinceProvider = StreamProvider.family<List<MealEntry>, CalendarDate>(
+  (ref, since) => ref.watch(nutritionRepositoryProvider).watchEntries(since: since),
+);
+
 final recentMealEntriesProvider = StreamProvider<List<MealEntry>>(
   (ref) => ref.watch(nutritionRepositoryProvider).watchRecent().map(recentEntries),
 );

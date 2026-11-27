@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/home_care/presentation/care_job_screen.dart';
+import '../../features/insights/presentation/insights_screen.dart';
 import '../../features/home_care/presentation/home_care_screen.dart';
 import '../../features/calendar/presentation/calendar_screen.dart';
 import '../../features/backup/presentation/backup_screen.dart';
@@ -53,9 +54,10 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
           _branch(AppRoutes.calendar, const CalendarScreen()),
           _branch(AppRoutes.tasks, const TasksScreen()),
           _branch(AppRoutes.track, const TrackScreen()),
-          _branch(AppRoutes.settings, const SettingsScreen()),
+          _branch(AppRoutes.insights, const InsightsScreen()),
         ],
       ),
+      GoRoute(path: AppRoutes.settings, builder: (context, state) => const SettingsScreen()),
       GoRoute(path: AppRoutes.recycleBin, builder: (context, state) => const RecycleBinScreen()),
       GoRoute(path: AppRoutes.backup, builder: (context, state) => const BackupScreen()),
       GoRoute(path: AppRoutes.modules, builder: (context, state) => const ModulesScreen()),

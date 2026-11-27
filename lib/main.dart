@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app/knightly_app.dart';
 import 'core/design/ambient/k_ambient_scene.dart';
 import 'core/perf/frame_probe.dart';
+import 'core/design/motion/k_effects.dart';
+import 'features/settings/application/display_controllers.dart';
 import 'features/notifications/data/notification_gateway.dart';
 import 'features/settings/application/live_backdrop_controller.dart';
 import 'features/settings/application/theme_controller.dart';
@@ -37,7 +39,11 @@ Future<void> main() async {
     overrides: [
       notificationGatewayProvider.overrideWithValue(notifications),
       // Core's live header scene follows the user's "Live backdrop" setting.
-      liveSceneEnabledProvider.overrideWith((ref) => ref.watch(liveBackdropProvider)),
+      // Low mode switches the live scene off too.
+      liveSceneEnabledProvider.overrideWith(
+        (ref) => ref.watch(liveBackdropProvider) && !ref.watch(lowModeProvider),
+      ),
+      lowEffectsProvider.overrideWith((ref) => ref.watch(lowModeProvider)),
     ],
   );
 

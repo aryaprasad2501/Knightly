@@ -13,7 +13,14 @@ void main() {
     addTearDown(router.dispose);
     expect(
       _paths(router.configuration.routes),
-      containsAll([AppRoutes.home, AppRoutes.calendar, AppRoutes.tasks, AppRoutes.track, AppRoutes.settings]),
+      containsAll([
+        AppRoutes.home,
+        AppRoutes.calendar,
+        AppRoutes.tasks,
+        AppRoutes.track,
+        AppRoutes.insights,
+        AppRoutes.settings,
+      ]),
     );
   });
 

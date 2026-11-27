@@ -131,7 +131,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Local notifications/reminders (events and routines; 2026-11-26)
 - [x] Data export/import (JSON) and local backup (Settings › Backup, safety copies)
 - [ ] Localisation (`intl`), units settings
-- [ ] Home-screen widgets
+- [x] Home-screen widget "Knightly · Today" (2026-11-28)
 
 ## Tech debt / follow-ups
 

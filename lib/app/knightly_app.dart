@@ -12,6 +12,7 @@ import '../core/design/theme/knightly_themes.dart';
 import '../features/notifications/presentation/reminder_host.dart';
 import '../features/settings/application/display_controllers.dart';
 import '../features/settings/application/theme_controller.dart';
+import 'home_widget_sync.dart';
 import 'router/app_router.dart';
 import 'router/app_routes.dart';
 
@@ -114,9 +115,11 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
         final media = MediaQuery.of(context);
         return MediaQuery(
           data: media.copyWith(disableAnimations: media.disableAnimations || reduceMotion),
-          child: ReminderHost(
-            onOpen: _openReminder,
-            child: KBootSequence(child: child ?? const SizedBox.shrink()),
+          child: HomeWidgetSync(
+            child: ReminderHost(
+              onOpen: _openReminder,
+              child: KBootSequence(child: child ?? const SizedBox.shrink()),
+            ),
           ),
         );
       },

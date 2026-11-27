@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Home-screen widget** "Knightly · Today": commitments done, water so far and the next mission;
+  tap to open. Long-press your home screen › Widgets › Knightly.
 - **Sounds**: soft clicks for switching tabs, ticking things done and toggles — mechanical in Dark
   Knight, airy in Shadow Cat (Kenney Interface Sounds, CC0). Settings › Sounds turns them off.
 - **Theme fonts**: Dark Knight titles in Chakra Petch with JetBrains Mono readouts; Shadow Cat

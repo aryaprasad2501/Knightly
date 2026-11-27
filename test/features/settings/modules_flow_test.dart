@@ -56,15 +56,15 @@ void main() {
     await pumpSeededKnightlyApp(tester, now: now, seed: seedMissionAndHabit);
     expect(tab('Tasks'), findsOneWidget);
     expect(find.text('File taxes').hitTestable(), findsOneWidget); // Home's next mission
-    expect(find.text('Missions done'), findsOneWidget);
+    expect(find.bySemanticsLabel(RegExp('^Missions done')), findsOneWidget);
 
     await toggleModules(tester, ['Missions']);
     expect(find.text('Missions is off · its data is kept'), findsOneWidget);
     expect(tab('Tasks'), findsNothing);
     await goToTab(tester, 'Home');
     expect(find.text('File taxes').hitTestable(), findsNothing);
-    expect(find.text('Missions done'), findsNothing);
-    expect(find.text('Habits done'), findsOneWidget, reason: 'other modules keep working');
+    expect(find.bySemanticsLabel(RegExp('^Missions done')), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('^Habits done')), findsOneWidget, reason: 'other modules keep working');
     expect(find.text('New mission'), findsNothing, reason: 'no quick action and no dock command');
 
     await toggleModules(tester, ['Missions']);
@@ -80,7 +80,7 @@ void main() {
     await pumpSeededKnightlyApp(tester, now: now, seed: seedMissionAndHabit);
 
     await toggleModules(tester, ['Habits']);
-    expect(find.text('Habits done'), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('^Habits done')), findsNothing);
     expect(tab('Track'), findsOneWidget, reason: 'Performance and the trackers are still on');
     await goToTab(tester, 'Track');
     expect(find.text('Meditate').hitTestable(), findsNothing);
@@ -137,6 +137,6 @@ void main() {
     expect(tab('Tasks'), findsNothing);
     expect(tab('Calendar'), findsNothing);
     expect(tab('Track'), findsOneWidget);
-    expect(find.text('Missions done'), findsNothing);
+    expect(find.bySemanticsLabel(RegExp('^Missions done')), findsNothing);
   });
 }

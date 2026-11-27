@@ -4,6 +4,10 @@ _Last updated: 2026-11-27 · Insights complete_
 
 ## Where things stand
 
+**Latest (2026-11-28):** Home `BriefingCard` (`today/presentation/widgets/briefing_card.dart`) leads Home and
+replaces `OverviewCard` + `DailyProgressCard` (removed). Gauges keep full screen-reader labels ("Missions done",
+"Water of 2 L: …"); the turning ring runs only with the live backdrop on and full effects. 417 tests.
+
 **Latest (2026-11-27, user requests):** schema **v12** (`care_jobs.category` for custom Home care categories,
 `CareArea.custom`, editor "+ Own", filter chips by category). `HomeCareSection` on Track. Track order setting
 `track.order` (`track/application/track_layout.dart`, `arrange_track_sheet.dart`, `reorder` glyph). Android

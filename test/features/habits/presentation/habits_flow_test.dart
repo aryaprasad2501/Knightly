@@ -197,15 +197,11 @@ void main() {
         await repo.setCount(done, today, 1);
       },
     );
-    await scrollTo(tester, find.text('1/2'));
-    expect(find.text('1/2'), findsOneWidget); // Habits done
-    await tester.scrollUntilVisible(
-      find.text('1 of 2'),
-      300,
-      scrollable: find.byType(Scrollable).hitTestable().first,
-    );
-    expect(find.text('1 of 2'), findsOneWidget); // Habits bar
-    expect(find.text('50%'), findsOneWidget); // ring: no missions, 1 of 2 habits
+    await scrollTo(tester, find.text('1/2').first);
+    expect(find.text('1/2'), findsWidgets); // Habits gauge and the dial
+    // The briefing dial: no missions, 1 of 2 habits.
+    expect(find.text('50% done'), findsOneWidget);
+    expect(find.text('1 of 2 commitments today'), findsOneWidget);
   });
 
   testWidgets('screen readers get separate nodes: an adjustable counter, not a merged row', (tester) async {

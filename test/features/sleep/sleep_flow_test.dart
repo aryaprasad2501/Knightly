@@ -60,7 +60,7 @@ void main() {
         clock: () => now,
       ).save(SleepDraft(date: today, bedtime: const ClockTime(0, 30), wakeTime: const ClockTime(7, 0))),
     );
-    final metric = find.bySemanticsLabel(RegExp('Sleep: 6 h 30 m last night'));
+    final metric = find.bySemanticsLabel(RegExp('Sleep: 6 h 30 m'));
     await scrollTo(tester, metric);
     expect(metric, findsOneWidget);
 

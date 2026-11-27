@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/database/app_database.dart';
 import 'package:knightly/core/design/components/k_button.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
-import 'package:knightly/core/design/components/k_progress_bar.dart';
 import 'package:knightly/core/modules/app_module.dart';
 import 'package:knightly/core/time/calendar_date.dart';
 import 'package:knightly/core/time/habit_schedule.dart';
@@ -97,9 +96,9 @@ void main() {
     expect(find.descendant(of: track, matching: find.text('Done today')), findsOneWidget);
 
     await goToTab(tester, 'Home');
-    final bar = find.byWidgetPredicate((w) => w is KProgressBar && w.label == 'Routines');
-    await scrollTo(tester, bar);
-    expect(tester.widget<KProgressBar>(bar).valueLabel, '1 of 1');
+    // The briefing counts the routine run.
+    expect(find.text('1 of 1 commitment today'), findsOneWidget);
+    expect(find.text('100% done'), findsOneWidget);
   });
 
   testWidgets('leaving mid-run keeps progress, and the routine resumes where it was', (tester) async {

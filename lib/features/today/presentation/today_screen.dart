@@ -9,8 +9,7 @@ import '../../../core/modules/app_module.dart';
 import '../../calendar/presentation/today_schedule_card.dart';
 import '../../home_care/presentation/home_care_card.dart';
 import 'widgets/command_header.dart';
-import 'widgets/daily_progress_card.dart';
-import 'widgets/overview_card.dart';
+import 'widgets/briefing_card.dart';
 import 'widgets/quick_actions_grid.dart';
 import 'widgets/upcoming_mission_card.dart';
 
@@ -30,10 +29,10 @@ class TodayScreen extends ConsumerWidget {
     // Each section appears only while a module it shows is on.
     final on = ref.watch(enabledModulesProvider);
     final sections = <List<Widget>>[
+      // The briefing first: today's commitments and vitals at a glance.
+      if (BriefingCard.hasContent(on)) const [BriefingCard()],
       if (on.contains(AppModule.missions)) const [UpcomingMissionHeader(), UpcomingMissionCard()],
       if (on.contains(AppModule.calendar)) const [KSectionHeader("Today's schedule"), TodayScheduleCard()],
-      if (OverviewCard.hasContent(on)) const [KSectionHeader("Today's overview"), OverviewCard()],
-      if (DailyProgressCard.hasContent(on)) const [KSectionHeader('Daily progress'), DailyProgressCard()],
       if (on.contains(AppModule.homeCare)) const [HomeCareCard()],
       if (QuickActionsGrid.hasContent(on)) const [KSectionHeader('Quick actions'), QuickActionsGrid()],
     ];

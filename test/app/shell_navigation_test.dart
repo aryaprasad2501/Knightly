@@ -26,7 +26,7 @@ void main() {
       'Tasks': 'No missions yet',
       'Track': 'No habits yet',
       'Insights': 'SCORE',
-      'Home': 'No mission scheduled',
+      'Home': 'BRIEFING · LIVE',
     };
 
     for (final MapEntry(key: label, value: marker) in expectations.entries) {
@@ -44,7 +44,7 @@ void main() {
     final handled = await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(handled, isTrue);
-    expect(find.text('No mission scheduled').hitTestable(), findsOneWidget);
+    expect(find.text('BRIEFING · LIVE').hitTestable(), findsOneWidget);
   });
 
   testWidgets('inactive branches are hidden from touch and accessibility', (tester) async {
@@ -53,8 +53,8 @@ void main() {
 
     await _goTo(tester, 'Tasks');
     // Home stays alive (state preserved) but cannot be hit.
-    expect(find.text('No mission scheduled'), findsOneWidget);
-    expect(find.text('No mission scheduled').hitTestable(), findsNothing);
+    expect(find.text('BRIEFING · LIVE'), findsOneWidget);
+    expect(find.text('BRIEFING · LIVE').hitTestable(), findsNothing);
   });
 
   testWidgets('theme change in Settings applies across the shell and persists', (tester) async {
@@ -73,7 +73,7 @@ void main() {
 
     await backToTabs(tester);
     expect(canvasOf(tester, find.byType(KNavigationBar)), steel);
-    expect(canvasOf(tester, find.text('No mission scheduled')), steel);
+    expect(canvasOf(tester, find.text("Today's briefing")), steel);
   });
 
   testWidgets('navigation bar exposes selected state to accessibility', (tester) async {

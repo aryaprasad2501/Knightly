@@ -82,7 +82,7 @@ void main() {
       now: now,
       seed: (db) => WaterRepository(db, clock: () => now).add(500),
     );
-    final overview = find.bySemanticsLabel(RegExp('Water of 2 L: 500 ml of 2 L today'));
+    final overview = find.bySemanticsLabel(RegExp('Water of 2 L: 500 ml'));
     await scrollTo(tester, overview);
     expect(overview, findsOneWidget);
 
@@ -92,7 +92,7 @@ void main() {
     await settleWithDatabase(tester);
     expect(find.text('250 ml of water logged'), findsOneWidget);
     await scrollToTop(tester);
-    final updated = find.bySemanticsLabel(RegExp('750 ml of 2 L today'));
+    final updated = find.bySemanticsLabel(RegExp('Water of 2 L: 750 ml'));
     await scrollTo(tester, updated);
     expect(updated, findsOneWidget);
   });

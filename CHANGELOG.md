@@ -6,6 +6,10 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Home briefing** right under the greeting: a live console with a dial of today's missions,
+  habits and routines (in a turning instrument ring / petal halo), a status line from your real
+  numbers, and round gauges for missions, habits, water, last night's sleep, calories, Home care
+  and your next event — each opens its page. Replaces the old overview and progress cards.
 - **Insights tilt**: tilt the phone and the score reactor turns with it while the room shifts
   behind; panels lean too and tip towards your finger when pressed. Off in Low mode and with
   Reduce motion.

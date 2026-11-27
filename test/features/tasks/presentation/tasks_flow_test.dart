@@ -326,16 +326,15 @@ void main() {
     expect(find.text('File taxes'), findsOneWidget);
     expect(find.text('Overdue · 2 days'), findsOneWidget);
     // The overview sits below the fold; the page builds lazily.
-    await scrollTo(tester, find.text('0/1'));
-    expect(find.text('0/1'), findsOneWidget);
-    await scrollToTop(tester);
+    await scrollTo(tester, find.text('0/1').first);
+    expect(find.text('0/1'), findsWidgets); // the dial and the Missions gauge
+    await scrollTo(tester, find.text('File taxes'));
 
     await tester.tap(find.byType(KCheckCircle).hitTestable().first);
     await settleWithDatabase(tester);
     expect(find.text('No mission scheduled'), findsOneWidget);
-    await scrollTo(tester, find.text('1/1'));
-    expect(find.text('1/1'), findsOneWidget);
-    await scrollTo(tester, find.text('100%'));
-    expect(find.text('100%'), findsOneWidget);
+    await scrollToTop(tester);
+    expect(find.text('1/1'), findsWidgets);
+    expect(find.text('100% done'), findsOneWidget);
   });
 }

@@ -36,6 +36,8 @@ versions follow `pubspec.yaml`.
   builds, so scheduling failed ("invalid_icon").
 
 ### Changed
+- Home briefing gauges: clipped to the card (no half-visible fifth gauge), snap in pages of four, with
+  page dots and a chevron showing there is more.
 - Home's "+" is now a floating button (hexagon in Dark Knight, round in Shadow Cat): drag it anywhere
   on Home and it stays there, also after restarting.
 - Settings › About: "Made by Arya" card; licences are a small link.

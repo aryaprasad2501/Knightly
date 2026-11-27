@@ -347,39 +347,7 @@ class _BriefingCardState extends ConsumerState<BriefingCard> with TickerProvider
                   const SizedBox(height: KSpacing.lg),
                   // Four gauges across; any more scroll. Built together so screen
                   // readers reach them all.
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      const gap = KSpacing.xs;
-                      final width = (constraints.maxWidth - gap * 3) / 4;
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        clipBehavior: Clip.none,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            for (final (i, g) in gauges.indexed) ...[
-                              if (i > 0) const SizedBox(width: gap),
-                              () {
-                                // Gauges rise in one after another and fill.
-                                final local = ((t * (gauges.length + 3) - i) / 3).clamp(0.0, 1.0);
-                                return Opacity(
-                                  opacity: local,
-                                  alwaysIncludeSemantics: true,
-                                  child: Transform.translate(
-                                    offset: Offset(0, 14 * (1 - local)),
-                                    child: SizedBox(
-                                      width: width,
-                                      child: g.copyWith(fill: local),
-                                    ),
-                                  ),
-                                );
-                              }(),
-                            ],
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                  _GaugeStrip(gauges: gauges, t: t),
                 ],
               ],
             ),
@@ -394,6 +362,168 @@ class _BriefingCardState extends ConsumerState<BriefingCard> with TickerProvider
 
 /// A round gauge: an arc for progress around the figure, with a short
 /// caption below. The whole gauge opens its page.
+/// Four gauges across, clipped to the card; more scroll sideways in pages of
+/// four. Dots under the strip (and a chevron while more is to the right) show
+/// that it scrolls and where you are.
+class _GaugeStrip extends StatefulWidget {
+  const _GaugeStrip({required this.gauges, required this.t});
+
+  final List<_Gauge> gauges;
+
+  /// Entrance progress (0..1).
+  final double t;
+
+  @override
+  State<_GaugeStrip> createState() => _GaugeStripState();
+}
+
+class _GaugeStripState extends State<_GaugeStrip> {
+  static const _perPage = 4;
+  static const _gap = KSpacing.xs;
+  final _scroll = ScrollController();
+  int _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(() {
+      final max = _scroll.position.maxScrollExtent;
+      final page = max <= 0 ? 0 : (_scroll.offset / max * (_pages - 1)).round();
+      if (page != _page) setState(() => _page = page);
+    });
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  int get _pages => (widget.gauges.length / _perPage).ceil();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final gauges = widget.gauges;
+    final t = widget.t;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final width = (constraints.maxWidth - _gap * (_perPage - 1)) / _perPage;
+        final strip = SingleChildScrollView(
+          controller: _scroll,
+          scrollDirection: Axis.horizontal,
+          // Clipped to the card: the fifth gauge never peeks in.
+          clipBehavior: Clip.hardEdge,
+          physics: _GaugePagePhysics(pageWidth: (width + _gap) * _perPage),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final (i, g) in gauges.indexed) ...[
+                if (i > 0) const SizedBox(width: _gap),
+                () {
+                  // Gauges rise in one after another and fill.
+                  final local = ((t * (gauges.length + 3) - i) / 3).clamp(0.0, 1.0);
+                  return Opacity(
+                    opacity: local,
+                    alwaysIncludeSemantics: true,
+                    child: Transform.translate(
+                      offset: Offset(0, 14 * (1 - local)),
+                      child: SizedBox(
+                        width: width,
+                        child: g.copyWith(fill: local),
+                      ),
+                    ),
+                  );
+                }(),
+              ],
+            ],
+          ),
+        );
+        if (_pages <= 1) return strip;
+        return Column(
+          children: [
+            Stack(
+              children: [
+                strip,
+                // "More this way" while there is more to the right.
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  child: IgnorePointer(
+                    child: AnimatedOpacity(
+                      opacity: _page < _pages - 1 ? 1 : 0,
+                      duration: const Duration(milliseconds: 200),
+                      child: Align(
+                        alignment: const Alignment(1, -0.35),
+                        child: KIcon(KGlyphs.chevronRight, size: 16, color: p.accentStrong),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: KSpacing.sm),
+            ExcludeSemantics(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (var i = 0; i < _pages; i++)
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.symmetric(horizontal: 3),
+                      width: i == _page ? 16 : 6,
+                      height: 4,
+                      decoration: BoxDecoration(
+                        color: i == _page ? p.accentStrong : p.outlineStrong,
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Snaps the gauge strip to whole pages of four.
+class _GaugePagePhysics extends ScrollPhysics {
+  const _GaugePagePhysics({required this.pageWidth, super.parent});
+
+  final double pageWidth;
+
+  @override
+  _GaugePagePhysics applyTo(ScrollPhysics? ancestor) =>
+      _GaugePagePhysics(pageWidth: pageWidth, parent: buildParent(ancestor));
+
+  @override
+  Simulation? createBallisticSimulation(ScrollMetrics position, double velocity) {
+    if ((velocity <= 0 && position.pixels <= position.minScrollExtent) ||
+        (velocity >= 0 && position.pixels >= position.maxScrollExtent)) {
+      return super.createBallisticSimulation(position, velocity);
+    }
+    final tolerance = toleranceFor(position);
+    var page = position.pixels / pageWidth;
+    if (velocity < -tolerance.velocity) {
+      page -= 0.5;
+    } else if (velocity > tolerance.velocity) {
+      page += 0.5;
+    }
+    final target = (page.roundToDouble() * pageWidth).clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    if ((target - position.pixels).abs() < tolerance.distance) return null;
+    return ScrollSpringSimulation(spring, position.pixels, target, velocity, tolerance: tolerance);
+  }
+
+  @override
+  bool get allowImplicitScrolling => false;
+}
+
 class _Gauge extends StatelessWidget {
   const _Gauge({
     required this.glyph,

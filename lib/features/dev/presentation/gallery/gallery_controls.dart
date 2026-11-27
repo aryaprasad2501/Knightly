@@ -4,6 +4,7 @@ import '../../../../core/design/components/k_button.dart';
 import '../../../../core/design/components/k_check_circle.dart';
 import '../../../../core/design/components/k_chip.dart';
 import '../../../../core/design/components/k_dropdown.dart';
+import '../../../../core/design/components/k_fab.dart';
 import '../../../../core/design/components/k_icon_button.dart';
 import '../../../../core/design/components/k_number_field.dart';
 import '../../../../core/design/components/k_text_field.dart';
@@ -84,6 +85,7 @@ class _IconButtons extends StatelessWidget {
   Widget build(BuildContext context) => const Wrap(
     spacing: KSpacing.md,
     children: [
+      KFab(glyph: KGlyphs.plus, tooltip: 'Floating', onPressed: _noop),
       KIconButton(glyph: KGlyphs.search, tooltip: 'Plain', onPressed: _noop),
       KIconButton(glyph: KGlyphs.plus, tooltip: 'Tonal', variant: KIconButtonVariant.tonal, onPressed: _noop),
       KIconButton(

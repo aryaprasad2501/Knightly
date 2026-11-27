@@ -36,6 +36,8 @@ versions follow `pubspec.yaml`.
   builds, so scheduling failed ("invalid_icon").
 
 ### Changed
+- Home's "+" is now a floating action button (hexagon in Dark Knight, round in Shadow Cat).
+- Settings › About: "Made by Arya" card; licences are a small link.
 - Android 8.0 (API 26) is now the minimum (needed for geofencing).
 - The briefing shows four gauges across; the rest scroll.
 - **More reminders** (Settings › Notifications › What to remind): timed missions at their time or

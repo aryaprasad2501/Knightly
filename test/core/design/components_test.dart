@@ -15,6 +15,7 @@ import 'package:knightly/core/design/components/k_confirmation_dialog.dart';
 import 'package:knightly/core/design/components/k_divider.dart';
 import 'package:knightly/core/design/components/k_dropdown.dart';
 import 'package:knightly/core/design/components/k_empty_state.dart';
+import 'package:knightly/core/design/components/k_fab.dart';
 import 'package:knightly/core/design/components/k_icon_button.dart';
 import 'package:knightly/core/design/components/k_loading_indicator.dart';
 import 'package:knightly/core/design/components/k_metal_text.dart';
@@ -370,5 +371,18 @@ void main() {
     await tester.tap(find.text('See all'));
     await tester.tap(find.text('Card'));
     expect((actions, cardTaps), (1, 1));
+  });
+
+  testWidgets('KFab is one 48dp+ button that taps', (tester) async {
+    var taps = 0;
+    await pumpThemed(
+      tester,
+      Center(
+        child: KFab(glyph: KGlyphs.plus, tooltip: 'Add', onPressed: () => taps++),
+      ),
+    );
+    await tester.tap(find.bySemanticsLabel('Add'));
+    expect(taps, 1);
+    expect(tester.getSize(find.byType(KFab)).width, greaterThanOrEqualTo(48));
   });
 }

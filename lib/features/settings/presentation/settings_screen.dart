@@ -7,6 +7,7 @@ import '../../../app/router/app_routes.dart';
 import '../../../core/design/ambient/k_backdrop.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_card.dart';
+import '../../../core/design/components/k_surface.dart';
 import '../../../core/design/components/k_chip.dart';
 import '../../../core/design/components/k_section_header.dart';
 import '../../../core/design/components/k_toggle.dart';
@@ -175,31 +176,41 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: KSpacing.xl),
         KSectionHeader(context.byStyle('Intel', 'About')),
-        const KCard(
-          glyph: KGlyphs.shield,
-          title: 'Private by design',
-          subtitle:
-              'Everything you record stays on this device: no account, no cloud, and Android cloud backup is '
-              'off. Keep your own copy with Backup & restore.',
-        ),
-        const SizedBox(height: KSpacing.md),
-        KCard(
-          glyph: KGlyphs.info,
-          title: 'Open-source licences',
-          subtitle: 'Fonts and libraries Knightly is built with',
-          trailing: chevron,
-          onTap: () => showLicensePage(
-            context: context,
-            applicationName: 'Knightly',
-            applicationVersion: ref.read(appVersionProvider).valueOrNull,
-            useRootNavigator: true,
+        KSurface(
+          child: Column(
+            children: [
+              Text('Knightly', style: context.textStyles.titleLarge),
+              const SizedBox(height: KSpacing.xxs),
+              Text(
+                'Own Your Night. Master Your Day.',
+                textAlign: TextAlign.center,
+                style: context.textStyles.bodySmall?.copyWith(color: context.palette.textMuted),
+              ),
+              const SizedBox(height: KSpacing.md),
+              Text(
+                'Made by Arya',
+                style: context.textStyles.titleSmall?.copyWith(color: context.palette.accentStrong),
+              ),
+              const SizedBox(height: KSpacing.xxs),
+              Text(
+                'Version ${ref.watch(appVersionProvider).valueOrNull ?? '—'}',
+                style: context.textStyles.bodySmall?.copyWith(color: context.palette.textMuted),
+              ),
+            ],
           ),
         ),
-        const SizedBox(height: KSpacing.md),
         Center(
-          child: Text(
-            'Knightly ${ref.watch(appVersionProvider).valueOrNull ?? ''}'.trim(),
-            style: context.textStyles.bodySmall?.copyWith(color: context.palette.textMuted),
+          child: TextButton(
+            onPressed: () => showLicensePage(
+              context: context,
+              applicationName: 'Knightly',
+              applicationVersion: ref.read(appVersionProvider).valueOrNull,
+              useRootNavigator: true,
+            ),
+            child: Text(
+              'Licences',
+              style: context.textStyles.bodySmall?.copyWith(color: context.palette.textMuted),
+            ),
           ),
         ),
         // Compile-time constant: this section is stripped from release builds.

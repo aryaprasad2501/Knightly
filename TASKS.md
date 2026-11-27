@@ -142,3 +142,8 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [ ] Re-check on a physical device: cold-start black-band glitch seen once on the emulator (Stage 0), frosted dock performance
 - [ ] Consider golden tests for key components once fonts load in tests (needs a font-loading test helper)
 - [x] App version in Settings › About (package_info_plus, 2026-11-28)
+
+## Later (owner's plan, 2026-11-28 — not started)
+
+- [ ] Optional Google-account backup so data survives uninstalling (changes the offline-only rule: needs a decision record and the owner's sign-off on scope)
+- [ ] "Report a bug" that sends to the owner's Gmail (after the cloud backup)

@@ -13,7 +13,7 @@ import 'k_button.dart';
 import 'k_dock_styles.dart';
 
 export 'k_dock_styles.dart' show KDockStyle;
-import 'k_icon_button.dart';
+import 'k_fab.dart';
 import 'k_ornaments.dart';
 import '../theme/knightly_style.dart';
 import '../theme/knightly_palette.dart';
@@ -132,13 +132,23 @@ class KNavigationBar extends StatelessWidget {
                   child: action == null
                       ? const SizedBox.shrink()
                       : action!.iconOnly
-                      ? KIconButton(
-                          key: ValueKey(action!.label),
-                          glyph: action!.glyph,
-                          tooltip: action!.label,
-                          variant: KIconButtonVariant.filled,
-                          size: 56,
-                          onPressed: action!.onPressed,
+                      ? Transform.translate(
+                          // Floats over the page, partly above the action row.
+                          offset: const Offset(-KSpacing.xs, -KSpacing.xl),
+                          child: SizedBox.square(
+                            dimension: KFab.size,
+                            // The halo spills past the 60 dp target.
+                            child: OverflowBox(
+                              maxWidth: KFab.outer,
+                              maxHeight: KFab.outer,
+                              child: KFab(
+                                key: ValueKey(action!.label),
+                                glyph: action!.glyph,
+                                tooltip: action!.label,
+                                onPressed: action!.onPressed,
+                              ),
+                            ),
+                          ),
                         )
                       : KButton(
                           key: ValueKey(action!.label),

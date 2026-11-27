@@ -36,7 +36,8 @@ versions follow `pubspec.yaml`.
   builds, so scheduling failed ("invalid_icon").
 
 ### Changed
-- Home's "+" is now a floating action button (hexagon in Dark Knight, round in Shadow Cat).
+- Home's "+" is now a floating button (hexagon in Dark Knight, round in Shadow Cat): drag it anywhere
+  on Home and it stays there, also after restarting.
 - Settings › About: "Made by Arya" card; licences are a small link.
 - Android 8.0 (API 26) is now the minimum (needed for geofencing).
 - The briefing shows four gauges across; the rest scroll.

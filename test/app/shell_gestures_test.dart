@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:knightly/app/shell/floating_add_button.dart';
+import 'package:knightly/core/design/components/k_fab.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
+import 'package:knightly/features/settings/data/settings_repository.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -76,5 +79,23 @@ void main() {
     await tester.pumpAndSettle();
     await backToTabs(tester);
     expect(nav().dockStyle, KDockStyle.crest);
+  });
+
+  testWidgets('the Home "+" can be dragged anywhere and keeps its place', (tester) async {
+    usePhoneViewport(tester);
+    final db = await pumpKnightlyApp(tester);
+    final before = tester.getCenter(find.byType(KFab));
+    await tester.drag(find.byType(KFab), const Offset(-200, -300));
+    await settleWithDatabase(tester);
+    final after = tester.getCenter(find.byType(KFab));
+    expect(after.dx, closeTo(before.dx - 200, 1));
+    expect(after.dy, closeTo(before.dy - 300, 1));
+
+    final stored = await tester.runAsync(() => SettingsRepository(db).read(FabPosition.storageKey));
+    expect(FabPosition.parse(stored), isNotNull);
+
+    // Restarting the app puts it back where it was left.
+    await pumpKnightlyApp(tester, db: db);
+    expect(tester.getCenter(find.byType(KFab)).dy, closeTo(after.dy, 2));
   });
 }

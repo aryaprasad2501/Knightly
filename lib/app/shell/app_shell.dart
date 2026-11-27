@@ -18,6 +18,7 @@ import '../../features/settings/presentation/welcome_sheet.dart';
 import '../../features/tasks/presentation/task_ui_actions.dart';
 import 'package:flutter/services.dart';
 import '../../core/design/components/k_confirmation_dialog.dart';
+import 'floating_add_button.dart';
 import 'quick_add_sheet.dart';
 import '../../features/settings/application/display_controllers.dart';
 import '../router/app_routes.dart';
@@ -68,13 +69,7 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   /// The command each screen puts on the dock, in [shellDestinations] order.
   KDockAction? _actionFor(int index, BuildContext context) => switch (index) {
-    // Home: a round "+" that opens a small panel of everything you can add.
-    0 => KDockAction(
-      glyph: KGlyphs.plus,
-      label: 'Add',
-      iconOnly: true,
-      onPressed: () => showQuickAddSheet(context, ref),
-    ),
+    // Home has its own floating "+" (FloatingAddButton), not a dock action.
     1 => KDockAction(
       glyph: KGlyphs.plus,
       label: 'New event',
@@ -204,6 +199,9 @@ class _AppShellState extends ConsumerState<AppShell> {
                   ),
                 ),
               ),
+              // Home's "+": drag it anywhere; it stays where it is left.
+              if (current == 0)
+                Positioned.fill(child: FloatingAddButton(onPressed: () => showQuickAddSheet(context, ref))),
             ],
           ),
         ),

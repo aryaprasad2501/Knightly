@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **More reminders** (Settings › Notifications › What to remind): timed missions at their time or
+  10/30/60 min before (on by default), water every 1–4 h in a window until the goal is met, an
+  evening wind-down, and a habits check when habits are still due.
 - **Workouts details page**: tap the Workouts picture on Track for 7/30/90 days — volume by day,
   training days, week streak, sets, time spent, biggest day, most-trained exercises with best set
   and estimated 1RM, and every session.

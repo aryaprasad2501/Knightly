@@ -52,7 +52,7 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 - [ ] Subtasks / checklist inside a mission (promised on the old coming-soon page)
 - [ ] Manual drag-to-reorder within a day
 - [ ] Search across missions
-- [ ] Reminders for timed missions (needs local notifications — see Later stages)
+- [x] Reminders for timed missions (2026-11-28, Settings › Notifications)
 - [ ] "Edit this occurrence vs. whole series" for repeating missions (today: edits apply to the open occurrence; future ones copy it)
 - [ ] Completed history beyond the latest 200 (pagination) — only matters for Insights later
 
@@ -72,7 +72,7 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 
 ### Habits follow-ups (not built)
 
-- [ ] Reminders per habit (needs local notifications)
+- [x] Habits reminder: one evening check when habits are due (2026-11-28); per-habit times not built
 - [ ] Check in for a past day (today only for now)
 - [ ] Reorder habits (currently oldest first)
 - [ ] Longer history view / calendar heatmap (natural fit for Insights)
@@ -123,7 +123,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Insights command centre (2026-11-27)
 - [ ] Weekly review (a written summary on top of Insights)
 - [ ] Insights correlations (e.g. sleep vs habit completion) — in the spec, not built
-- [ ] Water reminders and a sleep wind-down reminder — in the spec, not built
+- [x] Water reminders and a sleep wind-down reminder (2026-11-28)
 - [ ] Workout templates — in the spec, not built
 - [ ] Global quick-add and search — cross-cutting spec items, not built
 - [ ] Today: evening review entry point — in the spec, not built

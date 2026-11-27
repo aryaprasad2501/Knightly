@@ -17,6 +17,7 @@ import '../../tasks/presentation/time_format.dart';
 import '../application/notifications_providers.dart';
 import '../data/notification_gateway.dart';
 import '../domain/reminder_plan.dart';
+import 'module_reminders_section.dart';
 
 /// Settings › Notifications: the reminders switch, what Android allows, a test
 /// notification and the reminders coming up. Pushed route.
@@ -40,7 +41,7 @@ class NotificationsScreen extends ConsumerWidget {
           glyph: KGlyphs.bell,
           title: 'Reminders',
           subtitle: enabled
-              ? 'Event, routine and Home care reminders are delivered on this device.'
+              ? 'Your reminders are delivered on this device.'
               : 'Off. Reminders you set are kept and come back when you switch this on.',
           onTap: () => _setEnabled(context, ref, !enabled),
           trailing: KToggle(
@@ -115,6 +116,7 @@ class NotificationsScreen extends ConsumerWidget {
             },
           ),
         ],
+        if (enabled) ...[const SizedBox(height: KSpacing.xl), const ModuleRemindersSection()],
         const SizedBox(height: KSpacing.xl),
         const KSectionHeader('Coming up'),
         if (!enabled || plan.isEmpty)

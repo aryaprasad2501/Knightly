@@ -68,6 +68,7 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
     final router = ref.read(appRouterProvider);
     final (kind, value) = switch (payload.split(':')) {
       [final k, final v] => (k, v),
+      [final k] => (k, ''),
       _ => ('', ''),
     };
     final id = int.tryParse(value);
@@ -77,6 +78,10 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
       router.go(AppRoutes.calendar);
     } else if (kind == 'care') {
       router.push(AppRoutes.homeCare);
+    } else if (kind == 'mission') {
+      router.go(AppRoutes.tasks);
+    } else if (kind == 'water' || kind == 'sleep' || kind == 'habits') {
+      router.go(AppRoutes.track);
     }
   }
 

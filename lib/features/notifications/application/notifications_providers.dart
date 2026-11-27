@@ -12,7 +12,13 @@ import '../../routines/application/routines_providers.dart';
 import '../../routines/domain/routine.dart';
 import '../../settings/data/settings_repository.dart';
 import '../data/notification_gateway.dart';
+import '../domain/module_reminders.dart';
 import '../domain/reminder_plan.dart';
+import '../../habits/application/habits_providers.dart';
+import '../../tasks/application/tasks_providers.dart';
+import '../../tasks/domain/task.dart';
+import '../../water/application/water_providers.dart';
+import '../../../core/time/habit_schedule.dart';
 
 /// Whether Knightly schedules reminders at all. On by default; Android still
 /// needs the user's permission (see [notificationAccessProvider]).
@@ -42,6 +48,28 @@ final notificationAccessProvider = FutureProvider<NotificationAccess>(
   (ref) => ref.watch(notificationGatewayProvider).access(),
 );
 
+/// Reminders for whole modules (missions, water, wind-down, habits).
+class ModuleRemindersNotifier extends AsyncNotifier<ModuleReminders> {
+  @override
+  Future<ModuleReminders> build() async =>
+      ModuleReminders.parse(await ref.watch(settingsRepositoryProvider).read(ModuleReminders.storageKey));
+
+  Future<void> set(ModuleReminders value) async {
+    final previous = state;
+    state = AsyncData(value);
+    try {
+      await ref.read(settingsRepositoryProvider).write(ModuleReminders.storageKey, value.encode());
+    } catch (_) {
+      state = previous;
+      rethrow;
+    }
+  }
+}
+
+final moduleRemindersProvider = AsyncNotifierProvider<ModuleRemindersNotifier, ModuleReminders>(
+  ModuleRemindersNotifier.new,
+);
+
 /// "9:30 AM" or "09:30", following the device setting.
 String formatReminderTime(ClockTime t) {
   if (PlatformDispatcher.instance.alwaysUse24HourFormat) return t.format();
@@ -60,11 +88,19 @@ final plannedRemindersProvider = Provider<AsyncValue<List<PlannedReminder>>>((re
   final calendarOn = on.contains(AppModule.calendar);
   final routinesOn = on.contains(AppModule.routines);
   final careOn = on.contains(AppModule.homeCare);
+  final missionsOn = on.contains(AppModule.missions);
+  final waterOn = on.contains(AppModule.water);
+  final sleepOn = on.contains(AppModule.sleep);
+  final habitsOn = on.contains(AppModule.habits);
+  final modules = ref.watch(moduleRemindersProvider);
 
   final sources = <AsyncValue<Object>>[
     if (calendarOn) ...[ref.watch(eventsProvider), ref.watch(occurrenceStatesProvider)],
     if (routinesOn) ...[ref.watch(routinesProvider), ref.watch(routineRunsProvider)],
     if (careOn) ...[ref.watch(careJobStatesProvider), ref.watch(careRemindersProvider)],
+    modules,
+    if (missionsOn) ref.watch(openTasksProvider),
+    if (habitsOn) ...[ref.watch(habitSummaryProvider), ref.watch(activeHabitsProvider)],
   ];
   for (final s in sources) {
     if (s.hasError) return AsyncError(s.error!, s.stackTrace ?? StackTrace.current);
@@ -80,6 +116,36 @@ final plannedRemindersProvider = Provider<AsyncValue<List<PlannedReminder>>>((re
       runs: routinesOn ? ref.watch(routineRunsProvider).requireValue : const <RoutineRun>[],
       care: careOn ? ref.watch(careJobStatesProvider).requireValue : const <CareJobState>[],
       careTimes: careOn ? ref.watch(careRemindersProvider).requireValue : const CareReminderTimes([]),
+      modules: () {
+        final m = modules.requireValue;
+        return ModuleReminders(
+          missionLead: missionsOn ? m.missionLead : null,
+          water: waterOn ? m.water : null,
+          windDown: sleepOn ? m.windDown : null,
+          habitsAt: habitsOn ? m.habitsAt : null,
+        );
+      }(),
+      missions: missionsOn ? ref.watch(openTasksProvider).requireValue : const <Task>[],
+      waterTodayMl: waterOn ? ref.watch(waterTodayProvider).valueOrNull?.totalMl : null,
+      waterGoalMl: waterOn ? ref.watch(waterGoalProvider).valueOrNull ?? 2000 : 2000,
+      habitsLeftToday: habitsOn
+          ? () {
+              final s = ref.watch(habitSummaryProvider).requireValue;
+              return s.dueToday - s.doneToday;
+            }()
+          : null,
+      habitsDueOn: habitsOn
+          ? () {
+              final today = ref.watch(todayProvider);
+              final habits = ref.watch(activeHabitsProvider).requireValue;
+              return {
+                for (var i = 1; i <= 6; i++)
+                  today.addDays(i): habits
+                      .where((h) => h.schedule is TimesPerWeek || h.schedule.isScheduledOn(today.addDays(i)))
+                      .length,
+              };
+            }()
+          : const <CalendarDate, int>{},
     ),
   );
 });

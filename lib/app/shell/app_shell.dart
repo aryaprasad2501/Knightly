@@ -19,6 +19,7 @@ import '../../features/tasks/presentation/task_ui_actions.dart';
 import 'package:flutter/services.dart';
 import '../../core/design/components/k_confirmation_dialog.dart';
 import 'quick_add_sheet.dart';
+import '../../features/settings/application/display_controllers.dart';
 import '../router/app_routes.dart';
 
 /// Top-level destinations, in bottom-bar order. Must match the branch order in
@@ -116,6 +117,13 @@ class _AppShellState extends ConsumerState<AppShell> {
       for (var i = 0; i < shellDestinations.length; i++)
         if (AppShell.isBranchVisible(i, modules)) i,
     ];
+    // Home sits in the middle of the dock, the other tabs around it in order.
+    final others = [
+      for (final i in visible)
+        if (i != 0) i,
+    ];
+    final docked = [...others.take(others.length ~/ 2), 0, ...others.skip(others.length ~/ 2)];
+    final dockStyle = ref.watch(dockStyleProvider);
     final current = widget.navigationShell.currentIndex;
     if (!visible.contains(current)) {
       // The open tab's module was just switched off: go Home.
@@ -162,10 +170,10 @@ class _AppShellState extends ConsumerState<AppShell> {
           onHorizontalDragEnd: (d) {
             final v = d.primaryVelocity ?? 0;
             if (v.abs() < 500) return;
-            final at = visible.indexOf(current);
+            final at = docked.indexOf(current);
             if (at < 0) return;
             final to = at + (v < 0 ? 1 : -1);
-            if (to >= 0 && to < visible.length) _onSelected(visible[to]);
+            if (to >= 0 && to < docked.length) _onSelected(docked[to]);
           },
           child: Stack(
             children: [
@@ -200,9 +208,11 @@ class _AppShellState extends ConsumerState<AppShell> {
           ),
         ),
         bottomNavigationBar: KNavigationBar(
-          destinations: [for (final i in visible) shellDestinations[i]],
-          selectedIndex: visible.contains(current) ? visible.indexOf(current) : 0,
-          onSelected: (i) => _onSelected(visible[i]),
+          destinations: [for (final i in docked) shellDestinations[i]],
+          selectedIndex: docked.contains(current) ? docked.indexOf(current) : docked.indexOf(0),
+          onSelected: (i) => _onSelected(docked[i]),
+          dockStyle: dockStyle,
+          hubIndex: docked.indexOf(0),
           action: _actionFor(current, context),
         ),
       ),

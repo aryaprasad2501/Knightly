@@ -9,6 +9,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../icons/k_glyph.dart';
 import '../theme/theme_context.dart';
 import 'k_button.dart';
+import 'k_dock_styles.dart';
+
+export 'k_dock_styles.dart' show KDockStyle;
 import 'k_icon_button.dart';
 import 'k_ornaments.dart';
 import '../theme/knightly_style.dart';
@@ -63,7 +66,15 @@ class KNavigationBar extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelected,
     this.action,
+    this.dockStyle = KDockStyle.capsule,
+    this.hubIndex,
   });
+
+  /// The dock's shape; the selected highlight and transitions never change.
+  final KDockStyle dockStyle;
+
+  /// Which tab sits on the arc reactor's raised hub (usually Home, in the middle).
+  final int? hubIndex;
 
   final List<KNavDestination> destinations;
   final int selectedIndex;
@@ -138,7 +149,9 @@ class KNavigationBar extends StatelessWidget {
                 ),
               ),
             ),
-            _dock(context, p, style, tactical, shape, edge),
+            dockStyle == KDockStyle.capsule
+                ? _dock(context, p, style, tactical, shape, edge)
+                : _styledDock(context, p, style, tactical),
           ],
         ),
       ),
@@ -184,45 +197,7 @@ class KNavigationBar extends StatelessWidget {
                 const endPad = 10.0;
                 final itemWidth = (constraints.maxWidth - endPad * 2) / destinations.length;
                 const inset = KSpacing.xs + KSpacing.xxs;
-                return Stack(
-                  children: [
-                    // The cylinder's rounded ends and its light: drawn under
-                    // the icons, so the selected highlight stays as it was.
-                    const Positioned.fill(child: IgnorePointer(child: _CylinderShading())),
-                    AnimatedPositioned(
-                      duration: style.glide,
-                      curve: style.glideCurve,
-                      left: endPad + itemWidth * selectedIndex + inset,
-                      width: itemWidth - inset * 2,
-                      top: KSpacing.sm,
-                      bottom: KSpacing.sm,
-                      child: tactical
-                          ? _TacticalIndicator(color: p.accent, fill: p.accentMuted)
-                          : _FelineIndicator(palette: p),
-                    ),
-                    // A light that sweeps across the dock now and then.
-                    Positioned.fill(child: _DockGlint(tactical: tactical)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: endPad),
-                      child: Row(
-                        children: [
-                          for (var i = 0; i < destinations.length; i++)
-                            Expanded(
-                              child: _NavItem(
-                                destination: destinations[i],
-                                selected: i == selectedIndex,
-                                position: '${i + 1} of ${destinations.length}',
-                                onTap: () {
-                                  HapticFeedback.selectionClick();
-                                  onSelected(i);
-                                },
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
+                return _tabStack(context, p, style, tactical, itemWidth, endPad, inset, shading: true);
               },
             ),
           ),
@@ -233,6 +208,127 @@ class KNavigationBar extends StatelessWidget {
     return CustomPaint(
       painter: _FloatShadow(color: p.canvas, glow: p.accent),
       child: dock,
+    );
+  }
+
+  /// The tabs, the selected highlight (unchanged in every style) and the
+  /// passing light, laid over whichever body the style draws.
+  Widget _tabStack(
+    BuildContext context,
+    KnightlyPalette p,
+    KnightlyStyle style,
+    bool tactical,
+    double itemWidth,
+    double endPad,
+    double inset, {
+    required bool shading,
+  }) {
+    return Stack(
+      children: [
+        // The cylinder's rounded ends and its light: drawn under
+        // the icons, so the selected highlight stays as it was.
+        const Positioned.fill(child: IgnorePointer(child: _CylinderShading())),
+        AnimatedPositioned(
+          duration: style.glide,
+          curve: style.glideCurve,
+          left: endPad + itemWidth * selectedIndex + inset,
+          width: itemWidth - inset * 2,
+          top: KSpacing.sm,
+          bottom: KSpacing.sm,
+          child: tactical
+              ? _TacticalIndicator(color: p.accent, fill: p.accentMuted)
+              : _FelineIndicator(palette: p),
+        ),
+        // A light that sweeps across the dock now and then.
+        Positioned.fill(child: _DockGlint(tactical: tactical)),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: endPad),
+          child: Row(
+            children: [
+              for (var i = 0; i < destinations.length; i++)
+                Expanded(
+                  child: _NavItem(
+                    destination: destinations[i],
+                    selected: i == selectedIndex,
+                    position: '${i + 1} of ${destinations.length}',
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      onSelected(i);
+                    },
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Arc reactor or crest: a painted body (and hub or crest) under the same
+  /// tab stack as the capsule.
+  Widget _styledDock(BuildContext context, KnightlyPalette p, KnightlyStyle style, bool tactical) {
+    return CustomPaint(
+      painter: _FloatShadow(color: p.canvas, glow: p.accent),
+      child: SizedBox(
+        height: barHeight,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            const endPad = 14.0;
+            const inset = KSpacing.xs + KSpacing.xxs;
+            final itemWidth = (constraints.maxWidth - endPad * 2) / destinations.length;
+            final hub = hubIndex;
+            final hubX = hub == null ? null : endPad + itemWidth * (hub + 0.5);
+            final hubW = itemWidth + 22;
+            return Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned.fill(
+                  child: CustomPaint(
+                    painter: DockBodyPainter(
+                      style: dockStyle,
+                      tactical: tactical,
+                      p: p,
+                      cells: destinations.length,
+                      endPad: endPad,
+                      hubCenter: dockStyle == KDockStyle.reactor ? hubX : null,
+                    ),
+                  ),
+                ),
+                if (dockStyle == KDockStyle.reactor && hubX != null)
+                  Positioned(
+                    left: hubX - hubW / 2,
+                    top: -22,
+                    width: hubW,
+                    height: barHeight + 30,
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: DockHubPainter(tactical: tactical, p: p),
+                      ),
+                    ),
+                  ),
+                if (dockStyle == KDockStyle.crest)
+                  Positioned(
+                    left: constraints.maxWidth / 2 - 100,
+                    top: -24,
+                    width: 200,
+                    height: 26,
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: DockCrestPainter(tactical: tactical, p: p),
+                      ),
+                    ),
+                  ),
+                Positioned.fill(
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: _tabStack(context, p, style, tactical, itemWidth, endPad, inset, shading: false),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }

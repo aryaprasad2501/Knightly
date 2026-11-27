@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/design/components/k_dock_styles.dart';
+import '../../../core/time/clock.dart';
 import '../data/settings_repository.dart';
 
 /// An on/off display setting stored as `on` / `off` (off by default).
@@ -62,3 +64,77 @@ class WelcomeSeenController extends AsyncNotifier<bool> {
 }
 
 final welcomeSeenProvider = AsyncNotifierProvider<WelcomeSeenController, bool>(WelcomeSeenController.new);
+
+/// How the dock's style is chosen: one style, or a rotation.
+enum DockMode {
+  capsule('Capsule'),
+  reactor('Arc reactor'),
+  crest('Crest'),
+  everyTwoLaunches('Changes every 2 app starts'),
+  everyHalfHour('Changes every 30 minutes');
+
+  const DockMode(this.label);
+
+  final String label;
+
+  static DockMode parse(String? stored) =>
+      values.where((m) => m.name == stored).firstOrNull ?? DockMode.reactor;
+}
+
+/// The dock style setting (`appearance.dock_style`; Arc reactor by default)
+/// and the app-start count the "every 2 starts" rotation uses.
+class DockModeController extends AsyncNotifier<DockMode> {
+  static const storageKey = 'appearance.dock_style';
+  static const launchesKey = 'appearance.dock_launches';
+
+  /// The start count, read (and bumped once) when Knightly starts.
+  int launches = 0;
+  static bool _counted = false;
+
+  @override
+  Future<DockMode> build() async {
+    final settings = ref.watch(settingsRepositoryProvider);
+    launches = int.tryParse(await settings.read(launchesKey) ?? '') ?? 0;
+    if (!_counted) {
+      _counted = true;
+      launches++;
+      await settings.write(launchesKey, '$launches');
+    }
+    return DockMode.parse(await settings.read(storageKey));
+  }
+
+  Future<void> set(DockMode mode) async {
+    final previous = state;
+    state = AsyncData(mode);
+    try {
+      await ref.read(settingsRepositoryProvider).write(storageKey, mode.name);
+    } catch (_) {
+      state = previous;
+      rethrow;
+    }
+  }
+}
+
+final dockModeProvider = AsyncNotifierProvider<DockModeController, DockMode>(DockModeController.new);
+
+/// Ticks each minute with the current half-hour slot (for the 30-minute rotation).
+final _halfHourProvider = StreamProvider<int>((ref) async* {
+  final clock = ref.watch(clockProvider);
+  int slot() => clock().millisecondsSinceEpoch ~/ (30 * 60 * 1000);
+  yield slot();
+  yield* Stream.periodic(const Duration(minutes: 1), (_) => slot()).distinct();
+});
+
+/// The dock style to show now.
+final dockStyleProvider = Provider<KDockStyle>((ref) {
+  const rotation = [KDockStyle.reactor, KDockStyle.crest, KDockStyle.capsule];
+  final mode = ref.watch(dockModeProvider).valueOrNull ?? DockMode.reactor;
+  return switch (mode) {
+    DockMode.capsule => KDockStyle.capsule,
+    DockMode.reactor => KDockStyle.reactor,
+    DockMode.crest => KDockStyle.crest,
+    DockMode.everyTwoLaunches =>
+      rotation[((ref.read(dockModeProvider.notifier).launches - 1) ~/ 2) % rotation.length],
+    DockMode.everyHalfHour => rotation[(ref.watch(_halfHourProvider).valueOrNull ?? 0) % rotation.length],
+  };
+});

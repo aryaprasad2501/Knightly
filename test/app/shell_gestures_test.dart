@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
-import 'package:knightly/features/tasks/presentation/tasks_screen.dart';
 
 import '../helpers/pump_app.dart';
 
@@ -39,18 +38,43 @@ void main() {
     expect(find.text('Add mission'), findsOneWidget); // the mission editor opened
   });
 
-  testWidgets('swiping sideways moves between tabs', (tester) async {
+  testWidgets('swiping sideways moves between tabs in dock order (Home in the middle)', (tester) async {
     usePhoneViewport(tester);
     await pumpKnightlyApp(tester);
-    // Swipe left twice: Home → Calendar → Tasks.
-    for (var i = 0; i < 2; i++) {
+    String selected() {
+      final nav = tester.widget<KNavigationBar>(find.byType(KNavigationBar));
+      return nav.destinations[nav.selectedIndex].label;
+    }
+
+    expect(selected(), 'Home');
+    // Swipe left: Home → Track → Insights.
+    for (final expected in ['Track', 'Insights']) {
       await tester.flingFrom(const Offset(300, 420), const Offset(-250, 0), 1500);
       await tester.pumpAndSettle();
+      expect(selected(), expected);
     }
-    expect(find.byType(TasksScreen).hitTestable(), findsOneWidget);
+    // Swipe right back: Insights → Track.
     await tester.flingFrom(const Offset(80, 420), const Offset(250, 0), 1500);
     await tester.pumpAndSettle();
-    final nav = tester.widget<KNavigationBar>(find.byType(KNavigationBar));
-    expect(nav.destinations[nav.selectedIndex].label, 'Calendar');
+    expect(selected(), 'Track');
+  });
+
+  testWidgets('Dock style: Arc reactor by default; Settings switches it', (tester) async {
+    usePhoneViewport(tester);
+    await pumpKnightlyApp(tester);
+    KNavigationBar nav() => tester.widget<KNavigationBar>(find.byType(KNavigationBar));
+    expect(nav().dockStyle, KDockStyle.reactor);
+    expect(nav().hubIndex, 2);
+
+    await openSettings(tester);
+    await scrollTo(tester, find.text('Dock style'));
+    await tester.tap(find.text('Dock style'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Crest'));
+    await settleWithDatabase(tester);
+    await tester.tapAt(const Offset(20, 40)); // close the sheet
+    await tester.pumpAndSettle();
+    await backToTabs(tester);
+    expect(nav().dockStyle, KDockStyle.crest);
   });
 }

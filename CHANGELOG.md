@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Dock styles** (Settings › Dock style): Arc reactor (raised hub in the middle, default), Crest
+  (angular bar under a crest) or Capsule — or let it change every 2 app starts or every 30 minutes.
+  Home now sits in the middle of the dock; swiping follows the dock order.
 - **Fix past days**: tap a past day in a habit's week strip to fill in or clear a check-in; on the
   Water details page tap any day to see its drinks, remove one, or add a forgotten drink ("Add"
   picks any earlier day).

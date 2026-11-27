@@ -85,7 +85,7 @@ void main() {
       tester.getSemantics(_navSemantics('Home')),
       matchesSemantics(
         label: 'Home',
-        hint: 'Tab 1 of 5',
+        hint: 'Tab 3 of 5', // Home sits in the middle
         isButton: true,
         isSelected: true,
         hasSelectedState: true,

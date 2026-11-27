@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_routes.dart';
 import '../../../core/design/ambient/k_backdrop.dart';
+import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_card.dart';
+import '../../../core/design/components/k_chip.dart';
 import '../../../core/design/components/k_section_header.dart';
 import '../../../core/design/components/k_toggle.dart';
 import '../../../core/design/icons/k_glyph.dart';
@@ -60,6 +62,35 @@ class SettingsScreen extends ConsumerWidget {
             value: live,
             semanticLabel: 'Live backdrop',
             onChanged: (on) => _setLive(context, ref, on),
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
+          glyph: KGlyphs.home,
+          title: 'Dock style',
+          subtitle: ref.watch(dockModeProvider).valueOrNull?.label ?? DockMode.reactor.label,
+          trailing: chevron,
+          onTap: () => showKBottomSheet<void>(
+            context: context,
+            title: 'Dock style',
+            subtitle: 'The tab bar at the bottom. Home stays in the middle.',
+            child: Consumer(
+              builder: (context, ref, _) {
+                final mode = ref.watch(dockModeProvider).valueOrNull ?? DockMode.reactor;
+                return Wrap(
+                  spacing: KSpacing.sm,
+                  runSpacing: KSpacing.sm,
+                  children: [
+                    for (final m in DockMode.values)
+                      KChip(
+                        label: m.label,
+                        selected: m == mode,
+                        onSelected: (_) => ref.read(dockModeProvider.notifier).set(m),
+                      ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
         const SizedBox(height: KSpacing.md),

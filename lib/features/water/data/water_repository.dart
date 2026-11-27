@@ -40,6 +40,26 @@ class WaterRepository {
         );
   }
 
+  /// Logs [amountMl] for an earlier [date] (forgotten drinks). Stamped at
+  /// noon that day; today is stamped now.
+  Future<int> addOn(CalendarDate date, int amountMl) {
+    if (!WaterAmounts.isValid(amountMl)) {
+      throw ArgumentError.value(amountMl, 'amountMl', 'must be ${WaterAmounts.minMl}–${WaterAmounts.maxMl}');
+    }
+    final now = _clock();
+    final at = date == CalendarDate.of(now) ? now : DateTime(date.year, date.month, date.day, 12);
+    return _db
+        .into(_db.waterLogs)
+        .insert(
+          WaterLogsCompanion.insert(
+            date: date.toStorage(),
+            loggedAt: at,
+            amountMl: amountMl,
+            updatedAt: Value(now),
+          ),
+        );
+  }
+
   /// Removes an entry. Returns it, so Undo can put it back exactly.
   Future<WaterLog?> remove(int id) => _db.transaction(() async {
     final row = await (_db.select(_db.waterLogs)..where((l) => l.id.equals(id))).getSingleOrNull();

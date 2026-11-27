@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Fix past days**: tap a past day in a habit's week strip to fill in or clear a check-in; on the
+  Water details page tap any day to see its drinks, remove one, or add a forgotten drink ("Add"
+  picks any earlier day).
 - **Swipe between tabs** left and right.
 - **Leave Knightly?** — Back on Home now asks before closing the app.
 - **Home "+"**: a round add button that opens a small panel — mission, event, habit, routine, water,

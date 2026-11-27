@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
 import 'package:knightly/features/tasks/presentation/tasks_screen.dart';
@@ -23,7 +22,16 @@ void main() {
     await pumpKnightlyApp(tester);
     await tester.tap(find.byTooltip('Add'));
     await tester.pumpAndSettle();
-    for (final label in ['Mission', 'Event', 'Habit', 'Routine', 'Food', 'Sleep', 'Workout', 'Home care job']) {
+    for (final label in [
+      'Mission',
+      'Event',
+      'Habit',
+      'Routine',
+      'Food',
+      'Sleep',
+      'Workout',
+      'Home care job',
+    ]) {
       expect(find.bySemanticsLabel('Add $label'), findsOneWidget, reason: label);
     }
     await tester.tap(find.bySemanticsLabel('Add Mission'));

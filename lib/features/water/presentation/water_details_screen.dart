@@ -17,10 +17,12 @@ import '../../../core/design/layout/k_page.dart';
 import '../../../core/design/theme/k_tone.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../application/water_providers.dart';
 import '../domain/water.dart';
 import '../domain/water_insights.dart';
+import 'water_day_sheet.dart';
 
 /// Water in depth: the chosen range's intake against the goal, streaks,
 /// when you drink and every day's total. Pushed route.
@@ -168,7 +170,20 @@ class _WaterDetailsScreenState extends ConsumerState<WaterDetailsScreen> {
         ),
       ),
       const SizedBox(height: KSpacing.xl),
-      const KSectionHeader('Day by day'),
+      KSectionHeader(
+        'Day by day',
+        actionLabel: 'Add',
+        onAction: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: today.addDays(-1).startOfDay,
+            firstDate: today.addDays(-365).startOfDay,
+            lastDate: today.startOfDay,
+            helpText: 'Which day?',
+          );
+          if (picked != null && context.mounted) await showWaterDaySheet(context, CalendarDate.of(picked));
+        },
+      ),
       if (logged == 0)
         KSurface(
           child: Text('No water logged in this range.', style: text.bodyMedium?.copyWith(color: p.textMuted)),
@@ -180,13 +195,20 @@ class _WaterDetailsScreenState extends ConsumerState<WaterDetailsScreen> {
             children: [
               for (final (i, d) in w.loggedDays.reversed.indexed) ...[
                 if (i > 0) const KDivider(indent: KSpacing.lg, spacing: 0),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: KSpacing.lg, vertical: KSpacing.md),
-                  child: KProgressBar(
-                    value: d.progress,
-                    label: detailDayLabel(context, d.date, today),
-                    valueLabel: formatMl(d.totalMl),
-                    tone: d.reachedGoal ? KTone.success : KTone.accent,
+                Semantics(
+                  container: true,
+                  button: true,
+                  child: InkWell(
+                    onTap: () => showWaterDaySheet(context, d.date),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: KSpacing.lg, vertical: KSpacing.md),
+                      child: KProgressBar(
+                        value: d.progress,
+                        label: detailDayLabel(context, d.date, today),
+                        valueLabel: formatMl(d.totalMl),
+                        tone: d.reachedGoal ? KTone.success : KTone.accent,
+                      ),
+                    ),
                   ),
                 ),
               ],

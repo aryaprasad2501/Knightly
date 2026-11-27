@@ -15,3 +15,23 @@ git diff review-start-2026-11-28..HEAD --stat
 | 1 | Workouts details page | 36cbf0a | Track > tap the Workouts picture: 7/30/90 days, stats, most trained, sessions |
 | 2 | Reminders: missions, water, wind-down, habits | 53c7d06 | Settings > Notifications > What to remind; Coming up list shows them |
 | 3 | Swipe tabs, exit confirm, Home + panel, 4 gauges | 924f73b | Swipe on any tab; Back on Home; tap + on Home; briefing gauges |
+
+### CRUD audit (2026-11-28)
+
+| Item | Create | View | Edit | Delete |
+|---|---|---|---|---|
+| Missions | ✓ | ✓ | ✓ | ✓ swipe → Recycle Bin, Undo |
+| Projects | ✓ (also from the mission editor) | ✓ | ✓ rename | ✓ Recycle Bin |
+| Events | ✓ | ✓ | ✓ (one or all occurrences) | ✓ Recycle Bin |
+| Habits | ✓ | ✓ | ✓ | ✓ archive / Recycle Bin |
+| Habit check-ins | ✓ today, **past days this week (new)** | ✓ | ✓ | ✓ |
+| Routines / steps | ✓ | ✓ | ✓ | ✓ Recycle Bin |
+| Routine runs | ✓ | ✓ history | — | ✓ |
+| Water drinks | ✓ today, **any past day (new)** | ✓ per day (new) | remove + re-add | ✓ Undo |
+| Sleep nights | ✓ any day | ✓ | ✓ | ✓ Undo |
+| Workouts / sets | ✓ | ✓ | ✓ | ✓ Recycle Bin |
+| Foods | ✓ | ✓ | ✓ | ✓ Recycle Bin |
+| Meal entries | ✓ | ✓ | ✓ | ✓ Undo |
+| Home care jobs | ✓ | ✓ | ✓ | ✓ Recycle Bin |
+| Home care turns | ✓ (also earlier days) | ✓ history | remove + re-add | ✓ Undo |
+| Body stats, targets, goals | ✓ | ✓ | ✓ | (settings) |

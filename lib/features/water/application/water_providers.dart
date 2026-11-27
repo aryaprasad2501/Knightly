@@ -74,6 +74,7 @@ class WaterActions {
   final WaterRepository _repo;
 
   Future<int> add(int amountMl) => _repo.add(amountMl);
+  Future<int> addOn(CalendarDate date, int amountMl) => _repo.addOn(date, amountMl);
   Future<WaterLog?> remove(int id) => _repo.remove(id);
   Future<void> putBack(WaterLog log) => _repo.putBack(log);
 }

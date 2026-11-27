@@ -22,6 +22,8 @@ git diff review-start-2026-11-28..HEAD --stat
 | 7 | Sounds, home widget, arrival reminders, **release reminder fix** | 792730c | Settings > Sounds; add the Knightly widget; Home care > Reminders > Set home here (check arrival on a real phone); reminders now fire in release |
 | 8 | Mission checklists + search | d35161b | Open a mission > Add a step; card shows 1/2; search icon on Missions |
 | 9 | Floating Home +, About card | 40f8f42 | Home: + floats over the page; Settings > About |
+| 10 | Draggable Home + (remembers place) | 06110e0 | Drag the + on Home, restart: it stays |
+| 11 | Briefing gauges clipped + scroll hint | 2c9f1a0 | Home briefing: dots + chevron, swipe the gauges |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

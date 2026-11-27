@@ -111,6 +111,7 @@ of re-implementing them:
 | calendar | `showEventEditor()` (`event_editor_sheet.dart`) | App shell dock "New event" |
 | calendar | `TodayScheduleCard` (`today_schedule_card.dart`) | Home |
 | home_care | `HomeCareCard` (`home_care_card.dart`) | Home |
+| home_care | `HomeCareSection` (`home_care_section.dart`) | Track |
 | routines | `RoutinesSection` (`routines_section.dart`) | Track tab |
 | routines | `showRoutineEditor()` (`routine_editor_sheet.dart`) | App shell dock "New routine" (Track, habits off); Calendar agenda |
 | routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
@@ -208,7 +209,7 @@ Anything else in a feature's `presentation/` is private to that feature.
   carbs/fat totals; index on `date`) · v11 `care_jobs` (uuid, name, area 0–2,
   subject, schedule text, start_date, notes, created/updated/deleted_at) and
   `care_logs` (uuid, job_id → `ON DELETE CASCADE`, date, due_date, skipped, note,
-  logged_at, updated_at; index on `job_id`).
+  logged_at, updated_at; index on `job_id`) · v12 `care_jobs.category` (custom category name).
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -456,3 +457,6 @@ codegen not needed yet).
 | D86 | 2026-11-27 | Insights computes everything in a pure-Dart `InsightsSnapshot` from the other modules' public providers over a 184-day window (new `*SinceProvider` families). A "win" = mission finished, habit day done, routine finished, Home care turn done, water goal met, sleep goal met, calories within 10%, workout finished. Score = mean completion of the areas measurable in the period; today counts only once done | No schema change; every number traceable to stored records; empty modules show empty states, never invented figures. |
 | D87 | 2026-11-27 | Visual effects levels: full, Low mode (setting `appearance.low_mode`: no ambient motion, single-pass glows, live backdrop off) and Reduce motion (setting `appearance.reduce_motion`, applied app-wide by setting `MediaQuery.disableAnimations`). Static art is baked to bitmaps (`KBakedPaint`, Insights room layers) because Impeller replays every draw command each frame; glows are painted strokes/gradients, never blur. HUD light colours live in `KHudColors` (core tokens; Dark Knight blue/ice with gold only as a rare accent, per the user) | Full quality by default as the user asked, with an explicit switch for weak phones; keeps the 60 fps rules. |
 | D88 | 2026-11-27 | First-run welcome sheet (setting `onboarding.welcome_seen`) shows both themes and Settings/Low mode tips | User request; shown once, dismissible. |
+| D89 | 2026-11-27 | Home care custom categories: `CareArea.custom` (stored 3) plus a nullable `care_jobs.category` name (schema v12, `from11To12` adds the column). Backups carry `category`; older files restore without it | The user wanted categories beyond Home / Garden / Pets without a separate table. |
+| D90 | 2026-11-27 | Track section order is a setting (`track.order`, panel names; unknown names ignored, missing ones appended in default order); sections whose module is off keep their slot | Personal layout without a schema change; backups carry it. |
+| D91 | 2026-11-27 | The Android system splash shows no icon (`splash_blank` on 12+, bare canvas on older); the Flutter boot sequence is the brand intro | The old crest vector looked out of date next to the approved icon. |

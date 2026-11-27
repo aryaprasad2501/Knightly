@@ -86,7 +86,15 @@ void main() {
     expect(find.text('Meditate').hitTestable(), findsNothing);
     expect(find.text('Missions today'), findsOneWidget);
 
-    await toggleModules(tester, ['Performance', 'Routines', 'Sleep', 'Water', 'Workouts', 'Nutrition']);
+    await toggleModules(tester, [
+      'Performance',
+      'Routines',
+      'Sleep',
+      'Water',
+      'Workouts',
+      'Nutrition',
+      'Home care',
+    ]);
     expect(tab('Track'), findsNothing);
 
     await toggleModules(tester, ['Habits']);

@@ -49,6 +49,7 @@ class AppShell extends ConsumerStatefulWidget {
       on.contains(AppModule.habits) ||
           on.contains(AppModule.routines) ||
           on.contains(AppModule.analytics) ||
+          on.contains(AppModule.homeCare) ||
           on.any(AppModule.trackers.contains),
     _ => true,
   };

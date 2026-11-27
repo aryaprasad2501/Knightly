@@ -64,6 +64,7 @@ abstract final class KGlyphs {
     body: _gearTacticalBody,
     detail: _gearTacticalDetail,
   );
+  static const reorder = KGlyphData('reorder', detail: _reorder);
   static const gearFeline = KGlyphData('gearFeline', body: _gearFelineBody, detail: _gearFelineDetail);
 
   static const List<KGlyphData> all = [
@@ -75,7 +76,7 @@ abstract final class KGlyphs {
     flame,
     archive,
     habit, routine, dumbbell, leaf, chart, bell, backup, folder, edit, alarm, progress, paw, //
-    gearTactical, gearFeline,
+    gearTactical, gearFeline, reorder,
   ];
 }
 
@@ -357,6 +358,19 @@ void _dumbbellDetail(Path p) => p
   ..lineTo(22, 12);
 
 /// Nutrition: a leaf.
+/// A grip: three bars between an up and a down chevron.
+void _reorder(Path p) => p
+  ..moveTo(6, 10)
+  ..lineTo(18, 10)
+  ..moveTo(6, 14)
+  ..lineTo(18, 14)
+  ..moveTo(9, 6.5)
+  ..lineTo(12, 3.8)
+  ..lineTo(15, 6.5)
+  ..moveTo(9, 17.5)
+  ..lineTo(12, 20.2)
+  ..lineTo(15, 17.5);
+
 /// Eight square-cut teeth around a ring.
 void _gearTacticalBody(Path p) {
   const c = Offset(12, 12);

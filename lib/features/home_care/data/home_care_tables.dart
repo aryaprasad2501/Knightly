@@ -10,8 +10,11 @@ class CareJobs extends Table {
   TextColumn get uuid => text().clientDefault(newUuid).unique()();
   TextColumn get name => text().withLength(min: 1, max: 80)();
 
-  /// 0 home · 1 garden · 2 pets.
+  /// 0 home · 1 garden · 2 pets · 3 custom (named in [category]).
   IntColumn get area => integer()();
+
+  /// The person's own category name for custom jobs. Added in schema v12.
+  TextColumn get category => text().nullable()();
 
   /// Which plant, pet, room or appliance; optional.
   TextColumn get subject => text().nullable()();

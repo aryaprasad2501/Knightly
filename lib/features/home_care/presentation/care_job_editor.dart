@@ -45,6 +45,7 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
   late final _name = TextEditingController(text: widget.existing?.name);
   late final _subject = TextEditingController(text: widget.existing?.subject);
   late final _notes = TextEditingController(text: widget.existing?.notes);
+  late final _category = TextEditingController(text: widget.existing?.category);
   late CareArea _area = widget.existing?.area ?? widget.area ?? CareArea.home;
   late CalendarDate _start = widget.existing?.startDate ?? _today;
 
@@ -86,6 +87,7 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
     _name.dispose();
     _subject.dispose();
     _notes.dispose();
+    _category.dispose();
     super.dispose();
   }
 
@@ -128,6 +130,7 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
       schedule: schedule,
       startDate: _start,
       notes: _notes.text,
+      category: _category.text,
     );
     final problem = draft.validate();
     if (problem != null) {
@@ -170,6 +173,16 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
       );
   }
 
+  /// Category names already in use, for one-tap reuse.
+  List<String> get _categories {
+    final all = ref.watch(careJobStatesProvider).valueOrNull ?? const <CareJobState>[];
+    final names = <String>{
+      for (final s in all)
+        if (s.job.area == CareArea.custom && s.job.category != null) s.job.category!,
+    };
+    return names.toList()..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
@@ -195,11 +208,45 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 KChoiceChips<CareArea>(
-                  options: {for (final a in CareArea.values) a: a.label},
+                  options: {for (final a in CareArea.values) a: a == CareArea.custom ? '+ Own' : a.label},
                   value: _area,
-                  onChanged: (a) => setState(() => _area = a),
+                  onChanged: (a) => setState(() {
+                    _area = a;
+                    _error = null;
+                  }),
                 ),
-                if (isNew) ...[
+                if (_area == CareArea.custom) ...[
+                  const SizedBox(height: KSpacing.md),
+                  if (_categories.isNotEmpty) ...[
+                    Wrap(
+                      spacing: KSpacing.sm,
+                      runSpacing: KSpacing.xs,
+                      children: [
+                        for (final c in _categories)
+                          KChip(
+                            label: c,
+                            glyph: KGlyphs.folder,
+                            selected: _category.text.trim() == c,
+                            onSelected: (_) => setState(() {
+                              _category.text = c;
+                              _error = null;
+                            }),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: KSpacing.sm),
+                  ],
+                  KTextField(
+                    label: 'Your category',
+                    controller: _category,
+                    hint: 'e.g. Car, Office, Bike',
+                    glyph: KGlyphs.folder,
+                    maxLength: CareJobDraft.maxCategory,
+                    textCapitalization: TextCapitalization.words,
+                    onChanged: (_) => setState(() => _error = null),
+                  ),
+                ],
+                if (isNew && _area != CareArea.custom) ...[
                   label('Start from a common job'),
                   Wrap(
                     spacing: KSpacing.sm,
@@ -231,6 +278,7 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
                     CareArea.home => 'A room or appliance, e.g. Kitchen',
                     CareArea.garden => 'A plant or bed, e.g. Money plant',
                     CareArea.pets => 'A pet or tank, e.g. Bruno, Fish tank',
+                    CareArea.custom => 'What it is for, e.g. Swift, Laptop',
                   },
                   maxLength: CareJobDraft.maxSubject,
                   textCapitalization: TextCapitalization.words,

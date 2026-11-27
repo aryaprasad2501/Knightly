@@ -98,7 +98,7 @@ class CareJobScreen extends ConsumerWidget {
                 const SizedBox(width: KSpacing.sm),
                 Expanded(
                   child: Text(
-                    [job.area.label, ?job.subject, job.schedule.describe()].join(' · '),
+                    [job.areaLabel, ?job.subject, job.schedule.describe()].join(' · '),
                     style: text.bodySmall,
                   ),
                 ),

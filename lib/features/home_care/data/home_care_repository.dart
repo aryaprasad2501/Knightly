@@ -51,6 +51,7 @@ class HomeCareRepository {
           CareJobsCompanion.insert(
             name: draft.name.trim(),
             area: draft.area.storageValue,
+            category: Value(draft.cleanCategory),
             subject: Value(draft.cleanSubject),
             schedule: draft.schedule.encode(),
             startDate: draft.startDate.toStorage(),
@@ -67,6 +68,7 @@ class HomeCareRepository {
       CareJobsCompanion(
         name: Value(draft.name.trim()),
         area: Value(draft.area.storageValue),
+        category: Value(draft.cleanCategory),
         subject: Value(draft.cleanSubject),
         schedule: Value(draft.schedule.encode()),
         startDate: Value(draft.startDate.toStorage()),
@@ -160,6 +162,7 @@ class HomeCareRepository {
         uuid: r.uuid,
         name: r.name,
         area: CareArea.fromStorage(r.area),
+        category: r.category,
         subject: r.subject,
         schedule: CareSchedule.decode(r.schedule),
         startDate: CalendarDate.parse(r.startDate),

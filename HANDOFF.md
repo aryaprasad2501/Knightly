@@ -4,6 +4,12 @@ _Last updated: 2026-11-27 · Insights complete_
 
 ## Where things stand
 
+**Latest (2026-11-27, user requests):** schema **v12** (`care_jobs.category` for custom Home care categories,
+`CareArea.custom`, editor "+ Own", filter chips by category). `HomeCareSection` on Track. Track order setting
+`track.order` (`track/application/track_layout.dart`, `arrange_track_sheet.dart`, `reorder` glyph). Android
+splash icon blank (`drawable/splash_blank.xml`; the old `ic_launcher_foreground.xml` vector is unused by the app).
+Dock: floating capsule with cylinder shading. Mission editor: "New project…". 417 tests.
+
 **Latest (Insights, 2026-11-27):** `features/insights` — domain `insights.dart` (`InsightsSnapshot`, areas,
 rates, activity buckets, trends, records, 7×8 heat), `insights_providers.dart` (reads other modules via new
 `completedTasksSinceProvider`, `waterLogsSinceProvider`, `sleepNightsSinceProvider`, `mealEntriesSinceProvider`),

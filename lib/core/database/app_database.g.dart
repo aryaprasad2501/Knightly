@@ -7709,6 +7709,15 @@ class $CareJobsTable extends CareJobs with TableInfo<$CareJobsTable, CareJobRow>
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _categoryMeta = const VerificationMeta('category');
+  @override
+  late final GeneratedColumn<String> category = GeneratedColumn<String>(
+    'category',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _subjectMeta = const VerificationMeta('subject');
   @override
   late final GeneratedColumn<String> subject = GeneratedColumn<String>(
@@ -7780,6 +7789,7 @@ class $CareJobsTable extends CareJobs with TableInfo<$CareJobsTable, CareJobRow>
     uuid,
     name,
     area,
+    category,
     subject,
     schedule,
     startDate,
@@ -7812,6 +7822,9 @@ class $CareJobsTable extends CareJobs with TableInfo<$CareJobsTable, CareJobRow>
       context.handle(_areaMeta, area.isAcceptableOrUnknown(data['area']!, _areaMeta));
     } else if (isInserting) {
       context.missing(_areaMeta);
+    }
+    if (data.containsKey('category')) {
+      context.handle(_categoryMeta, category.isAcceptableOrUnknown(data['category']!, _categoryMeta));
     }
     if (data.containsKey('subject')) {
       context.handle(_subjectMeta, subject.isAcceptableOrUnknown(data['subject']!, _subjectMeta));
@@ -7851,6 +7864,7 @@ class $CareJobsTable extends CareJobs with TableInfo<$CareJobsTable, CareJobRow>
       uuid: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}uuid'])!,
       name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       area: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}area'])!,
+      category: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}category']),
       subject: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}subject']),
       schedule: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}schedule'])!,
       startDate: attachedDatabase.typeMapping.read(
@@ -7884,8 +7898,11 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
   final String uuid;
   final String name;
 
-  /// 0 home · 1 garden · 2 pets.
+  /// 0 home · 1 garden · 2 pets · 3 custom (named in [category]).
   final int area;
+
+  /// The person's own category name for custom jobs. Added in schema v12.
+  final String? category;
 
   /// Which plant, pet, room or appliance; optional.
   final String? subject;
@@ -7904,6 +7921,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
     required this.uuid,
     required this.name,
     required this.area,
+    this.category,
     this.subject,
     required this.schedule,
     required this.startDate,
@@ -7919,6 +7937,9 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
     map['uuid'] = Variable<String>(uuid);
     map['name'] = Variable<String>(name);
     map['area'] = Variable<int>(area);
+    if (!nullToAbsent || category != null) {
+      map['category'] = Variable<String>(category);
+    }
     if (!nullToAbsent || subject != null) {
       map['subject'] = Variable<String>(subject);
     }
@@ -7941,6 +7962,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
       uuid: Value(uuid),
       name: Value(name),
       area: Value(area),
+      category: category == null && nullToAbsent ? const Value.absent() : Value(category),
       subject: subject == null && nullToAbsent ? const Value.absent() : Value(subject),
       schedule: Value(schedule),
       startDate: Value(startDate),
@@ -7958,6 +7980,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
       uuid: serializer.fromJson<String>(json['uuid']),
       name: serializer.fromJson<String>(json['name']),
       area: serializer.fromJson<int>(json['area']),
+      category: serializer.fromJson<String?>(json['category']),
       subject: serializer.fromJson<String?>(json['subject']),
       schedule: serializer.fromJson<String>(json['schedule']),
       startDate: serializer.fromJson<String>(json['startDate']),
@@ -7975,6 +7998,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
       'uuid': serializer.toJson<String>(uuid),
       'name': serializer.toJson<String>(name),
       'area': serializer.toJson<int>(area),
+      'category': serializer.toJson<String?>(category),
       'subject': serializer.toJson<String?>(subject),
       'schedule': serializer.toJson<String>(schedule),
       'startDate': serializer.toJson<String>(startDate),
@@ -7990,6 +8014,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
     String? uuid,
     String? name,
     int? area,
+    Value<String?> category = const Value.absent(),
     Value<String?> subject = const Value.absent(),
     String? schedule,
     String? startDate,
@@ -8002,6 +8027,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
     uuid: uuid ?? this.uuid,
     name: name ?? this.name,
     area: area ?? this.area,
+    category: category.present ? category.value : this.category,
     subject: subject.present ? subject.value : this.subject,
     schedule: schedule ?? this.schedule,
     startDate: startDate ?? this.startDate,
@@ -8016,6 +8042,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
       uuid: data.uuid.present ? data.uuid.value : this.uuid,
       name: data.name.present ? data.name.value : this.name,
       area: data.area.present ? data.area.value : this.area,
+      category: data.category.present ? data.category.value : this.category,
       subject: data.subject.present ? data.subject.value : this.subject,
       schedule: data.schedule.present ? data.schedule.value : this.schedule,
       startDate: data.startDate.present ? data.startDate.value : this.startDate,
@@ -8033,6 +8060,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
           ..write('uuid: $uuid, ')
           ..write('name: $name, ')
           ..write('area: $area, ')
+          ..write('category: $category, ')
           ..write('subject: $subject, ')
           ..write('schedule: $schedule, ')
           ..write('startDate: $startDate, ')
@@ -8045,8 +8073,20 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, uuid, name, area, subject, schedule, startDate, notes, createdAt, updatedAt, deletedAt);
+  int get hashCode => Object.hash(
+    id,
+    uuid,
+    name,
+    area,
+    category,
+    subject,
+    schedule,
+    startDate,
+    notes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -8055,6 +8095,7 @@ class CareJobRow extends DataClass implements Insertable<CareJobRow> {
           other.uuid == this.uuid &&
           other.name == this.name &&
           other.area == this.area &&
+          other.category == this.category &&
           other.subject == this.subject &&
           other.schedule == this.schedule &&
           other.startDate == this.startDate &&
@@ -8069,6 +8110,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
   final Value<String> uuid;
   final Value<String> name;
   final Value<int> area;
+  final Value<String?> category;
   final Value<String?> subject;
   final Value<String> schedule;
   final Value<String> startDate;
@@ -8081,6 +8123,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
     this.uuid = const Value.absent(),
     this.name = const Value.absent(),
     this.area = const Value.absent(),
+    this.category = const Value.absent(),
     this.subject = const Value.absent(),
     this.schedule = const Value.absent(),
     this.startDate = const Value.absent(),
@@ -8094,6 +8137,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
     this.uuid = const Value.absent(),
     required String name,
     required int area,
+    this.category = const Value.absent(),
     this.subject = const Value.absent(),
     required String schedule,
     required String startDate,
@@ -8110,6 +8154,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
     Expression<String>? uuid,
     Expression<String>? name,
     Expression<int>? area,
+    Expression<String>? category,
     Expression<String>? subject,
     Expression<String>? schedule,
     Expression<String>? startDate,
@@ -8123,6 +8168,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
       if (uuid != null) 'uuid': uuid,
       if (name != null) 'name': name,
       if (area != null) 'area': area,
+      if (category != null) 'category': category,
       if (subject != null) 'subject': subject,
       if (schedule != null) 'schedule': schedule,
       if (startDate != null) 'start_date': startDate,
@@ -8138,6 +8184,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
     Value<String>? uuid,
     Value<String>? name,
     Value<int>? area,
+    Value<String?>? category,
     Value<String?>? subject,
     Value<String>? schedule,
     Value<String>? startDate,
@@ -8151,6 +8198,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
       uuid: uuid ?? this.uuid,
       name: name ?? this.name,
       area: area ?? this.area,
+      category: category ?? this.category,
       subject: subject ?? this.subject,
       schedule: schedule ?? this.schedule,
       startDate: startDate ?? this.startDate,
@@ -8175,6 +8223,9 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
     }
     if (area.present) {
       map['area'] = Variable<int>(area.value);
+    }
+    if (category.present) {
+      map['category'] = Variable<String>(category.value);
     }
     if (subject.present) {
       map['subject'] = Variable<String>(subject.value);
@@ -8207,6 +8258,7 @@ class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
           ..write('uuid: $uuid, ')
           ..write('name: $name, ')
           ..write('area: $area, ')
+          ..write('category: $category, ')
           ..write('subject: $subject, ')
           ..write('schedule: $schedule, ')
           ..write('startDate: $startDate, ')
@@ -13525,6 +13577,7 @@ typedef $$CareJobsTableCreateCompanionBuilder =
       Value<String> uuid,
       required String name,
       required int area,
+      Value<String?> category,
       Value<String?> subject,
       required String schedule,
       required String startDate,
@@ -13539,6 +13592,7 @@ typedef $$CareJobsTableUpdateCompanionBuilder =
       Value<String> uuid,
       Value<String> name,
       Value<int> area,
+      Value<String?> category,
       Value<String?> subject,
       Value<String> schedule,
       Value<String> startDate,
@@ -13587,6 +13641,9 @@ class $$CareJobsTableFilterComposer extends Composer<_$AppDatabase, $CareJobsTab
 
   ColumnFilters<int> get area =>
       $composableBuilder(column: $table.area, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get subject =>
       $composableBuilder(column: $table.subject, builder: (column) => ColumnFilters(column));
@@ -13648,6 +13705,9 @@ class $$CareJobsTableOrderingComposer extends Composer<_$AppDatabase, $CareJobsT
   ColumnOrderings<int> get area =>
       $composableBuilder(column: $table.area, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get subject =>
       $composableBuilder(column: $table.subject, builder: (column) => ColumnOrderings(column));
 
@@ -13685,6 +13745,9 @@ class $$CareJobsTableAnnotationComposer extends Composer<_$AppDatabase, $CareJob
   GeneratedColumn<String> get name => $composableBuilder(column: $table.name, builder: (column) => column);
 
   GeneratedColumn<int> get area => $composableBuilder(column: $table.area, builder: (column) => column);
+
+  GeneratedColumn<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => column);
 
   GeneratedColumn<String> get subject =>
       $composableBuilder(column: $table.subject, builder: (column) => column);
@@ -13756,6 +13819,7 @@ class $$CareJobsTableTableManager
                 Value<String> uuid = const Value.absent(),
                 Value<String> name = const Value.absent(),
                 Value<int> area = const Value.absent(),
+                Value<String?> category = const Value.absent(),
                 Value<String?> subject = const Value.absent(),
                 Value<String> schedule = const Value.absent(),
                 Value<String> startDate = const Value.absent(),
@@ -13768,6 +13832,7 @@ class $$CareJobsTableTableManager
                 uuid: uuid,
                 name: name,
                 area: area,
+                category: category,
                 subject: subject,
                 schedule: schedule,
                 startDate: startDate,
@@ -13782,6 +13847,7 @@ class $$CareJobsTableTableManager
                 Value<String> uuid = const Value.absent(),
                 required String name,
                 required int area,
+                Value<String?> category = const Value.absent(),
                 Value<String?> subject = const Value.absent(),
                 required String schedule,
                 required String startDate,
@@ -13794,6 +13860,7 @@ class $$CareJobsTableTableManager
                 uuid: uuid,
                 name: name,
                 area: area,
+                category: category,
                 subject: subject,
                 schedule: schedule,
                 startDate: startDate,

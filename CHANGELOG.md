@@ -6,6 +6,15 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Home care on Track**: its own section with the panel picture, what is due (Done in place) and
+  buttons for all jobs and a new job.
+- **Your own Home care categories** (+ Own): e.g. Car, Office or Bike, alongside Home, Garden and
+  Pets; filter by them on the Home care page.
+- **Arrange Track**: drag the sections into the order you want (saved, and kept in backups).
+
+### Changed
+- The system splash before Knightly's intro is now the plain dark canvas (the old crest is gone).
+
 - **Insights** (new tab in the dock): a command centre built only from what you record —
   productivity score with a breakdown and how it is calculated, activity by day / week / month,
   missions (done, pending, overdue, on time, by project and priority), habit consistency and

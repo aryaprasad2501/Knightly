@@ -14,7 +14,12 @@ import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/modules/app_module.dart';
 import '../../habits/application/habits_providers.dart';
 import '../../habits/domain/habit_stats.dart';
+import '../../../core/design/components/k_button.dart';
+import '../../../core/design/components/k_icon_button.dart';
 import '../../habits/presentation/habits_section.dart';
+import '../application/track_layout.dart';
+import 'arrange_track_sheet.dart';
+import '../../home_care/presentation/home_care_section.dart';
 import '../../routines/presentation/routines_section.dart';
 import '../../sleep/presentation/sleep_section.dart';
 import '../../tasks/application/tasks_providers.dart';
@@ -38,27 +43,58 @@ class TrackScreen extends ConsumerWidget {
         ? 'Habits'
         : '${summary.doneToday} of ${summary.dueToday} habits done';
 
-    // Each part appears only while its module is on.
+    // Each part appears only while its module is on, in the person's order.
+    final order = ref.watch(trackOrderProvider).valueOrNull ?? TrackPanel.values;
+    bool shows(TrackPanel panel) => switch (panel) {
+      TrackPanel.performance =>
+        on.contains(AppModule.analytics) && (habitsOn || on.contains(AppModule.missions)),
+      _ => on.contains(panel.module),
+    };
+    Widget build(TrackPanel panel) => switch (panel) {
+      TrackPanel.performance => const _PerformancePanel(),
+      TrackPanel.habits => const HabitsSection(),
+      TrackPanel.routines => const RoutinesSection(),
+      TrackPanel.water => const WaterSection(),
+      TrackPanel.sleep => const SleepSection(),
+      TrackPanel.workouts => const WorkoutsSection(),
+      TrackPanel.nutrition => const NutritionSection(),
+      TrackPanel.homeCare => const HomeCareSection(),
+    };
+    final shown = {
+      for (final p in order)
+        if (shows(p)) p,
+    };
     final sections = <Widget>[
-      if (on.contains(AppModule.analytics) && (habitsOn || on.contains(AppModule.missions)))
-        const _PerformancePanel(),
-      if (habitsOn) const HabitsSection(),
-      if (on.contains(AppModule.routines)) const RoutinesSection(),
-      if (on.contains(AppModule.water)) const WaterSection(),
-      if (on.contains(AppModule.sleep)) const SleepSection(),
-      if (on.contains(AppModule.workouts)) const WorkoutsSection(),
-      if (on.contains(AppModule.nutrition)) const NutritionSection(),
+      for (final p in order)
+        if (shown.contains(p)) KeyedSubtree(key: ValueKey(p), child: build(p)),
       if (on.any((m) => AppModule.trackers.contains(m) && !m.built)) const _MoreTrackers(),
     ];
+    void arrange() => showArrangeTrackSheet(context, shown: shown);
 
     return KPage(
       eyebrow: eyebrow,
       title: context.byStyle('Console', 'Instincts'),
       backdrop: KBackdrop.track,
+      actions: [
+        if (shown.length > 1)
+          KIconButton(glyph: KGlyphs.reorder, tooltip: 'Arrange sections', onPressed: arrange),
+      ],
       children: [
         for (final (i, section) in sections.indexed) ...[
           if (i > 0) const SizedBox(height: KSpacing.xl),
           section,
+        ],
+        if (shown.length > 1) ...[
+          const SizedBox(height: KSpacing.lg),
+          Center(
+            child: KButton(
+              label: 'Arrange sections',
+              glyph: KGlyphs.reorder,
+              variant: KButtonVariant.outlined,
+              size: KButtonSize.compact,
+              onPressed: arrange,
+            ),
+          ),
         ],
       ],
     );

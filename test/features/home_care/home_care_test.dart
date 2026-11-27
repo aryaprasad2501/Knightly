@@ -190,6 +190,27 @@ void main() {
     });
   });
 
+  group('custom categories', () {
+    test('need a name and show it as the area', () async {
+      CareJobDraft d(String? c) => CareJobDraft(
+        name: 'Service the car',
+        area: CareArea.custom,
+        category: c,
+        schedule: EveryInterval(6, CareUnit.months),
+        startDate: today,
+      );
+      expect(d(null).validate(), isNotNull);
+      expect(d('  ').validate(), isNotNull);
+      expect(d(' Car ').validate(), isNull);
+      expect(d(' Car ').cleanCategory, 'Car');
+
+      final repo = HomeCareRepository(testDatabase(), clock: () => now);
+      await repo.createJob(d(' Car '));
+      final job = (await repo.watchJobs().first).single;
+      expect((job.area, job.category, job.areaLabel), (CareArea.custom, 'Car', 'Car'));
+    });
+  });
+
   group('repository', () {
     test('create, log, undo, trash and restore', () async {
       final db = testDatabase();

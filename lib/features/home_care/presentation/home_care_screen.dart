@@ -10,7 +10,7 @@ import '../../../core/design/components/k_empty_state.dart';
 import '../../../core/design/components/k_icon_button.dart';
 import '../../../core/design/components/k_loading_indicator.dart';
 import '../../../core/design/components/k_section_header.dart';
-import '../../../core/design/components/k_share_bar.dart';
+import '../../../core/design/components/k_chip.dart';
 import '../../../core/design/components/k_surface.dart';
 import '../../../core/design/icons/k_glyph.dart';
 import '../../../core/design/icons/k_glyphs.dart';
@@ -33,10 +33,18 @@ class HomeCareScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeCareScreenState extends ConsumerState<HomeCareScreen> {
+  /// null for all; otherwise an area (custom jobs filter by category name).
   CareArea? _area;
+  String? _category;
+
+  bool _matches(CareJobState s) {
+    if (_area == null) return true;
+    if (s.job.area != _area) return false;
+    return _area != CareArea.custom || s.job.category == _category;
+  }
 
   Future<void> _add() async {
-    final id = await showCareJobEditor(context, area: _area);
+    final id = await showCareJobEditor(context, area: _area == CareArea.custom ? null : _area);
     if (id != null && id > 0 && mounted) await context.push(AppRoutes.careJobFor(id));
   }
 
@@ -80,7 +88,7 @@ class _HomeCareScreenState extends ConsumerState<HomeCareScreen> {
     final summary = CareSummary.of(all);
     final shown = [
       for (final s in all)
-        if (_area == null || s.job.area == _area) s,
+        if (_matches(s)) s,
     ];
     final reminders = ref.watch(careRemindersProvider).valueOrNull;
 
@@ -176,16 +184,43 @@ class _HomeCareScreenState extends ConsumerState<HomeCareScreen> {
         ),
       ] else ...[
         const SizedBox(height: KSpacing.md),
-        KChoiceChips<CareArea?>(
-          options: {null: 'All', for (final a in CareArea.values) a: a.label},
-          value: _area,
-          onChanged: (a) => setState(() => _area = a),
+        // All, the three areas and each of the person's own categories.
+        Wrap(
+          spacing: KSpacing.sm,
+          runSpacing: KSpacing.xs,
+          children: [
+            KChip(label: 'All', selected: _area == null, onSelected: (_) => setState(() => _area = null)),
+            for (final a in CareArea.values)
+              if (a != CareArea.custom)
+                KChip(
+                  label: a.label,
+                  glyph: careAreaGlyph(a),
+                  selected: _area == a,
+                  onSelected: (_) => setState(() {
+                    _area = a;
+                    _category = null;
+                  }),
+                ),
+            for (final c in {
+              for (final s in all)
+                if (s.job.area == CareArea.custom && s.job.category != null) s.job.category!,
+            })
+              KChip(
+                label: c,
+                glyph: KGlyphs.folder,
+                selected: _area == CareArea.custom && _category == c,
+                onSelected: (_) => setState(() {
+                  _area = CareArea.custom;
+                  _category = c;
+                }),
+              ),
+          ],
         ),
         if (shown.isEmpty) ...[
           const SizedBox(height: KSpacing.xl),
           KSurface(
             child: Text(
-              'No ${_area!.label.toLowerCase()} jobs yet.',
+              'No ${(_category ?? _area!.label).toLowerCase()} jobs yet.',
               style: text.bodyMedium?.copyWith(color: p.textMuted),
             ),
           ),

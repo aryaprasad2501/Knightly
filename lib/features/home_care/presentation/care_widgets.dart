@@ -17,6 +17,7 @@ KGlyphData careAreaGlyph(CareArea area) => switch (area) {
   CareArea.home => KGlyphs.home,
   CareArea.garden => KGlyphs.leaf,
   CareArea.pets => KGlyphs.paw,
+  CareArea.custom => KGlyphs.folder,
 };
 
 KTone careStatusTone(CareStatus status) => switch (status) {

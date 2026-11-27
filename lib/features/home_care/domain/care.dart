@@ -1,10 +1,12 @@
 import '../../../core/time/calendar_date.dart';
 
-/// Where a job belongs.
+/// Where a job belongs. [custom] jobs carry the person's own category name
+/// (e.g. "Car", "Office").
 enum CareArea {
   home('Home'),
   garden('Garden'),
-  pets('Pets');
+  pets('Pets'),
+  custom('Custom');
 
   const CareArea(this.label);
 
@@ -250,12 +252,19 @@ class CareJob {
     this.subject,
     this.notes,
     this.deletedAt,
+    this.category,
   });
 
   final int id;
   final String uuid;
   final String name;
   final CareArea area;
+
+  /// The person's own category name, for [CareArea.custom] jobs.
+  final String? category;
+
+  /// "Home", "Garden", "Pets" or the custom category's name.
+  String get areaLabel => area == CareArea.custom ? (category ?? CareArea.custom.label) : area.label;
 
   /// Which plant, pet, room or appliance, e.g. "Money plant", "Bruno", "Fish tank".
   final String? subject;
@@ -401,10 +410,14 @@ class CareJobDraft {
     required this.startDate,
     this.subject,
     this.notes,
+    this.category,
   });
 
   final String name;
   final CareArea area;
+
+  /// Required for [CareArea.custom]; ignored otherwise.
+  final String? category;
   final String? subject;
   final CareSchedule schedule;
   final CalendarDate startDate;
@@ -413,17 +426,25 @@ class CareJobDraft {
   static const maxName = 80;
   static const maxSubject = 40;
   static const maxNotes = 500;
+  static const maxCategory = 24;
 
   String? validate() {
     final n = name.trim();
     if (n.isEmpty) return 'Give the job a name.';
     if (n.length > maxName) return 'Keep the name under $maxName characters.';
+    if (area == CareArea.custom) {
+      final c = category?.trim() ?? '';
+      if (c.isEmpty) return 'Name your category, e.g. Car or Office.';
+      if (c.length > maxCategory) return 'Keep the category under $maxCategory characters.';
+    }
     if ((subject?.trim().length ?? 0) > maxSubject) return 'Keep "for" under $maxSubject characters.';
     if ((notes?.trim().length ?? 0) > maxNotes) return 'Keep notes under $maxNotes characters.';
     return null;
   }
 
   String? get cleanSubject => subject == null || subject!.trim().isEmpty ? null : subject!.trim();
+  String? get cleanCategory => area == CareArea.custom ? category?.trim() : null;
+
   String? get cleanNotes => notes == null || notes!.trim().isEmpty ? null : notes!.trim();
 }
 

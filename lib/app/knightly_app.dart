@@ -82,6 +82,8 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
       router.push(AppRoutes.homeCare);
     } else if (kind == 'mission') {
       router.go(AppRoutes.tasks);
+    } else if (kind == 'place') {
+      router.push(AppRoutes.places);
     } else if (kind == 'water' || kind == 'sleep' || kind == 'habits') {
       router.go(AppRoutes.track);
     }

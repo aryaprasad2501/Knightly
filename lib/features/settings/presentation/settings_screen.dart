@@ -147,6 +147,14 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: KSpacing.md),
         KCard(
+          glyph: KGlyphs.pin,
+          title: 'Places',
+          subtitle: 'Home, office and more · a reminder when you arrive',
+          trailing: chevron,
+          onTap: () => context.push(AppRoutes.places),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
           glyph: KGlyphs.settings,
           title: 'Modules',
           subtitle: '${modulesOn.length} of ${AppModule.values.length} on · switch off what you do not use',

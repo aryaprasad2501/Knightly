@@ -110,7 +110,7 @@ class _CareReminders extends ConsumerWidget {
           ),
         ],
         const SizedBox(height: KSpacing.xl),
-        const _ArrivalRow(),
+        const HomeArrivalRow(),
       ],
     );
   }
@@ -118,14 +118,16 @@ class _CareReminders extends ConsumerWidget {
 
 /// "When I get home": mark this place as home; on arrival, a notification
 /// lists the jobs still due.
-class _ArrivalRow extends ConsumerStatefulWidget {
-  const _ArrivalRow();
+/// "When I get home": set or move home, or turn the arrival reminder off.
+/// Public: the Places screen shows it too.
+class HomeArrivalRow extends ConsumerStatefulWidget {
+  const HomeArrivalRow({super.key});
 
   @override
-  ConsumerState<_ArrivalRow> createState() => _ArrivalRowState();
+  ConsumerState<HomeArrivalRow> createState() => _HomeArrivalRowState();
 }
 
-class _ArrivalRowState extends ConsumerState<_ArrivalRow> {
+class _HomeArrivalRowState extends ConsumerState<HomeArrivalRow> {
   String? _problem;
   bool _busy = false;
 

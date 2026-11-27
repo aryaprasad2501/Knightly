@@ -65,6 +65,7 @@ abstract final class KGlyphs {
     detail: _gearTacticalDetail,
   );
   static const reorder = KGlyphData('reorder', detail: _reorder);
+  static const pin = KGlyphData('pin', body: _pinBody, detail: _pinDetail);
   static const gearFeline = KGlyphData('gearFeline', body: _gearFelineBody, detail: _gearFelineDetail);
 
   static const List<KGlyphData> all = [
@@ -76,7 +77,7 @@ abstract final class KGlyphs {
     flame,
     archive,
     habit, routine, dumbbell, leaf, chart, bell, backup, folder, edit, alarm, progress, paw, //
-    gearTactical, gearFeline, reorder,
+    gearTactical, gearFeline, reorder, pin,
   ];
 }
 
@@ -531,3 +532,13 @@ void _progressBody(Path p) => p.addOval(Rect.fromCircle(center: const Offset(16,
 
 void _progressDetail(Path p) =>
     p.addArc(Rect.fromCircle(center: const Offset(12, 12), radius: 8), -1.05, -4.9);
+
+// A map pin: a teardrop with a dot (places).
+void _pinBody(Path p) => p
+  ..moveTo(12, 21)
+  ..cubicTo(8, 16.6, 5, 13.2, 5, 9.6)
+  ..arcToPoint(const Offset(19, 9.6), radius: const Radius.circular(7))
+  ..cubicTo(19, 13.2, 16, 16.6, 12, 21)
+  ..close();
+
+void _pinDetail(Path p) => p.addOval(Rect.fromCircle(center: const Offset(12, 9.6), radius: 2.4));

@@ -112,6 +112,7 @@ of re-implementing them:
 | calendar | `TodayScheduleCard` (`today_schedule_card.dart`) | Home |
 | home_care | `HomeCareCard` (`home_care_card.dart`) | Home |
 | home_care | `HomeCareSection` (`home_care_section.dart`) | Track |
+| home_care | `HomeArrivalRow` (`care_reminders_sheet.dart`) | Settings › Places |
 | routines | `RoutinesSection` (`routines_section.dart`) | Track tab |
 | routines | `showRoutineEditor()` (`routine_editor_sheet.dart`) | App shell dock "New routine" (Track, habits off); Calendar agenda |
 | routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
@@ -473,3 +474,4 @@ codegen not needed yet).
 | D96 | 2026-11-28 | Schema v13: `task_checks` (cascade on mission delete); `update(..., checks: null)` leaves a checklist untouched; next occurrences copy lines unticked; backup table `taskChecks` (since 13) | Checklists without touching existing tables. |
 | D97 | 2026-11-28 | `YearlyRecurrence` (`yearly:MM-DD`, 29 Feb → 28 Feb in common years) added to the shared recurrence; no schema change | Birthdays without a new table. |
 | D98 | 2026-11-28 | Home's "+" is a draggable `KFab` stored as fractions in `home.fab_position` | Position survives screen-size and rotation changes. |
+| D99 | 2026-11-28 | Places stored as JSON in setting `places.list` (so in backups), mirrored to `places.json` for the geofence callback; `PlaceWatcher` interface for tests; shared `locateHere()` in core/location | Small user config, no schema change. |

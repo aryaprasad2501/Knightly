@@ -2,9 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:native_geofence/native_geofence.dart';
 import 'package:path_provider/path_provider.dart';
+
+import '../../../core/location/here.dart';
 
 /// "When I get home" for Home care: a geofence around the place the person
 /// marks as home. Android watches it (no app running, little battery); on
@@ -19,34 +20,15 @@ class HomeArrival {
   /// Why setting home failed, for the person; null on success.
   static Future<String?> setHomeHere() async {
     try {
-      if (!await Geolocator.isLocationServiceEnabled()) return 'Turn on Location in Android settings first.';
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        return 'Knightly needs location access to know when you are home.';
-      }
-      if (permission == LocationPermission.whileInUse) {
-        // Android asks for "Allow all the time" as a second step.
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission != LocationPermission.always) {
-        await Geolocator.openAppSettings();
-        return 'Choose "Allow all the time" for Location, then tap Set home again.';
-      }
-      // The phone's own GPS (no Play-services accuracy prompt).
-      final here = await Geolocator.getCurrentPosition(
-        locationSettings: AndroidSettings(
-          accuracy: LocationAccuracy.high,
-          forceLocationManager: true,
-          timeLimit: const Duration(seconds: 20),
-        ),
-      );
+      String? problem;
+      final here = await locateHere((p) => problem = p);
+      if (here == null) return problem ?? 'Home could not be set on this phone.';
       await NativeGeofenceManager.instance.initialize();
       await NativeGeofenceManager.instance.removeGeofenceById(_id).catchError((_) {});
       await NativeGeofenceManager.instance.createGeofence(
         Geofence(
           id: _id,
-          location: Location(latitude: here.latitude, longitude: here.longitude),
+          location: Location(latitude: here.lat, longitude: here.lon),
           radiusMeters: radiusMeters,
           triggers: {GeofenceEvent.enter},
           iosSettings: const IosGeofenceSettings(initialTrigger: false),

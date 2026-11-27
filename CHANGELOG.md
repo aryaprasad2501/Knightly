@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Places** (Settings › Places): set home there too, and add your own places (office, gym…) by
+  standing there; arriving brings that place's reminder. Location stays on the phone.
 - **Module widgets**: four small home-screen widgets, Missions, Habits, Water and Next event, next to
   "Knightly · Today". Place only the ones you want; tapping one opens that module.
 - **Yearly events** (birthdays, anniversaries): "Every year" repeat in Calendar and missions, and a

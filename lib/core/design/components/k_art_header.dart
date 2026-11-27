@@ -1,14 +1,24 @@
 import 'package:flutter/material.dart';
 
+import '../icons/k_glyph.dart';
+import '../icons/k_glyphs.dart';
 import '../theme/theme_context.dart';
 import '../tokens/k_spacing.dart';
 
 /// Wide scene art at the top of a panel, fading into the panel below, with
 /// [child] laid over its lower part. Use inside a `KSurface(padding: zero)`:
 /// the surface clips the corners. Static (no motion, no blur), so it costs
-/// one decoded image and nothing per frame.
+/// one decoded image and nothing per frame. With [onTap], a small
+/// [actionLabel] tag sits on the art's top-right and the art opens it.
 class KArtHeader extends StatelessWidget {
-  const KArtHeader({super.key, required this.image, required this.child, this.height = 190});
+  const KArtHeader({
+    super.key,
+    required this.image,
+    required this.child,
+    this.height = 190,
+    this.onTap,
+    this.actionLabel = 'Details',
+  });
 
   final ImageProvider image;
   final Widget child;
@@ -16,10 +26,13 @@ class KArtHeader extends StatelessWidget {
   /// Height of the art; [child] sits at its bottom.
   final double height;
 
+  final VoidCallback? onTap;
+  final String actionLabel;
+
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
-    return SizedBox(
+    final art = SizedBox(
       height: height,
       child: Stack(
         fit: StackFit.expand,
@@ -45,8 +58,59 @@ class KArtHeader extends StatelessWidget {
             ),
           ),
           Positioned(left: KSpacing.lg, right: KSpacing.lg, bottom: KSpacing.md, child: child),
+          if (onTap != null)
+            Positioned(
+              top: KSpacing.md,
+              right: KSpacing.md,
+              child: Semantics(
+                button: true,
+                label: actionLabel,
+                excludeSemantics: true,
+                onTap: onTap,
+                child: GestureDetector(
+                  onTap: onTap,
+                  child: DecoratedBox(
+                    decoration: ShapeDecoration(
+                      color: p.canvas.withValues(alpha: 0.72),
+                      shape: context.style.panel(
+                        size: KRadius.pill,
+                        side: BorderSide(
+                          color: p.accentStrong.withValues(alpha: 0.5),
+                          width: KStroke.hairline,
+                        ),
+                      ),
+                    ),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 36),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(
+                          KSpacing.md,
+                          KSpacing.xs,
+                          KSpacing.sm,
+                          KSpacing.xs,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              actionLabel,
+                              style: context.textStyles.labelMedium?.copyWith(color: p.accentStrong),
+                            ),
+                            const SizedBox(width: KSpacing.xxs),
+                            KIcon(KGlyphs.chevronRight, size: 14, color: p.accentStrong),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
+    if (onTap == null) return art;
+    // The whole picture opens it too (the tag is the labelled target).
+    return GestureDetector(behavior: HitTestBehavior.opaque, onTap: onTap, child: art);
   }
 }

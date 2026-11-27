@@ -34,6 +34,11 @@ abstract final class AppRoutes {
   static const nutritionAdd = '/nutrition/add';
   static String nutritionAddFor(String date, int meal) => '/nutrition/add?date=$date&meal=$meal';
 
+  /// Tracker details pages (history, charts and stats).
+  static const waterDetails = '/water';
+  static const sleepDetails = '/sleep';
+  static const nutritionInsights = '/nutrition/insights';
+
   /// The person's own foods.
   static const myFoods = '/nutrition/foods';
 

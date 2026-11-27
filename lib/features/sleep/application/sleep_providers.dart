@@ -4,6 +4,7 @@ import '../../../core/time/clock.dart';
 import '../../settings/data/settings_repository.dart';
 import '../data/sleep_repository.dart';
 import '../domain/sleep.dart';
+import '../domain/sleep_insights.dart';
 
 /// The nightly sleep goal in minutes (a setting; default 8 h).
 class SleepGoal extends AsyncNotifier<int> {
@@ -66,3 +67,24 @@ class SleepActions {
 final sleepActionsProvider = Provider<SleepActions>(
   (ref) => SleepActions(ref.watch(sleepRepositoryProvider)),
 );
+
+final _sleepRangeProvider = StreamProvider.family<List<SleepLog>, int>((ref, range) {
+  final today = ref.watch(todayProvider);
+  return ref.watch(sleepRepositoryProvider).watchNights(since: today.addDays(-(range - 1)));
+});
+
+/// Sleep over the last [range] nights (the details page).
+final sleepInsightsProvider = Provider.family<AsyncValue<SleepInsights>, int>((ref, range) {
+  final nights = ref.watch(_sleepRangeProvider(range));
+  final goal = ref.watch(sleepGoalProvider);
+  if (nights.hasError) return AsyncError(nights.error!, nights.stackTrace ?? StackTrace.current);
+  if (!nights.hasValue || !goal.hasValue) return const AsyncLoading();
+  return AsyncData(
+    SleepInsights.of(
+      nights.requireValue,
+      today: ref.watch(todayProvider),
+      range: range,
+      goal: Duration(minutes: goal.requireValue),
+    ),
+  );
+});

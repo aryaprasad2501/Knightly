@@ -4,6 +4,7 @@ import '../../../core/time/clock.dart';
 import '../../settings/data/settings_repository.dart';
 import '../data/water_repository.dart';
 import '../domain/water.dart';
+import '../domain/water_insights.dart';
 
 /// The daily water goal in millilitres (a setting; default 2 L).
 class WaterGoal extends AsyncNotifier<int> {
@@ -74,3 +75,24 @@ class WaterActions {
 final waterActionsProvider = Provider<WaterActions>(
   (ref) => WaterActions(ref.watch(waterRepositoryProvider)),
 );
+
+final _waterRangeLogsProvider = StreamProvider.family<List<WaterLog>, int>((ref, range) {
+  final today = ref.watch(todayProvider);
+  return ref.watch(waterRepositoryProvider).watchLogs(since: today.addDays(-(range - 1)));
+});
+
+/// Water over the last [range] days (the details page).
+final waterInsightsProvider = Provider.family<AsyncValue<WaterInsights>, int>((ref, range) {
+  final logs = ref.watch(_waterRangeLogsProvider(range));
+  final goal = ref.watch(waterGoalProvider);
+  if (logs.hasError) return AsyncError(logs.error!, logs.stackTrace ?? StackTrace.current);
+  if (!logs.hasValue || !goal.hasValue) return const AsyncLoading();
+  return AsyncData(
+    WaterInsights.of(
+      logs.requireValue,
+      today: ref.watch(todayProvider),
+      range: range,
+      goalMl: goal.requireValue,
+    ),
+  );
+});

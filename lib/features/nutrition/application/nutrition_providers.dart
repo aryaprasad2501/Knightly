@@ -9,6 +9,7 @@ import '../../settings/data/settings_repository.dart';
 import '../data/nutrition_repository.dart';
 import '../domain/food_library.dart';
 import '../domain/nutrition.dart';
+import '../domain/nutrition_insights.dart';
 
 /// Where the bundled food list lives (see tool/nutrition/build_foods.py).
 const foodLibraryAsset = 'assets/data/foods.json';
@@ -113,3 +114,24 @@ class NutritionActions {
 final nutritionActionsProvider = Provider<NutritionActions>(
   (ref) => NutritionActions(ref.watch(nutritionRepositoryProvider)),
 );
+
+final _rangeEntriesProvider = StreamProvider.family<List<MealEntry>, int>((ref, range) {
+  final today = ref.watch(todayProvider);
+  return ref.watch(nutritionRepositoryProvider).watchEntries(since: today.addDays(-(range - 1)));
+});
+
+/// Eating over the last [range] days (the insights page).
+final nutritionInsightsProvider = Provider.family<AsyncValue<NutritionInsights>, int>((ref, range) {
+  final entries = ref.watch(_rangeEntriesProvider(range));
+  final targets = ref.watch(nutritionTargetsProvider);
+  if (entries.hasError) return AsyncError(entries.error!, entries.stackTrace ?? StackTrace.current);
+  if (!entries.hasValue || !targets.hasValue) return const AsyncLoading();
+  return AsyncData(
+    NutritionInsights.of(
+      entries.requireValue,
+      today: ref.watch(todayProvider),
+      range: range,
+      targets: targets.requireValue,
+    ),
+  );
+});

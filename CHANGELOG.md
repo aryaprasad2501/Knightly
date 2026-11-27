@@ -6,6 +6,14 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Details pages for Water, Sleep and Nutrition**: tap the picture on a Track panel (or its
+  "Details" tag) for 7, 30 or 90 days of history — a chart against your goal or target, stats at a
+  glance (goal days, streaks, best day, typical drink; sleep debt, typical bedtime and wake-up,
+  how steady your bedtime is, longest and shortest night; days on target, average protein, carbs
+  and fat), where it comes from (time of day, sleep quality, macro and meal split), your most
+  logged foods, and every day or night in the range.
+
+### Added
 - **Body stats in Workouts**: enter your current weight and height on Track › Workouts and see
   your BMI with its band (underweight, healthy, overweight, obese). Saved on the phone and in
   backups.

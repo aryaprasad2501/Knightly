@@ -14,6 +14,9 @@ import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/tasks/presentation/tasks_screen.dart';
 import '../../features/nutrition/presentation/food_search_screen.dart';
 import '../../features/nutrition/presentation/my_foods_screen.dart';
+import '../../features/nutrition/presentation/nutrition_insights_screen.dart';
+import '../../features/sleep/presentation/sleep_details_screen.dart';
+import '../../features/water/presentation/water_details_screen.dart';
 import '../../features/nutrition/presentation/nutrition_day_screen.dart';
 import '../../features/workouts/presentation/exercise_library_screen.dart';
 import '../../features/workouts/presentation/workout_history_screen.dart';
@@ -76,6 +79,12 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
           meal: int.tryParse(state.uri.queryParameters['meal'] ?? ''),
         ),
       ),
+      GoRoute(
+        path: AppRoutes.nutritionInsights,
+        builder: (context, state) => const NutritionInsightsScreen(),
+      ),
+      GoRoute(path: AppRoutes.waterDetails, builder: (context, state) => const WaterDetailsScreen()),
+      GoRoute(path: AppRoutes.sleepDetails, builder: (context, state) => const SleepDetailsScreen()),
       GoRoute(path: AppRoutes.myFoods, builder: (context, state) => const MyFoodsScreen()),
       GoRoute(path: AppRoutes.notifications, builder: (context, state) => const NotificationsScreen()),
       GoRoute(

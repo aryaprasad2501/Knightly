@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/design/components/k_art_header.dart';
+import 'package:knightly/core/design/components/k_bar_chart.dart';
+import 'package:knightly/core/design/components/k_share_bar.dart';
+import 'package:knightly/core/design/components/k_stat_tile.dart';
 import 'package:knightly/core/design/components/k_bottom_sheet.dart';
 import 'package:knightly/core/design/components/k_activity_rings.dart';
 import 'package:knightly/core/design/components/k_button.dart';
@@ -48,6 +51,26 @@ void main() {
                 child: KArtHeader(image: AssetImage('assets/panels/dk_water.webp'), child: Text('art')),
               ),
               const KCard(title: 'card', glyph: KGlyphs.moon, child: Text('body')),
+              KArtHeader(
+                image: const AssetImage('assets/panels/dk_sleep.webp'),
+                onTap: () {},
+                child: const Text('tap'),
+              ),
+              const KBarChart(
+                values: [1, null, 3],
+                labels: ['a', 'b', 'c'],
+                target: 2,
+                semanticLabel: 'bars',
+              ),
+              const KStatGrid(
+                tiles: [
+                  KStatTile(label: 'stat', value: '1', caption: 'c'),
+                  KStatTile(label: 's', value: '2'),
+                ],
+              ),
+              const KShareBar(parts: [KShare('x', 0.4), KShare('y', 0.6)]),
+              const KShareBar(parts: [KShare('none', 0)]),
+              KChoiceChips<int>(options: const {1: 'one', 2: 'two'}, value: 1, onChanged: (_) {}),
               const KTextField(label: 'field', errorText: 'bad'),
               KNumberField(value: 62.5, decimal: true, semanticLabel: 'kg', onChanged: (_) {}),
               KDropdown<int>(

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router/app_routes.dart';
 
 import '../../../core/design/components/k_art_header.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
@@ -98,6 +101,7 @@ class _SleepPanel extends StatelessWidget {
           KArtHeader(
             image: AssetImage(context.byStyle('assets/panels/dk_sleep.webp', 'assets/panels/sc_sleep.webp')),
             height: last == null ? 190 : 230,
+            onTap: () => context.push(AppRoutes.sleepDetails),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,

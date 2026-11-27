@@ -4,6 +4,12 @@ _Last updated: 2026-11-27 · Phase 2 step 8 (Nutrition) complete_
 
 ## Where things stand
 
+**Latest (tracker details, 2026-11-27):** user request. New core components `KBarChart` (+ `dayChartLabels`),
+`KStatTile`/`KStatGrid`, `KShareBar`, `KChoiceChips` (gallery + components test); `KArtHeader.onTap` shows a
+"Details ›" tag. `core/design/layout/detail_ranges.dart`. Domain: `water_insights.dart`, `sleep_insights.dart`
+(bedtimes averaged around noon), `nutrition_insights.dart`; range providers per feature. Screens
+`/water`, `/sleep`, `/nutrition/insights`. No schema change. 364 tests. Verified on the Pixel 8 AVD.
+
 **Latest (body stats, 2026-11-27):** user request. `workouts/domain/body_stats.dart` (BMI, WHO bands),
 `bodyStatsProvider` (setting `body.stats` = "kg,cm", so backups carry it; no schema change),
 `presentation/body_stats_card.dart` (card under the Workouts buttons + edit sheet). 356 tests. Verified on

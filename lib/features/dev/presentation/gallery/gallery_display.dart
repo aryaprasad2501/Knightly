@@ -4,6 +4,9 @@ import '../../../../core/design/components/k_activity_rings.dart';
 import '../../../../core/design/components/k_toggle.dart';
 
 import '../../../../core/design/components/k_art_header.dart';
+import '../../../../core/design/components/k_bar_chart.dart';
+import '../../../../core/design/components/k_share_bar.dart';
+import '../../../../core/design/components/k_stat_tile.dart';
 import '../../../../core/design/components/k_bottom_sheet.dart';
 import '../../../../core/design/components/k_button.dart';
 import '../../../../core/design/components/k_card.dart';
@@ -57,11 +60,38 @@ class _Surfaces extends StatelessWidget {
           padding: EdgeInsets.zero,
           child: KArtHeader(
             image: AssetImage(context.byStyle('assets/panels/dk_sleep.webp', 'assets/panels/sc_sleep.webp')),
+            onTap: () {},
             child: Text(
               'KArtHeader — panel art fading into the surface',
               style: context.textStyles.titleSmall,
             ),
           ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        const KSurface(
+          child: KBarChart(
+            values: [1800, 2100, null, 1500, 2400, 900, 2000],
+            labels: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+            target: 2000,
+            semanticLabel: 'KBarChart sample',
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        const KStatGrid(
+          tiles: [
+            KStatTile(label: 'KStatTile', value: '1.8 L', caption: 'Daily average', glyph: KGlyphs.drop),
+            KStatTile(label: 'Streak', value: '4 days', caption: 'Best 9', glyph: KGlyphs.flame),
+          ],
+        ),
+        const SizedBox(height: KSpacing.md),
+        const KSurface(
+          child: KShareBar(parts: [KShare('Protein', 0.3), KShare('Carbs', 0.45), KShare('Fat', 0.25)]),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KChoiceChips<int>(
+          options: const {7: '7 days', 30: '30 days', 90: '90 days'},
+          value: 7,
+          onChanged: (_) {},
         ),
       ],
     );

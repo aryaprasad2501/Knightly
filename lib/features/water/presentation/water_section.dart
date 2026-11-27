@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router/app_routes.dart';
 
 import '../../../core/design/components/k_art_header.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
@@ -105,6 +108,7 @@ class _WaterPanel extends ConsumerWidget {
           KArtHeader(
             image: AssetImage(context.byStyle('assets/panels/dk_water.webp', 'assets/panels/sc_water.webp')),
             height: 200,
+            onTap: () => context.push(AppRoutes.waterDetails),
             child: Semantics(
               container: true,
               label: 'Water today: ${formatMl(today.totalMl)} of ${formatMl(today.goalMl)}',

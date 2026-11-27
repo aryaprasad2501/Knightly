@@ -83,6 +83,7 @@ class _NutritionPanel extends ConsumerWidget {
               context.byStyle('assets/panels/dk_nutrition.webp', 'assets/panels/sc_nutrition.webp'),
             ),
             height: 200,
+            onTap: () => context.push(AppRoutes.nutritionInsights),
             child: CalorieSummary(day: today),
           ),
           Padding(

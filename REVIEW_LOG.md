@@ -26,6 +26,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 11 | Briefing gauges clipped + scroll hint | 2c9f1a0 | Home briefing: dots + chevron, swipe the gauges |
 | 12 | Yearly events / birthdays | 1d3e0b6 | Calendar > New event > Birthday · yearly |
 | 13 | Module widgets | 03755c0 | Long-press home screen > Widgets > Knightly: 5 widgets; tap one opens its module |
+| 14 | Places (home + office etc.) | 3f6aa0d | Settings > Places > Add a place here (check arrival on a real phone) |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

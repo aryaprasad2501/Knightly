@@ -56,7 +56,7 @@ class InsightsTicker extends StatelessWidget {
               margin: const EdgeInsets.only(left: 4),
               padding: const EdgeInsets.symmetric(horizontal: KSpacing.sm, vertical: 3),
               decoration: ShapeDecoration(
-                color: tactical ? hud.secondary : hud.secondary.withValues(alpha: 0.85),
+                color: tactical ? hud.primary : hud.secondary.withValues(alpha: 0.85),
                 shape: tactical
                     ? const BeveledRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(4)))
                     : const StadiumBorder(),
@@ -66,7 +66,7 @@ class InsightsTicker extends StatelessWidget {
             const SizedBox(width: KSpacing.sm),
             Expanded(
               child: ClipRect(
-                child: effects.animates && effects.ambient
+                child: effects.ambient
                     ? LayoutBuilder(
                         builder: (context, constraints) {
                           final painter = TextPainter(
@@ -78,17 +78,14 @@ class InsightsTicker extends StatelessWidget {
                           painter.dispose();
                           return AnimatedBuilder(
                             animation: time,
-                            builder: (context, _) {
-                              final dx = -((time.value * 34) % width);
-                              return OverflowBox(
-                                alignment: Alignment.centerLeft,
-                                maxWidth: double.infinity,
-                                child: Transform.translate(
-                                  offset: Offset(dx, 0),
-                                  child: Text(line + line, maxLines: 1, softWrap: false, style: style),
-                                ),
-                              );
-                            },
+                            builder: (context, _) => OverflowBox(
+                              alignment: Alignment.centerLeft,
+                              maxWidth: double.infinity,
+                              child: Transform.translate(
+                                offset: Offset(-((time.value * 34) % width), 0),
+                                child: Text(line + line, maxLines: 1, softWrap: false, style: style),
+                              ),
+                            ),
                           );
                         },
                       )

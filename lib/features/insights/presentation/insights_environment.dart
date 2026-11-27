@@ -88,20 +88,14 @@ class _InsightsClockState extends ConsumerState<InsightsClock> with WidgetsBindi
   }
 }
 
-/// How far the camera pans each way, as a share of the screen width.
-const _sway = 0.09;
-
-/// The room behind Insights, painted in layers that drift at different
-/// depths as the camera slowly pans left and right.
+/// The room behind Insights. Dark Knight: a holographic command HUD in steel
+/// blue and ice — rings of instrument arcs turning behind the score, a faint
+/// bat silhouette in their centre, a hex mesh, circuit traces and data
+/// streams at the edges, over a perspective grid floor with a scan beam. Shadow Cat: a violet nebula that breathes, two slow orbits and
+/// twinkling motes rising like embers. Painted, never blurred.
 ///
-/// Dark Knight: a round command chamber — gold ring lights in the ceiling, a
-/// panoramic window on a night skyline under the moon (bats cross it now and
-/// then), and a polished floor of concentric gold rings that pulse.
-/// Shadow Cat: a violet night garden — a nebula sky and moon, a blossom
-/// branch, drifting petals, rising motes and a dark pond whose ripples glow.
-///
-/// The heavy art is baked into bitmaps once per size; each frame draws those
-/// bitmaps at an offset plus a handful of moving shapes.
+/// The still parts are baked into one bitmap per size; each frame draws it
+/// plus the moving parts.
 class InsightsEnvironment extends StatefulWidget {
   const InsightsEnvironment({super.key, required this.time, required this.scroll, required this.effects});
 
@@ -114,35 +108,31 @@ class InsightsEnvironment extends StatefulWidget {
 }
 
 class _InsightsEnvironmentState extends State<InsightsEnvironment> {
-  final _layers = _Layers();
+  final _cache = _Baked();
+  final _rings = _Baked();
 
   @override
   void dispose() {
-    _layers.clear();
+    _cache.clear();
+    _rings.clear();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final hud = KHudColors.of(context);
-    final tactical = context.style.family == KStyleFamily.tactical;
+    final family = context.style.family;
     final canvas = context.palette.canvas;
-    final dpr = MediaQuery.devicePixelRatioOf(context);
+    final dpr = math.min(MediaQuery.devicePixelRatioOf(context), 2.0);
+    final rich = widget.effects != KEffects.low;
     return IgnorePointer(
       child: ExcludeSemantics(
         child: RepaintBoundary(
           child: CustomPaint(
             size: Size.infinite,
-            painter: _RoomPainter(
-              time: widget.time,
-              scroll: widget.scroll,
-              hud: hud,
-              canvas: canvas,
-              tactical: tactical,
-              rich: widget.effects != KEffects.low,
-              layers: _layers,
-              dpr: dpr,
-            ),
+            painter: family == KStyleFamily.tactical
+                ? _HudPainter(widget.time, widget.scroll, hud, canvas, _cache, _rings, dpr, rich: rich)
+                : _NebulaPainter(widget.time, widget.scroll, hud, canvas, _cache, dpr, rich: rich),
           ),
         ),
       ),
@@ -150,687 +140,446 @@ class _InsightsEnvironmentState extends State<InsightsEnvironment> {
   }
 }
 
-/// Baked layer bitmaps for one size and theme.
-class _Layers {
+/// One baked bitmap of the still background.
+class _Baked {
   Object? key;
-  ui.Image? sky;
-  ui.Image? room;
-  ui.Image? floor;
+  ui.Image? image;
 
   void clear() {
-    sky?.dispose();
-    room?.dispose();
-    floor?.dispose();
-    sky = room = floor = null;
+    image?.dispose();
+    image = null;
     key = null;
+  }
+
+  ui.Image get(Object k, Size size, double dpr, void Function(Canvas c, Size s) draw) {
+    if (key != k || image == null) {
+      clear();
+      final recorder = ui.PictureRecorder();
+      final c = Canvas(recorder)..scale(dpr);
+      draw(c, size);
+      final picture = recorder.endRecording();
+      image = picture.toImageSync((size.width * dpr).ceil(), (size.height * dpr).ceil());
+      picture.dispose();
+      key = k;
+    }
+    return image!;
   }
 }
 
-ui.Image _bake(Size size, double dpr, void Function(Canvas c, Size s) draw) {
-  final recorder = ui.PictureRecorder();
-  final c = Canvas(recorder)..scale(dpr);
-  draw(c, size);
-  final picture = recorder.endRecording();
-  final image = picture.toImageSync((size.width * dpr).ceil(), (size.height * dpr).ceil());
-  picture.dispose();
-  return image;
+void _drawBaked(Canvas c, ui.Image image, Size size, [Offset offset = Offset.zero]) {
+  c.drawImageRect(
+    image,
+    Offset.zero & Size(image.width.toDouble(), image.height.toDouble()),
+    offset & size,
+    Paint()..filterQuality = FilterQuality.low,
+  );
 }
 
-class _RoomPainter extends CustomPainter {
-  _RoomPainter({
-    required this.time,
-    required this.scroll,
-    required this.hud,
-    required this.canvas,
-    required this.tactical,
+/// Where the score reactor sits on screen at rest (logical px from the top).
+const _coreY = 385.0;
+
+/// The radius of the largest HUD ring.
+const _ringMax = 320.0;
+
+class _HudPainter extends CustomPainter {
+  _HudPainter(
+    this.time,
+    this.scroll,
+    this.hud,
+    this.canvas,
+    this.cache,
+    this.rings,
+    this.dpr, {
     required this.rich,
-    required this.layers,
-    required this.dpr,
   }) : super(repaint: Listenable.merge([time, scroll]));
 
   final ValueListenable<double> time;
   final ValueListenable<double> scroll;
   final KHudColors hud;
   final Color canvas;
-  final bool tactical;
-  final bool rich;
-  final _Layers layers;
+  final _Baked cache;
+  final _Baked rings;
   final double dpr;
+  final bool rich;
 
-  /// Layers are baked at most at 2× to keep memory modest.
-  double get _bakeScale => math.min(dpr, 2);
+  Paint _stroke(double w, Color c) => Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = w
+    ..color = c;
+
+  /// The still room: light, a hex mesh, circuit traces at the edges.
+  void _still(Canvas c, Size size) {
+    final w = size.width, h = size.height;
+    final rect = Offset.zero & size;
+    c.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [hud.deep, canvas, hud.deep],
+          stops: const [0, 0.55, 1],
+        ).createShader(rect),
+    );
+    // Cold light pooled around the reactor.
+    c.drawRect(
+      rect,
+      Paint()
+        ..shader = RadialGradient(
+          center: Alignment(0, _coreY / h * 2 - 1),
+          radius: 0.75,
+          colors: [hud.haze.withValues(alpha: 0.85), hud.haze.withValues(alpha: 0)],
+        ).createShader(rect),
+    );
+    if (!rich) return;
+    // A faint hex mesh.
+    final mesh = _stroke(0.7, hud.primary.withValues(alpha: 0.05));
+    const r = 16.0;
+    final dx = r * math.sqrt(3);
+    for (var row = 0; row * r * 1.5 < h * 0.66; row++) {
+      final y = row * r * 1.5;
+      for (var x = (row.isOdd ? dx / 2 : 0.0); x < w + dx; x += dx) {
+        final hex = Path();
+        for (var k = 0; k < 6; k++) {
+          final a = math.pi / 6 + k * math.pi / 3;
+          final p = Offset(x + math.cos(a) * r, y + math.sin(a) * r);
+          k == 0 ? hex.moveTo(p.dx, p.dy) : hex.lineTo(p.dx, p.dy);
+        }
+        c.drawPath(hex..close(), mesh);
+      }
+    }
+    // Circuit traces running in from the edges, with nodes.
+    final trace = _stroke(1, hud.primary.withValues(alpha: 0.35));
+    final node = Paint()..color = hud.secondary.withValues(alpha: 0.7);
+    for (final left in [true, false]) {
+      double fx(double x) => left ? x : w - x;
+      for (var i = 0; i < 4; i++) {
+        final y0 = h * (0.2 + i * 0.085);
+        final run = 26.0 + i * 14;
+        final end = run + 18 + 22.0 * (i % 2 + 1);
+        final path = Path()
+          ..moveTo(fx(0), y0)
+          ..lineTo(fx(run), y0)
+          ..lineTo(fx(run + 18), y0 + 18)
+          ..lineTo(fx(end), y0 + 18);
+        c.drawPath(path, trace);
+        c.drawCircle(Offset(fx(end), y0 + 18), 2.4, node);
+      }
+    }
+  }
+
+  /// The HUD rings, baked once side by side in one image (each drawn later at
+  /// its own rotation), plus the bat silhouette.
+  void _ringSheet(Canvas c, Size size) {
+    const d = _ringMax * 2;
+    for (var i = 0; i < 5; i++) {
+      final center = Offset(d * i + _ringMax, _ringMax);
+      switch (i) {
+        case 0:
+          // Fine ring with instrument ticks.
+          const r = 150.0;
+          c.drawCircle(center, r, _stroke(1, hud.bright.withValues(alpha: 0.3)));
+          for (var k = 0; k < 120; k++) {
+            final a = k / 120 * math.pi * 2;
+            final dir = Offset(math.cos(a), math.sin(a));
+            final long = k % 10 == 0;
+            c.drawLine(
+              center + dir * (r + 3),
+              center + dir * (r + (long ? 12 : 6)),
+              _stroke(long ? 1.6 : 0.8, hud.bright.withValues(alpha: long ? 0.55 : 0.3)),
+            );
+          }
+        case 1:
+          // Heavy broken arcs.
+          const r = 190.0;
+          final rect = Rect.fromCircle(center: center, radius: r);
+          for (final (start, len) in [(0.0, 1.5), (1.8, 0.8), (2.9, 0.35), (3.5, 1.9), (5.6, 0.45)]) {
+            c.drawArc(rect, start, len, false, _stroke(10, hud.primary.withValues(alpha: 0.08)));
+            c.drawArc(rect, start, len, false, _stroke(3, hud.primary.withValues(alpha: 0.55)));
+          }
+        case 2:
+          // Dashed ring.
+          const r = 232.0;
+          final rect = Rect.fromCircle(center: center, radius: r);
+          for (var k = 0; k < 90; k++) {
+            if (k % 15 > 11) continue;
+            c.drawArc(
+              rect,
+              k / 90 * math.pi * 2,
+              math.pi * 2 / 90 * 0.55,
+              false,
+              _stroke(1.6, hud.secondary.withValues(alpha: 0.4)),
+            );
+          }
+        case 3:
+          // Outer sweep with notches and one small warm accent.
+          const r = 290.0;
+          final rect = Rect.fromCircle(center: center, radius: r);
+          c.drawArc(rect, 0.4, 2.2, false, _stroke(1, hud.bright.withValues(alpha: 0.28)));
+          c.drawArc(rect, 3.6, 1.6, false, _stroke(1, hud.bright.withValues(alpha: 0.28)));
+          for (final a in [0.4, 2.6, 3.6, 5.2]) {
+            final dir = Offset(math.cos(a), math.sin(a));
+            c.drawLine(
+              center + dir * (r - 8),
+              center + dir * (r + 8),
+              _stroke(2, hud.secondary.withValues(alpha: 0.6)),
+            );
+          }
+          c.drawArc(rect, 1.2, 0.18, false, _stroke(2.5, hud.series[3].withValues(alpha: 0.6)));
+        case 4:
+          // An original bat silhouette, faint, in the heart of the HUD.
+          final bat = _bat(center, 118);
+          c.drawPath(bat, Paint()..color = hud.primary.withValues(alpha: 0.075));
+          c.drawPath(bat, _stroke(1, hud.bright.withValues(alpha: 0.12)));
+      }
+    }
+  }
+
+  /// Wings with a scalloped trailing edge, small ears and a narrow body.
+  static Path _bat(Offset c, double half) {
+    final s = half / 100;
+    Offset p(double x, double y) => c + Offset(x * s, y * s);
+    final path = Path();
+    for (final side in [1.0, -1.0]) {
+      final ear = p(side * 6, -34), earBase = p(side * 9, -20), tip = p(side * 100, -12);
+      final wing = Path()
+        ..moveTo(p(0, -22).dx, p(0, -22).dy)
+        ..lineTo(ear.dx, ear.dy)
+        ..lineTo(earBase.dx, earBase.dy)
+        ..quadraticBezierTo(p(side * 40, -30).dx, p(side * 40, -30).dy, tip.dx, tip.dy)
+        ..quadraticBezierTo(p(side * 78, 0).dx, p(side * 78, 0).dy, p(side * 74, 18).dx, p(side * 74, 18).dy)
+        ..quadraticBezierTo(p(side * 60, 6).dx, p(side * 60, 6).dy, p(side * 46, 16).dx, p(side * 46, 16).dy)
+        ..quadraticBezierTo(p(side * 34, 4).dx, p(side * 34, 4).dy, p(side * 22, 14).dx, p(side * 22, 14).dy)
+        ..quadraticBezierTo(p(side * 12, 18).dx, p(side * 12, 18).dy, p(0, 34).dx, p(0, 34).dy)
+        ..close();
+      path.addPath(wing, Offset.zero);
+    }
+    return path;
+  }
 
   @override
   void paint(Canvas c, Size size) {
     final w = size.width, h = size.height;
     if (w <= 0 || h <= 0) return;
-    final roomW = w * (1 + _sway * 2);
-    final key = (size, tactical, hud, dpr);
-    if (layers.key != key) {
-      layers.clear();
-      layers.key = key;
-      final full = Size(roomW, h);
-      if (tactical) {
-        layers.sky = _bake(full, _bakeScale, _dkSky);
-        layers.room = _bake(full, _bakeScale, _dkRoom);
-        layers.floor = _bake(full, _bakeScale, _dkFloor);
-      } else {
-        layers.sky = _bake(full, _bakeScale, _scSky);
-        layers.room = _bake(full, _bakeScale, _scBranches);
-        layers.floor = _bake(full, _bakeScale, _scPond);
-      }
-    }
-
     final t = time.value;
-    final pan = math.sin(t * 0.11) * w * _sway; // the camera's sway
     final lift = scroll.value;
-    final paint = Paint()..filterQuality = FilterQuality.low;
-    void layer(ui.Image? image, double depth, double rise) {
-      if (image == null) return;
-      final dx = -w * _sway + pan * depth;
-      c.drawImageRect(
-        image,
-        Offset.zero & Size(image.width.toDouble(), image.height.toDouble()),
-        Rect.fromLTWH(dx, -lift * rise, roomW, h),
-        paint,
-      );
-    }
+    _drawBaked(c, cache.get((size, hud, canvas, rich, 'hud'), size, dpr, _still), size);
 
-    c.drawRect(Offset.zero & size, Paint()..color = hud.deep);
-    layer(layers.sky, 0.35, 0.04);
-    if (tactical) {
-      if (rich) _bats(c, size, t, pan * 0.5, lift * 0.04);
-      layer(layers.floor, 0.75, 0.1);
-      layer(layers.room, 1.0, 0.12);
-      if (rich) _dkPulse(c, size, t, pan, lift);
-    } else {
-      layer(layers.floor, 0.6, 0.1);
-      layer(layers.room, 0.8, 0.08);
-      if (rich) _scLife(c, size, t, pan, lift);
-    }
-    // Darken the lower room so cards stay readable.
-    final fade = Rect.fromLTWH(0, h * 0.5, w, h * 0.5);
-    c.drawRect(
-      fade,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [canvas.withValues(alpha: 0), canvas.withValues(alpha: 0.5)],
-        ).createShader(fade),
-    );
-  }
-
-  // ---- Dark Knight -----------------------------------------------------------
-
-  void _dkSky(Canvas c, Size s) {
-    final w = s.width, h = s.height;
-    final rect = Offset.zero & s;
-    c.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [hud.deep, hud.haze, hud.deep],
-          stops: const [0.05, 0.42, 0.62],
-        ).createShader(rect),
-    );
-    // The moon and its halo.
-    final moon = Offset(w * 0.7, h * 0.22);
-    c.drawCircle(
-      moon,
-      90,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [hud.bright.withValues(alpha: 0.35), hud.bright.withValues(alpha: 0)],
-        ).createShader(Rect.fromCircle(center: moon, radius: 90)),
-    );
-    c.drawCircle(moon, 26, Paint()..color = hud.bright.withValues(alpha: 0.92));
-    c.drawCircle(moon.translate(-7, -5), 6, Paint()..color = hud.haze.withValues(alpha: 0.18));
-    c.drawCircle(moon.translate(8, 7), 4, Paint()..color = hud.haze.withValues(alpha: 0.15));
-    // Long thin clouds.
-    final cloud = Paint()..color = hud.haze.withValues(alpha: 0.6);
-    for (final (x, y, cw) in [(0.62, 0.25, 0.3), (0.12, 0.2, 0.22), (0.4, 0.3, 0.35)]) {
-      c.drawOval(Rect.fromCenter(center: Offset(w * x, h * y), width: w * cw, height: 10), cloud);
-    }
-    // A searchlight beam over the city.
-    final base = h * 0.52;
-    final beam = Path()
-      ..moveTo(w * 0.33, base)
-      ..lineTo(w * 0.2, h * 0.04)
-      ..lineTo(w * 0.26, h * 0.04)
-      ..close();
-    c.drawPath(
-      beam,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.bottomCenter,
-          end: Alignment.topCenter,
-          colors: [hud.bright.withValues(alpha: 0.14), hud.bright.withValues(alpha: 0)],
-        ).createShader(beam.getBounds()),
-    );
-    // The skyline: towers with lit windows, a few spires with beacons.
-    final r = math.Random(7);
-    var x = -10.0;
-    final lit = Paint();
-    while (x < w + 20) {
-      final bw = 16 + r.nextDouble() * 34;
-      final tall = r.nextDouble();
-      final bh = h * (0.07 + tall * tall * 0.26);
-      final top = base - bh;
-      final shade = Color.lerp(hud.deep, hud.grid, 0.35 + r.nextDouble() * 0.35)!;
-      c.drawRect(Rect.fromLTWH(x, top, bw, bh), Paint()..color = shade);
-      if (tall > 0.75) {
-        c.drawRect(Rect.fromLTWH(x + bw / 2 - 1, top - 18, 2, 18), Paint()..color = shade);
-        c.drawCircle(Offset(x + bw / 2, top - 19), 1.6, Paint()..color = hud.secondaryBright);
-      }
-      for (var wy = top + 5; wy < base - 4; wy += 6) {
-        for (var wx = x + 3; wx < x + bw - 3; wx += 5) {
-          final v = r.nextDouble();
-          if (v < 0.18) {
-            lit.color = (v < 0.05 ? hud.secondaryBright : hud.bright).withValues(alpha: 0.35 + v * 2);
-            c.drawRect(Rect.fromLTWH(wx, wy, 1.6, 2.2), lit);
-          }
-        }
-      }
-      x += bw + r.nextDouble() * 3;
-    }
-  }
-
-  void _dkRoom(Canvas c, Size s) {
-    final w = s.width, h = s.height;
-    final dark = Paint()..color = hud.deep;
-    final metal = Paint()
-      ..shader = LinearGradient(
-        colors: [hud.deep, Color.lerp(hud.deep, hud.grid, 0.6)!, hud.deep],
-      ).createShader(Offset.zero & s);
-    // Ceiling: a dark dome whose rim curves over the window.
-    final ceiling = Path()
-      ..moveTo(0, 0)
-      ..lineTo(w, 0)
-      ..lineTo(w, h * 0.12)
-      ..quadraticBezierTo(w / 2, h * 0.2, 0, h * 0.12)
-      ..close();
-    c.drawPath(ceiling, metal);
-    final rim = Path()
-      ..moveTo(0, h * 0.12)
-      ..quadraticBezierTo(w / 2, h * 0.2, w, h * 0.12);
-    _glowStroke(c, rim, hud.secondary, hud.secondaryBright, 2);
-    // Gold ring lights in the ceiling.
-    final ringCenter = Offset(w / 2, h * 0.045);
-    for (final (rw, rh, a) in [(0.46, 0.07, 0.9), (0.32, 0.05, 0.8), (0.2, 0.032, 1.0)]) {
-      final oval = Rect.fromCenter(center: ringCenter, width: w * rw, height: h * rh);
-      c.drawOval(
-        oval.inflate(6),
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 10
-          ..color = hud.secondary.withValues(alpha: 0.12 * a),
-      );
-      c.drawOval(
-        oval,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2.2
-          ..color = hud.secondaryBright.withValues(alpha: a),
-      );
-    }
-    // Window mullions, leaning into the round room.
-    final top = h * 0.14, sill = h * 0.52;
-    for (var i = 0; i <= 10; i++) {
-      final x = w * i / 10;
-      final lean = (x - w / 2) * 0.04;
-      final bar = Path()
-        ..moveTo(x - 3 - lean, top)
-        ..lineTo(x + 3 - lean, top)
-        ..lineTo(x + 4, sill)
-        ..lineTo(x - 4, sill)
-        ..close();
-      c.drawPath(bar, dark);
-      c.drawLine(
-        Offset(x + 3 - lean, top),
-        Offset(x + 4, sill),
-        Paint()
-          ..strokeWidth = 1
-          ..color = hud.primary.withValues(alpha: 0.5),
-      );
-    }
-    // The sill: a console ledge with a gold light strip.
-    c.drawRect(Rect.fromLTWH(0, sill, w, h * 0.035), metal);
-    _glowStroke(
-      c,
-      Path()
-        ..moveTo(0, sill + h * 0.035)
-        ..lineTo(w, sill + h * 0.035),
-      hud.secondary,
-      hud.secondaryBright,
-      1.6,
-    );
-    // Side walls with consoles and lit edges.
-    for (final left in [true, false]) {
-      final x0 = left ? 0.0 : w;
-      final x1 = left ? w * 0.08 : w * 0.92;
-      final wall = Path()
-        ..moveTo(x0, 0)
-        ..lineTo(x1, h * 0.1)
-        ..lineTo(x1, h * 0.6)
-        ..lineTo(x0, h * 0.66)
-        ..close();
-      c.drawPath(wall, metal);
-      _glowStroke(
-        c,
-        Path()
-          ..moveTo(x1, h * 0.12)
-          ..lineTo(x1, h * 0.58),
-        hud.primary,
-        hud.bright,
-        1.2,
-      );
-      // Small screens on the wall.
-      for (var k = 0; k < 3; k++) {
-        final sx = left ? x1 - w * 0.065 : x1 + w * 0.012;
-        final r = Rect.fromLTWH(sx, h * (0.22 + k * 0.1), w * 0.05, h * 0.06);
-        c.drawRect(r, Paint()..color = hud.haze.withValues(alpha: 0.9));
-        c.drawRect(
-          r,
-          Paint()
-            ..style = PaintingStyle.stroke
-            ..strokeWidth = 0.8
-            ..color = hud.bright.withValues(alpha: 0.6),
+    // The ring system behind the reactor, following it up as you scroll.
+    const d = _ringMax * 2;
+    final sheet = rings.get((hud, 'rings'), const Size(d * 5, d), math.min(dpr, 1.5), _ringSheet);
+    final center = Offset(w / 2, _coreY - lift * 0.85);
+    if (center.dy > -_ringMax) {
+      final src = sheet.width / 5;
+      void ring(int i, double angle, [double scale = 1]) {
+        c.save();
+        c.translate(center.dx, center.dy);
+        c.rotate(angle);
+        c.scale(scale, scale);
+        c.drawImageRect(
+          sheet,
+          Rect.fromLTWH(src * i, 0, src, sheet.height.toDouble()),
+          const Rect.fromLTWH(-_ringMax, -_ringMax, d, d),
+          Paint()..filterQuality = FilterQuality.low,
         );
-        for (var b = 0; b < 4; b++) {
-          final bh = r.height * (0.2 + ((k * 3 + b * 7) % 5) / 7);
-          c.drawRect(
-            Rect.fromLTWH(r.left + 3 + b * r.width / 5, r.bottom - 3 - bh, r.width / 8, bh),
-            Paint()..color = (b.isEven ? hud.secondaryBright : hud.bright).withValues(alpha: 0.8),
-          );
-        }
+        c.restore();
       }
-    }
-  }
 
-  void _dkFloor(Canvas c, Size s) {
-    final w = s.width, h = s.height;
-    final top = h * 0.555;
-    final floor = Rect.fromLTWH(0, top, w, h - top);
-    c.drawRect(
-      floor,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [Color.lerp(hud.deep, hud.haze, 0.5)!, hud.deep],
-        ).createShader(floor),
-    );
-    // The window's reflection in the polished floor.
-    final shine = Rect.fromLTWH(0, top, w, h * 0.12);
-    c.drawRect(
-      shine,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [hud.primary.withValues(alpha: 0.16), hud.primary.withValues(alpha: 0)],
-        ).createShader(shine),
-    );
-    // Concentric gold rings and spokes around the centre dais.
-    final center = Offset(w / 2, h * 0.78);
-    final spoke = Paint()
-      ..strokeWidth = 1
-      ..color = hud.grid.withValues(alpha: 0.8);
-    for (var i = 0; i < 16; i++) {
-      final a = i / 16 * math.pi * 2;
-      c.drawLine(
-        center + Offset(math.cos(a) * w * 0.17, math.sin(a) * h * 0.052),
-        center + Offset(math.cos(a) * w * 0.6, math.sin(a) * h * 0.19),
-        spoke,
-      );
+      ring(4, 0, 1 + (rich ? math.sin(t * 0.8) * 0.015 : 0));
+      ring(0, t * 0.05);
+      ring(1, -t * 0.12);
+      ring(2, t * 0.07);
+      ring(3, -t * 0.03);
     }
-    for (var i = 1; i <= 6; i++) {
-      final oval = Rect.fromCenter(center: center, width: w * 0.16 * i, height: h * 0.05 * i);
-      c.drawOval(
-        oval,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = i == 2 ? 2.4 : 1
-          ..color = (i == 2 ? hud.secondaryBright : hud.secondary).withValues(alpha: i == 2 ? 0.75 : 0.35),
-      );
-    }
-    // Floor light strips near the front.
-    for (final (x, y, len) in [(0.08, 0.93, 0.18), (0.74, 0.95, 0.2), (0.4, 0.99, 0.2)]) {
-      _glowStroke(
-        c,
-        Path()
-          ..moveTo(w * x, h * y)
-          ..lineTo(w * (x + len), h * (y - 0.01)),
-        hud.secondary,
-        hud.secondaryBright,
-        1.8,
-      );
-    }
-  }
 
-  void _bats(Canvas c, Size s, double t, double dx, double dy) {
-    final w = s.width, h = s.height;
-    c.save();
-    c.clipRect(Rect.fromLTWH(0, h * 0.14, w, h * 0.38));
-    final p = Paint()..color = hud.deep;
-    for (var i = 0; i < 3; i++) {
-      final cycle = (t * 0.035 + i * 0.37) % 1.6;
-      if (cycle > 1.15) continue;
-      final x = (cycle - 0.1) * w + dx;
-      final y = h * (0.22 + i * 0.05) + math.sin(t * 1.3 + i) * 10 - dy;
-      final flap = math.sin(t * 11 + i * 2);
-      c.drawPath(_bat(Offset(x, y), 9.0 - i * 1.5, flap), p);
-    }
-    c.restore();
-  }
-
-  /// An original bat silhouette: a small body and two scalloped wings.
-  static Path _bat(Offset at, double span, double flap) {
-    final lift = flap * span * 0.45;
-    final p = Path()..addOval(Rect.fromCenter(center: at, width: span * 0.35, height: span * 0.5));
-    for (final side in [-1.0, 1.0]) {
-      p
-        ..moveTo(at.dx, at.dy)
-        ..quadraticBezierTo(
-          at.dx + side * span * 0.5,
-          at.dy - lift - span * 0.3,
-          at.dx + side * span,
-          at.dy - lift,
-        )
-        ..quadraticBezierTo(
-          at.dx + side * span * 0.75,
-          at.dy - lift * 0.4 + span * 0.12,
-          at.dx + side * span * 0.55,
-          at.dy + span * 0.05,
-        )
-        ..quadraticBezierTo(at.dx + side * span * 0.35, at.dy + span * 0.02, at.dx, at.dy + span * 0.12)
-        ..close();
-    }
-    return p;
-  }
-
-  void _dkPulse(Canvas c, Size s, double t, double pan, double lift) {
-    final w = s.width, h = s.height;
-    // A wave of light runs out across the floor rings.
-    final k = (t * 0.22) % 1;
-    final center = Offset(w / 2 + pan * 0.75, h * 0.78 - lift * 0.1);
-    final oval = Rect.fromCenter(center: center, width: w * (0.3 + k * 0.85), height: h * (0.09 + k * 0.27));
-    c.drawOval(
-      oval,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 3
-        ..color = hud.secondaryBright.withValues(alpha: 0.45 * (1 - k)),
-    );
-    // The ceiling rings breathe.
-    final glow = 0.5 + 0.5 * math.sin(t * 1.4);
-    final ring = Rect.fromCenter(
-      center: Offset(w / 2 + pan, h * 0.045 - lift * 0.12),
-      width: w * 0.2,
-      height: h * 0.032,
-    );
-    c.drawOval(
-      ring.inflate(4),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..color = hud.secondaryBright.withValues(alpha: 0.12 + 0.2 * glow),
-    );
-  }
-
-  // ---- Shadow Cat ------------------------------------------------------------
-
-  void _scSky(Canvas c, Size s) {
-    final w = s.width, h = s.height;
-    final rect = Offset.zero & s;
-    c.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [hud.deep, hud.haze, hud.deep],
-          stops: const [0, 0.38, 0.7],
-        ).createShader(rect),
-    );
-    void cloud(Offset at, double r, Color color, double a) => c.drawCircle(
-      at,
-      r,
-      Paint()
-        ..shader = RadialGradient(
-          colors: [
-            color.withValues(alpha: a),
-            color.withValues(alpha: 0),
-          ],
-        ).createShader(Rect.fromCircle(center: at, radius: r)),
-    );
-    cloud(Offset(w * 0.25, h * 0.15), w * 0.6, hud.haze, 0.9);
-    cloud(Offset(w * 0.85, h * 0.32), w * 0.45, hud.secondary, 0.22);
-    cloud(Offset(w * 0.5, h * 0.5), w * 0.5, hud.primary, 0.14);
-    final moon = Offset(w * 0.74, h * 0.17);
-    cloud(moon, 110, hud.secondaryBright, 0.35);
-    c.drawCircle(moon, 30, Paint()..color = hud.secondaryBright.withValues(alpha: 0.95));
-    c.drawCircle(moon.translate(-8, 6), 7, Paint()..color = hud.secondary.withValues(alpha: 0.25));
-    final r = math.Random(11);
-    final star = Paint();
-    for (var i = 0; i < 90; i++) {
-      star.color = (i.isEven ? hud.bright : hud.secondaryBright).withValues(
-        alpha: 0.2 + r.nextDouble() * 0.6,
-      );
-      c.drawCircle(Offset(r.nextDouble() * w, r.nextDouble() * h * 0.55), 0.6 + r.nextDouble(), star);
-    }
-    // Far towers, soft and violet.
-    final base = h * 0.56;
-    var x = 0.0;
-    final tower = Paint()..color = Color.lerp(hud.deep, hud.grid, 0.5)!.withValues(alpha: 0.9);
-    while (x < w) {
-      final bw = 12 + r.nextDouble() * 26;
-      final bh = h * (0.04 + r.nextDouble() * 0.12);
-      c.drawPath(
-        Path()
-          ..moveTo(x, base)
-          ..lineTo(x, base - bh)
-          ..quadraticBezierTo(x + bw / 2, base - bh - 14, x + bw, base - bh)
-          ..lineTo(x + bw, base)
-          ..close(),
-        tower,
-      );
-      x += bw + 2;
-    }
-  }
-
-  void _scBranches(Canvas c, Size s) {
-    final w = s.width, h = s.height;
-    // A blossom branch reaching in from the top left.
-    final bark = Paint()
+    // Perspective floor: lines run to a vanishing point on the horizon and
+    // the cross lines roll towards you.
+    final horizon = h * 0.66 - (lift * 0.08).clamp(0, h * 0.2);
+    final vp = Offset(w / 2, horizon);
+    final grid = Paint()
       ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..color = hud.deep;
-    c.drawPath(
-      Path()
-        ..moveTo(-10, h * 0.02)
-        ..quadraticBezierTo(w * 0.22, h * 0.03, w * 0.42, h * 0.1),
-      bark..strokeWidth = 9,
+      ..strokeWidth = 1;
+    for (var i = -10; i <= 10; i++) {
+      final x = w / 2 + i * w * 0.16;
+      grid.color = hud.grid.withValues(alpha: 0.55 - i.abs() * 0.02);
+      c.drawLine(vp, Offset(x + (x - w / 2) * 2.5, h), grid);
+    }
+    final roll = (t * 0.12) % 1;
+    for (var i = 0; i < 12; i++) {
+      final k = (i + roll) / 12;
+      final y = horizon + (h - horizon) * k * k;
+      grid.color = hud.grid.withValues(alpha: (0.15 + 0.6 * k).clamp(0, 0.75));
+      c.drawLine(Offset(0, y), Offset(w, y), grid);
+    }
+    final band = Rect.fromLTWH(0, horizon - 18, w, 36);
+    c.drawRect(
+      band,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            hud.secondary.withValues(alpha: 0),
+            hud.secondary.withValues(alpha: 0.14),
+            hud.secondary.withValues(alpha: 0),
+          ],
+        ).createShader(band),
     );
-    c.drawPath(
-      Path()
-        ..moveTo(w * 0.2, h * 0.04)
-        ..quadraticBezierTo(w * 0.28, h * 0.1, w * 0.3, h * 0.16),
-      bark..strokeWidth = 4,
+    c.drawLine(
+      Offset(0, horizon),
+      Offset(w, horizon),
+      Paint()
+        ..shader = LinearGradient(
+          colors: [
+            hud.secondary.withValues(alpha: 0),
+            hud.secondaryBright.withValues(alpha: 0.7),
+            hud.secondary.withValues(alpha: 0),
+          ],
+        ).createShader(band)
+        ..strokeWidth = 1.2,
     );
-    final r = math.Random(5);
-    for (var i = 0; i < 40; i++) {
-      final along = r.nextDouble();
-      final at = Offset(w * 0.04 + along * w * 0.4, h * (0.02 + along * 0.08) + (r.nextDouble() - 0.5) * 30);
-      final color = i % 3 == 0 ? hud.secondaryBright : hud.secondary;
-      c.drawCircle(
-        at,
-        9,
-        Paint()
-          ..shader = RadialGradient(
-            colors: [color.withValues(alpha: 0.5), color.withValues(alpha: 0)],
-          ).createShader(Rect.fromCircle(center: at, radius: 9)),
-      );
-      for (var k = 0; k < 5; k++) {
-        final a = k / 5 * math.pi * 2 + i;
-        c.drawCircle(
-          at + Offset(math.cos(a), math.sin(a)) * 3,
-          2.4,
-          Paint()..color = color.withValues(alpha: 0.85),
-        );
+
+    if (!rich) return;
+    // Data streams falling down the edges.
+    final stream = _stroke(1, hud.primary.withValues(alpha: 0.22));
+    final bit = Paint()..color = hud.secondaryBright;
+    for (final (i, x) in [(0, 9.0), (1, 17.0), (2, w - 17), (3, w - 9)]) {
+      final top = h * 0.12, bottom = h * 0.62;
+      c.drawLine(Offset(x, top), Offset(x, bottom), stream);
+      for (var k = 0; k < 2; k++) {
+        final y = top + ((t * (0.09 + i * 0.02) + k * 0.5 + i * 0.13) % 1) * (bottom - top);
+        c.drawRect(Rect.fromCenter(center: Offset(x, y), width: 2, height: 10), bit);
       }
     }
-    // Two slow orbits like a hologram halo over the garden.
-    for (final (k, tilt) in [(1.0, 0.18), (0.72, -0.25)]) {
-      c.save();
-      c.translate(w / 2, h * 0.36);
-      c.rotate(tilt);
-      final o = Rect.fromCenter(center: Offset.zero, width: w * 1.1 * k, height: w * 0.34 * k);
-      c.drawOval(
-        o,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1
-          ..shader = SweepGradient(
-            colors: [
-              hud.primary.withValues(alpha: 0),
-              hud.bright.withValues(alpha: 0.4),
-              hud.secondary.withValues(alpha: 0.3),
-              hud.primary.withValues(alpha: 0),
-            ],
-          ).createShader(o),
-      );
-      c.restore();
-    }
-  }
-
-  void _scPond(Canvas c, Size s) {
-    final w = s.width, h = s.height;
-    final top = h * 0.56;
-    final pond = Rect.fromLTWH(0, top, w, h - top);
+    // A scan beam passes every eight seconds.
+    final scanY = (t / 8 % 1) * h * 1.2 - h * 0.1;
+    final scan = Rect.fromLTWH(0, scanY - 60, w, 120);
     c.drawRect(
-      pond,
+      scan,
       Paint()
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color.lerp(hud.deep, hud.haze, 0.6)!, hud.deep],
-        ).createShader(pond),
-    );
-    // The moon's path on the water.
-    final path = Rect.fromLTWH(w * 0.66, top, w * 0.16, h * 0.2);
-    c.drawRect(
-      path,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [hud.secondaryBright.withValues(alpha: 0.3), hud.secondaryBright.withValues(alpha: 0)],
-        ).createShader(path),
-    );
-    final center = Offset(w / 2, h * 0.78);
-    for (var i = 1; i <= 5; i++) {
-      final oval = Rect.fromCenter(center: center, width: w * 0.2 * i, height: h * 0.055 * i);
-      c.drawOval(
-        oval,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.2
-          ..color = (i.isEven ? hud.secondary : hud.primary).withValues(alpha: 0.4 - i * 0.05),
-      );
-    }
-    // Lily pads with a bud each.
-    final r = math.Random(3);
-    for (var i = 0; i < 9; i++) {
-      final at = Offset(r.nextDouble() * w, top + h * (0.06 + r.nextDouble() * 0.3));
-      c.drawOval(
-        Rect.fromCenter(center: at, width: 30 + r.nextDouble() * 20, height: 8),
-        Paint()..color = hud.grid,
-      );
-      c.drawCircle(at.translate(0, -3), 2.5, Paint()..color = hud.secondaryBright.withValues(alpha: 0.8));
-    }
-  }
-
-  static final _motes = List.generate(36, (i) {
-    final r = math.Random(i * 7919 + 13);
-    return (r.nextDouble(), r.nextDouble(), r.nextDouble() * math.pi * 2, 0.6 + r.nextDouble() * 1.6);
-  });
-
-  void _scLife(Canvas c, Size s, double t, double pan, double lift) {
-    final w = s.width, h = s.height;
-    // Petals drift sideways and down, tumbling.
-    final petal = Paint();
-    for (var i = 0; i < 10; i++) {
-      final k = (t * 0.03 + i / 10) % 1;
-      final x = ((i * 0.137 + k * 0.6) % 1.2 - 0.1) * w + pan * 0.9;
-      final y = k * h * 0.8 - lift * 0.1;
-      c.save();
-      c.translate(x, y);
-      c.rotate(t * 1.5 + i);
-      c.scale(1, 0.55 + 0.45 * math.sin(t * 2 + i));
-      petal.color = (i.isEven ? hud.secondaryBright : hud.secondary).withValues(alpha: 0.75);
-      c.drawOval(const Rect.fromLTWH(-5, -3, 10, 6), petal);
-      c.restore();
-    }
-    // Motes rising like embers.
-    final dot = Paint();
-    for (final (x, y, phase, sz) in _motes) {
-      final yy = ((y - t * 0.012 * sz) % 1) * h;
-      final a = 0.3 + 0.5 * (0.5 + 0.5 * math.sin(t * 1.4 + phase));
-      final p = Offset(x * w + math.sin(t * 0.5 + phase) * 6 + pan * 0.4, yy);
-      dot.color = hud.bright.withValues(alpha: a * 0.25);
-      c.drawCircle(p, sz * 2.6, dot);
-      dot.color = hud.bright.withValues(alpha: a);
-      c.drawCircle(p, sz * 0.7, dot);
-    }
-    // A ripple spreading across the pond.
-    final k = (t * 0.18) % 1;
-    final oval = Rect.fromCenter(
-      center: Offset(w / 2 + pan * 0.6, h * 0.78 - lift * 0.1),
-      width: w * (0.2 + k * 0.9),
-      height: h * (0.05 + k * 0.25),
-    );
-    c.drawOval(
-      oval,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..color = hud.secondaryBright.withValues(alpha: 0.5 * (1 - k)),
-    );
-  }
-
-  void _glowStroke(Canvas c, Path path, Color glow, Color core, double width) {
-    c.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = width * 6
-        ..color = glow.withValues(alpha: 0.1),
-    );
-    c.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = width * 2.5
-        ..color = glow.withValues(alpha: 0.22),
-    );
-    c.drawPath(
-      path,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = width
-        ..color = core,
+          colors: [
+            hud.primary.withValues(alpha: 0),
+            hud.primary.withValues(alpha: 0.07),
+            hud.primary.withValues(alpha: 0),
+          ],
+        ).createShader(scan),
     );
   }
 
   @override
-  bool shouldRepaint(_RoomPainter old) =>
-      old.hud != hud ||
-      old.rich != rich ||
-      old.canvas != canvas ||
-      old.tactical != tactical ||
-      old.dpr != dpr;
+  bool shouldRepaint(_HudPainter old) =>
+      old.hud != hud || old.rich != rich || old.canvas != canvas || old.dpr != dpr;
+}
+
+class _NebulaPainter extends CustomPainter {
+  _NebulaPainter(this.time, this.scroll, this.hud, this.canvas, this.cache, this.dpr, {required this.rich})
+    : super(repaint: Listenable.merge([time, scroll]));
+
+  final ValueListenable<double> time;
+  final ValueListenable<double> scroll;
+  final KHudColors hud;
+  final Color canvas;
+  final _Baked cache;
+  final double dpr;
+  final bool rich;
+
+  static final _motes = List.generate(46, (i) {
+    final r = math.Random(i * 7919 + 13);
+    return (r.nextDouble(), r.nextDouble(), r.nextDouble() * math.pi * 2, 0.6 + r.nextDouble() * 1.8);
+  });
+
+  /// The night gradient and the nebula clouds, baked a little taller than the
+  /// screen so they can drift.
+  void _still(Canvas c, Size size) {
+    final rect = Offset.zero & size;
+    c.drawRect(
+      rect,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [hud.deep, canvas, hud.deep],
+        ).createShader(rect),
+    );
+    void cloud(Alignment at, double radius, Color color, double alpha) {
+      c.drawRect(
+        rect,
+        Paint()
+          ..shader = RadialGradient(
+            center: at,
+            radius: radius,
+            colors: [
+              color.withValues(alpha: alpha),
+              color.withValues(alpha: 0),
+            ],
+          ).createShader(rect),
+      );
+    }
+
+    cloud(const Alignment(-0.6, -0.7), 0.95, hud.haze, 0.75);
+    cloud(const Alignment(0.85, -0.1), 0.7, hud.secondary, 0.16);
+    cloud(const Alignment(-0.2, 0.9), 0.8, hud.primary, 0.12);
+  }
+
+  @override
+  void paint(Canvas c, Size size) {
+    final t = time.value;
+    final w = size.width, h = size.height;
+    if (w <= 0 || h <= 0) return;
+    final drift = scroll.value * 0.05;
+    // The nebula breathes: the baked sky sways a little and drifts with scroll.
+    final big = Size(w * 1.12, h * 1.1);
+    final sky = cache.get((size, hud, canvas, false), big, dpr, _still);
+    _drawBaked(c, sky, big, Offset(-w * 0.06 + math.sin(t * 0.12) * w * 0.04, -h * 0.05 - drift));
+
+    // Two slow orbits behind everything.
+    final orbit = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+    for (final (i, k) in [(0, 1.0), (1, 0.7)]) {
+      c.save();
+      c.translate(w / 2, h * 0.3 - drift);
+      c.rotate(t * 0.03 * (i == 0 ? 1 : -1) + i * 0.6);
+      final r = Rect.fromCenter(center: Offset.zero, width: w * 1.3 * k, height: w * 0.42 * k);
+      orbit.shader = SweepGradient(
+        colors: [
+          hud.primary.withValues(alpha: 0),
+          hud.bright.withValues(alpha: 0.35),
+          hud.secondary.withValues(alpha: 0.25),
+          hud.primary.withValues(alpha: 0),
+        ],
+      ).createShader(r);
+      c.drawOval(r, orbit);
+      c.restore();
+    }
+
+    // Motes rising like embers, twinkling.
+    final dot = Paint();
+    final count = rich ? _motes.length : 18;
+    for (var i = 0; i < count; i++) {
+      final (x, y, phase, s) = _motes[i];
+      final yy = ((y - t * 0.012 * s) % 1) * h;
+      final a = 0.25 + 0.55 * (0.5 + 0.5 * math.sin(t * 1.4 + phase));
+      final color = i.isEven ? hud.bright : hud.secondaryBright;
+      final p = Offset(x * w + math.sin(t * 0.5 + phase) * 6, yy);
+      // A soft halo, then the core: no blur needed.
+      dot.shader = RadialGradient(
+        colors: [
+          color.withValues(alpha: a * 0.5),
+          color.withValues(alpha: 0),
+        ],
+      ).createShader(Rect.fromCircle(center: p, radius: s * 4));
+      c.drawCircle(p, s * 4, dot);
+      dot.shader = null;
+      dot.color = color.withValues(alpha: a);
+      c.drawCircle(p, s * 0.7, dot);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_NebulaPainter old) =>
+      old.hud != hud || old.rich != rich || old.canvas != canvas || old.dpr != dpr;
 }

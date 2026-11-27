@@ -4,8 +4,9 @@ import 'knightly_style.dart';
 import 'theme_context.dart';
 
 /// Extra light colours for holographic / HUD visuals (Insights). Each theme
-/// has its own set: Dark Knight is midnight blue with steel-blue and gold
-/// light; Shadow Cat is deep purple with violet, magenta and soft pink.
+/// has its own set: Dark Knight is midnight blue with steel-blue and ice
+/// light (gold only as a rare accent); Shadow Cat is deep purple with violet,
+/// magenta and soft pink.
 @immutable
 class KHudColors {
   const KHudColors({
@@ -32,30 +33,31 @@ class KHudColors {
   final Color primary;
   final Color bright;
 
-  /// Counter-light (gold for Dark Knight, magenta for Shadow Cat).
+  /// Counter-light (ice cyan for Dark Knight, magenta for Shadow Cat).
   final Color secondary;
   final Color secondaryBright;
 
   /// One colour per data series, in order.
   final List<Color> series;
 
+  /// Steel blue and ice light, holographic; gold only as a rare accent.
   static const tactical = KHudColors(
-    deep: Color(0xFF050A14),
-    haze: Color(0xFF12284A),
-    grid: Color(0xFF1C3354),
+    deep: Color(0xFF040910),
+    haze: Color(0xFF0F2440),
+    grid: Color(0xFF1A3352),
     primary: Color(0xFF4F8FD6),
-    bright: Color(0xFFA9D2FF),
-    secondary: Color(0xFFD9A441),
-    secondaryBright: Color(0xFFF6D27A),
+    bright: Color(0xFFB9E2FF),
+    secondary: Color(0xFF5CC8F0),
+    secondaryBright: Color(0xFFE4F6FF),
     series: [
       Color(0xFF4F8FD6),
-      Color(0xFFD9A441),
-      Color(0xFF6FD1C5),
+      Color(0xFF6FD1E8),
       Color(0xFF9DB4D3),
-      Color(0xFF5FB0FF),
-      Color(0xFFE8C36A),
+      Color(0xFFC9A55A),
+      Color(0xFF3D6FB0),
+      Color(0xFF8FE3F2),
       Color(0xFF7C8FB5),
-      Color(0xFFB98A3E),
+      Color(0xFFDCE8F5),
     ],
   );
 

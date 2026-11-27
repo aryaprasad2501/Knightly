@@ -7,8 +7,11 @@ _Last updated: 2026-11-27 · Insights complete_
 **Latest (Insights, 2026-11-27):** `features/insights` — domain `insights.dart` (`InsightsSnapshot`, areas,
 rates, activity buckets, trends, records, 7×8 heat), `insights_providers.dart` (reads other modules via new
 `completedTasksSinceProvider`, `waterLogsSinceProvider`, `sleepNightsSinceProvider`, `mealEntriesSinceProvider`),
-presentation: `insights_screen.dart`, `insights_environment.dart` (baked parallax room, camera sway, bats /
-petals), `score_core.dart` (holo-table reactor + hologram towers), `holo_panel.dart` (3D side entrance, baked
+presentation: `insights_screen.dart`, `insights_environment.dart` (DK: JARVIS-style HUD — baked ring sheet
+rotated per frame, hex mesh, circuit traces, data streams, grid floor; SC: baked nebula + orbits + motes),
+`score_core.dart` (hexagon reactor / ring bloom; rings baked, trim live). The user tried a Batcave
+room + hologram city + round holo-table and preferred the first hexagon design with a JARVIS background and
+little yellow (`KHudColors.tactical` is blue/ice; gold only a rare accent), `holo_panel.dart` (3D side entrance, baked
 frames, expandable), `insights_charts.dart`, `insights_ticker.dart`, `insights_activation.dart` (1.3 s, first
 visit per launch). Dock: Insights replaced Settings; Settings = pushed `/settings` via gear (`KPageChrome`).
 Settings: Low mode, Reduce motion (`display_controllers.dart`); first-run `welcome_sheet.dart`. Core:

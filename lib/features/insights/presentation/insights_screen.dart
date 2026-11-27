@@ -252,10 +252,6 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
       ScoreCore(
         score: score,
         rates: rates,
-        towers: [
-          for (var i = 13; i >= 0; i--)
-            s.winsByDay[s.today.addDays(-i)]?.values.fold<int>(0, (a, b) => a + b) ?? 0,
-        ],
         time: time,
         scroll: _offset,
         effects: effects,

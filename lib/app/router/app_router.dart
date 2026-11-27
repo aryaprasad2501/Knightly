@@ -3,6 +3,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/home_care/presentation/care_job_screen.dart';
+import '../../features/home_care/presentation/home_care_screen.dart';
 import '../../features/calendar/presentation/calendar_screen.dart';
 import '../../features/backup/presentation/backup_screen.dart';
 import '../../features/dev/dev_routes.dart';
@@ -85,6 +87,12 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
       ),
       GoRoute(path: AppRoutes.waterDetails, builder: (context, state) => const WaterDetailsScreen()),
       GoRoute(path: AppRoutes.sleepDetails, builder: (context, state) => const SleepDetailsScreen()),
+      GoRoute(path: AppRoutes.homeCare, builder: (context, state) => const HomeCareScreen()),
+      GoRoute(
+        path: AppRoutes.careJob,
+        builder: (context, state) =>
+            CareJobScreen(jobId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1),
+      ),
       GoRoute(path: AppRoutes.myFoods, builder: (context, state) => const MyFoodsScreen()),
       GoRoute(path: AppRoutes.notifications, builder: (context, state) => const NotificationsScreen()),
       GoRoute(

@@ -73,6 +73,8 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
       router.push(AppRoutes.routineRunFor(id));
     } else if (kind == 'event') {
       router.go(AppRoutes.calendar);
+    } else if (kind == 'care') {
+      router.push(AppRoutes.homeCare);
     }
   }
 

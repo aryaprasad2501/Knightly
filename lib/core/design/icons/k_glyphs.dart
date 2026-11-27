@@ -54,6 +54,7 @@ abstract final class KGlyphs {
   static const edit = KGlyphData('edit', body: _editBody, detail: _editDetail);
   static const alarm = KGlyphData('alarm', body: _alarmBody, detail: _alarmDetail);
   static const progress = KGlyphData('progress', body: _progressBody, detail: _progressDetail);
+  static const paw = KGlyphData('paw', body: _pawBody);
 
   static const List<KGlyphData> all = [
     home, calendar, tasks, track, settings, //
@@ -63,7 +64,7 @@ abstract final class KGlyphs {
     moon, drop, bolt, flag, spark, shield,
     flame,
     archive,
-    habit, routine, dumbbell, leaf, chart, bell, backup, folder, edit, alarm, progress,
+    habit, routine, dumbbell, leaf, chart, bell, backup, folder, edit, alarm, progress, paw,
   ];
 }
 
@@ -345,6 +346,19 @@ void _dumbbellDetail(Path p) => p
   ..lineTo(22, 12);
 
 /// Nutrition: a leaf.
+/// Pets: a paw print — main pad and four toes.
+void _pawBody(Path p) => p
+  ..moveTo(12, 12.2)
+  ..cubicTo(15.2, 12.2, 18, 15.6, 18, 18)
+  ..cubicTo(18, 20.2, 15.6, 20.6, 12, 19.4)
+  ..cubicTo(8.4, 20.6, 6, 20.2, 6, 18)
+  ..cubicTo(6, 15.6, 8.8, 12.2, 12, 12.2)
+  ..close()
+  ..addOval(Rect.fromCenter(center: const Offset(4.9, 10.6), width: 3.2, height: 4))
+  ..addOval(Rect.fromCenter(center: const Offset(9, 6.2), width: 3.4, height: 4.4))
+  ..addOval(Rect.fromCenter(center: const Offset(15, 6.2), width: 3.4, height: 4.4))
+  ..addOval(Rect.fromCenter(center: const Offset(19.1, 10.6), width: 3.2, height: 4));
+
 void _leafBody(Path p) => p
   ..moveTo(5, 19)
   ..cubicTo(4, 10, 10, 4, 20, 4)

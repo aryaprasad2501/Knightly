@@ -40,7 +40,7 @@ class NotificationsScreen extends ConsumerWidget {
           glyph: KGlyphs.bell,
           title: 'Reminders',
           subtitle: enabled
-              ? 'Event and routine reminders you set are delivered on this device.'
+              ? 'Event, routine and Home care reminders are delivered on this device.'
               : 'Off. Reminders you set are kept and come back when you switch this on.',
           onTap: () => _setEnabled(context, ref, !enabled),
           trailing: KToggle(

@@ -110,6 +110,7 @@ of re-implementing them:
 | habits | `showHabitEditor()` | Calendar day agenda (habits) |
 | calendar | `showEventEditor()` (`event_editor_sheet.dart`) | App shell dock "New event" |
 | calendar | `TodayScheduleCard` (`today_schedule_card.dart`) | Home |
+| home_care | `HomeCareCard` (`home_care_card.dart`) | Home |
 | routines | `RoutinesSection` (`routines_section.dart`) | Track tab |
 | routines | `showRoutineEditor()` (`routine_editor_sheet.dart`) | App shell dock "New routine" (Track, habits off); Calendar agenda |
 | routines | `openRoutineRun()` (`routines_section.dart`) | Calendar day agenda |
@@ -204,7 +205,10 @@ Anything else in a feature's `presentation/` is private to that feature.
   v10 `foods` (uuid, name, serving, kcal/protein/carbs/fat per serving, created/
   updated/deleted_at) and `meal_entries` (uuid, date, meal 0–3, logged_at, name,
   food_id → `ON DELETE SET NULL`, library_id, portion, quantity, kcal/protein/
-  carbs/fat totals; index on `date`).
+  carbs/fat totals; index on `date`) · v11 `care_jobs` (uuid, name, area 0–2,
+  subject, schedule text, start_date, notes, created/updated/deleted_at) and
+  `care_logs` (uuid, job_id → `ON DELETE CASCADE`, date, due_date, skipped, note,
+  logged_at, updated_at; index on `job_id`).
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -446,3 +450,5 @@ codegen not needed yet).
 | D80 | 2026-11-27 | Meal entries copy the name and nutrient totals when logged (with the portion and quantity); `food_id` is set null if a food is deleted for good. Entries are removed with Undo (like water); the person's foods go to the Recycle Bin. Targets are one setting (`nutrition.targets`, "kcal,protein,carbs,fat", macros optional) | History stays right when foods change; one row per item keeps day totals a simple sum. |
 | D81 | 2026-11-27 | Body weight and height are one setting (`body.stats`, "kg,cm"), shown with BMI in the Workouts section; no weight history table yet | The user asked for current values and BMI; a setting needs no schema change and is backed up with settings. A weight log can become its own table later. |
 | D82 | 2026-11-27 | Tracker details are pushed pages (`/water`, `/sleep`, `/nutrition/insights`) opened from the panel art, with 7/30/90-day ranges computed in pure-Dart `*Insights` classes over the existing streams; shared visuals are core components (`KBarChart`, `KStatTile`, `KShareBar`, `KChoiceChips`). Averages use logged days only | Room for charts and lists a sheet can't hold; no schema change; days before someone started tracking don't drag averages down. |
+| D83 | 2026-11-27 | Home care jobs (Home / Garden / Pets, optional "for" subject) use their own `CareSchedule`: every N days/weeks/months counted from the last turn, fixed weekdays, or a day of the month. Each turn is a `care_logs` row with the day done and the due day it covered, so a fixed-day job done early moves to the turn after; skips move the job on without counting as done. Next due is derived, never stored | Plant watering and filter changes drift with real life; storing turns (not a due date) keeps history, on-time rate and undo simple. |
+| D84 | 2026-11-27 | Home care reminders are summaries at chosen times of day (setting `homecare.reminders`, default 9:00 and 19:00, up to four, or `off`), planned 7 days ahead for every day something is due or overdue; a job done drops out because plans are rebuilt on every change. Location ("when I get home") triggers are not built | User asked for repeats until done (e.g. after office). Geofencing needs a new package and background location permission — left for a separate decision. |

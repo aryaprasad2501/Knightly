@@ -1,8 +1,20 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-27 · Phase 2 step 8 (Nutrition) complete_
+_Last updated: 2026-11-27 · Phase 2 step 9 (Home care) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 9 — Home care, 2026-11-27):** schema v11 (`features/home_care/data/home_care_tables.dart`:
+`care_jobs`, `care_logs`). Domain `home_care/domain/care.dart` (`CareSchedule`: `EveryInterval` / `OnWeekdays` /
+`MonthlyOn`, `CareJobState` derives next due from the latest turn, `CareSummary`, `dueOn`, presets,
+`CareReminderTimes`). Repository + `home_care_providers.dart` (`careJobStatesProvider`, setting
+`homecare.reminders`). Screens `/home-care` (art header `dk_homecare`/`sc_homecare` from DK-07 / SC-07) and
+`/home-care/:id`; editor sheet; `HomeCareCard` on Home. Reminders: `planReminders(care:, careTimes:)`, payload
+`care:all`. Recycle Bin `BinKind.careJob`, backups `careJobs`/`careLogs` since v11. New `paw` glyph. Shopping /
+purchase planning is deliberately NOT here — a separate future "Wishlist & Purchase Planner" module (user
+decision). Location-based reminders not built (needs a package + background location; ask first). 387 tests.
+Verified on the Pixel 8 AVD (release) in both themes. **Next:** Insights (user request, plan first), then a
+Workouts details page (user asked).
 
 **Latest (tracker details, 2026-11-27):** user request. New core components `KBarChart` (+ `dayChartLabels`),
 `KStatTile`/`KStatGrid`, `KShareBar`, `KChoiceChips` (gallery + components test); `KArtHeader.onTap` shows a

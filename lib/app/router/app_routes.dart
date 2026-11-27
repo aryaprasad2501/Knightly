@@ -39,6 +39,11 @@ abstract final class AppRoutes {
   static const sleepDetails = '/sleep';
   static const nutritionInsights = '/nutrition/insights';
 
+  /// Home care: every job, and one job with its history ([careJobFor]).
+  static const homeCare = '/home-care';
+  static const careJob = '/home-care/:id';
+  static String careJobFor(int id) => '/home-care/$id';
+
   /// The person's own foods.
   static const myFoods = '/nutrition/foods';
 

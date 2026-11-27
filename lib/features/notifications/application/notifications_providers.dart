@@ -6,6 +6,8 @@ import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../../calendar/application/calendar_providers.dart';
 import '../../calendar/domain/calendar_event.dart';
+import '../../home_care/application/home_care_providers.dart';
+import '../../home_care/domain/care.dart';
 import '../../routines/application/routines_providers.dart';
 import '../../routines/domain/routine.dart';
 import '../../settings/data/settings_repository.dart';
@@ -57,10 +59,12 @@ final plannedRemindersProvider = Provider<AsyncValue<List<PlannedReminder>>>((re
   final on = ref.watch(enabledModulesProvider);
   final calendarOn = on.contains(AppModule.calendar);
   final routinesOn = on.contains(AppModule.routines);
+  final careOn = on.contains(AppModule.homeCare);
 
   final sources = <AsyncValue<Object>>[
     if (calendarOn) ...[ref.watch(eventsProvider), ref.watch(occurrenceStatesProvider)],
     if (routinesOn) ...[ref.watch(routinesProvider), ref.watch(routineRunsProvider)],
+    if (careOn) ...[ref.watch(careJobStatesProvider), ref.watch(careRemindersProvider)],
   ];
   for (final s in sources) {
     if (s.hasError) return AsyncError(s.error!, s.stackTrace ?? StackTrace.current);
@@ -74,6 +78,8 @@ final plannedRemindersProvider = Provider<AsyncValue<List<PlannedReminder>>>((re
       states: calendarOn ? ref.watch(occurrenceStatesProvider).requireValue : const {},
       routines: routinesOn ? ref.watch(routinesProvider).requireValue : const <Routine>[],
       runs: routinesOn ? ref.watch(routineRunsProvider).requireValue : const <RoutineRun>[],
+      care: careOn ? ref.watch(careJobStatesProvider).requireValue : const <CareJobState>[],
+      careTimes: careOn ? ref.watch(careRemindersProvider).requireValue : const CareReminderTimes([]),
     ),
   );
 });

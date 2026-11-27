@@ -1,6 +1,7 @@
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/habit_schedule.dart';
 import '../../calendar/domain/calendar_event.dart';
+import '../../home_care/domain/care.dart';
 import '../../routines/domain/routine.dart';
 
 /// One notification to deliver at [at].
@@ -19,7 +20,7 @@ class PlannedReminder {
   final String title;
   final String body;
 
-  /// What a tap opens: `routine:<id>` or `event:<yyyy-MM-dd>`.
+  /// What a tap opens: `routine:<id>`, `event:<yyyy-MM-dd>` or `care:all`.
   final String payload;
 
   @override
@@ -48,6 +49,10 @@ const reminderWindowDays = 14;
 /// Android limits pending alarms per app; stay well below it.
 const maxScheduledReminders = 60;
 
+/// Home care reminders look this many days ahead (they repeat daily, so a
+/// shorter window leaves room for events and routines).
+const careReminderWindowDays = 7;
+
 /// Everything to schedule from [now] on: event reminders (not done, not
 /// skipped, at their moved date and time) and routine reminders (not on days
 /// they are already done or resting). Only modules that are on are included.
@@ -59,6 +64,8 @@ List<PlannedReminder> planReminders({
   Map<(int, CalendarDate), OccurrenceState> states = const {},
   Iterable<Routine> routines = const [],
   Iterable<RoutineRun> runs = const [],
+  Iterable<CareJobState> care = const [],
+  CareReminderTimes careTimes = const CareReminderTimes([]),
   int days = reminderWindowDays,
   int limit = maxScheduledReminders,
 }) {
@@ -109,6 +116,27 @@ List<PlannedReminder> planReminders({
     }
   }
 
+  // Home care: at each chosen time, whatever is due and not yet done. Doing a
+  // job re-plans, so it drops out of the later reminders.
+  final careLast = today.addDays(careReminderWindowDays < days ? careReminderWindowDays : days);
+  for (var d = today; !d.isAfter(careLast); d = d.addDays(1)) {
+    final due = dueOn(care, d);
+    if (due.isEmpty) continue;
+    for (final t in careTimes.times) {
+      final at = _at(d, t);
+      if (!at.isAfter(now)) continue;
+      plan.add(
+        PlannedReminder(
+          id: _id('care', t.inMinutes, d),
+          at: at,
+          title: due.length == 1 ? due.single.job.title : '${due.length} home care jobs waiting',
+          body: due.length == 1 ? describeDue(d.daysUntil(due.single.nextDue)) : _careNames(due),
+          payload: 'care:all',
+        ),
+      );
+    }
+  }
+
   plan.sort((a, b) => a.at.compareTo(b.at));
   return plan.length > limit ? plan.sublist(0, limit) : plan;
 }
@@ -117,6 +145,12 @@ String _eventBody(EventOccurrence o, int minutes, String Function(ClockTime) for
   final t = o.time;
   if (t == null) return o.event.kind == EventKind.fixed ? 'All day today' : 'Today, any time';
   return minutes == 0 ? 'Now · ${formatTime(t)}' : 'At ${formatTime(t)}';
+}
+
+String _careNames(List<CareJobState> due) {
+  final names = [for (final s in due.take(3)) s.job.name];
+  final more = due.length - names.length;
+  return more > 0 ? '${names.join(', ')} +$more more' : names.join(', ');
 }
 
 DateTime _at(CalendarDate d, ClockTime t) => DateTime(d.year, d.month, d.day, t.hour, t.minute);

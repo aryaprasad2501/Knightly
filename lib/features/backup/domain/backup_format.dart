@@ -11,7 +11,8 @@
 ///   "data": {"settings": [...], "projects": [...], "tasks": [...], "habits": [...], "habitCheckIns": [...],
 ///            "events": [...], "eventExceptions": [...], "routines": [...], "routineSteps": [...],
 ///            "routineRuns": [...], "waterLogs": [...], "sleepLogs": [...],
-///            "workouts": [...], "workoutSets": [...], "foods": [...], "mealEntries": [...]}
+///            "workouts": [...], "workoutSets": [...], "foods": [...], "mealEntries": [...],
+///            "careJobs": [...], "careLogs": [...]}
 /// }
 /// ```
 ///
@@ -43,6 +44,8 @@ const backupTables = [
   'workoutSets',
   'foods',
   'mealEntries',
+  'careJobs',
+  'careLogs',
 ];
 
 /// Tables added after the first backup format; files made before them (an
@@ -59,6 +62,8 @@ const backupTablesSince = {
   'workoutSets': 9,
   'foods': 10,
   'mealEntries': 10,
+  'careJobs': 11,
+  'careLogs': 11,
 };
 
 /// Settings that describe this device rather than the user's data; they are
@@ -86,6 +91,8 @@ class BackupSummary {
   int get workouts => counts['workouts'] ?? 0;
   int get mealEntries => counts['mealEntries'] ?? 0;
   int get foods => counts['foods'] ?? 0;
+  int get careJobs => counts['careJobs'] ?? 0;
+  int get careLogs => counts['careLogs'] ?? 0;
 }
 
 /// A backup that cannot be read or restored. [message] is user-facing and

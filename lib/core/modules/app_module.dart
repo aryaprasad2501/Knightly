@@ -24,7 +24,11 @@ enum AppModule {
   water('Water', 'Glasses of water against a daily goal', built: true),
   workouts('Workouts', 'Exercises, sets, reps and weights', built: true),
   nutrition('Nutrition', 'Meals, calories and macros against daily targets', built: true),
-  homeCare('Home, garden & pets', 'Chores, plant care and pet care with reminders');
+  homeCare(
+    'Home care',
+    'Chores, plant care, pet care and maintenance on repeat, with reminders',
+    built: true,
+  );
 
   const AppModule(this.label, this.description, {this.built = false});
 

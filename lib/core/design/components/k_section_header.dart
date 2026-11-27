@@ -85,18 +85,23 @@ class KSectionHeader extends StatelessWidget {
               KClawMarks(color: p.accent.withValues(alpha: 0.55), size: 12),
             if (hasAction) ...[
               const SizedBox(width: KSpacing.xs),
-              InkWell(
-                onTap: onAction,
-                borderRadius: BorderRadius.circular(KRadius.sm),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: KSpacing.sm),
-                    child: Center(
-                      widthFactor: 1,
-                      child: Text(
-                        actionLabel!,
-                        style: context.textStyles.labelMedium?.copyWith(color: p.accentStrong),
+              // Its own node: otherwise the link merges into the content below.
+              Semantics(
+                container: true,
+                button: true,
+                child: InkWell(
+                  onTap: onAction,
+                  borderRadius: BorderRadius.circular(KRadius.sm),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48, minWidth: 48),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: KSpacing.sm),
+                      child: Center(
+                        widthFactor: 1,
+                        child: Text(
+                          actionLabel!,
+                          style: context.textStyles.labelMedium?.copyWith(color: p.accentStrong),
+                        ),
                       ),
                     ),
                   ),

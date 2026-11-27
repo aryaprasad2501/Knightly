@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../calendar/application/calendar_providers.dart';
 import '../../habits/application/habits_providers.dart';
+import '../../home_care/application/home_care_providers.dart';
 import '../../nutrition/application/nutrition_providers.dart';
 import '../../nutrition/domain/nutrition.dart' show formatKcal;
 import '../../routines/application/routines_providers.dart';
@@ -11,7 +12,7 @@ import '../../tasks/application/tasks_providers.dart';
 import '../domain/bin_item.dart';
 
 /// Everything in the Recycle Bin — missions, projects, habits, events,
-/// routines, workouts and foods — newest
+/// routines, workouts, foods and Home care jobs — newest
 /// deletion first. Built only from the other features' public application
 /// providers (ARCHITECTURE.md › Layer rules).
 final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
@@ -22,7 +23,17 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
   final routines = ref.watch(trashedRoutinesProvider);
   final workouts = ref.watch(trashedWorkoutsProvider);
   final foods = ref.watch(trashedFoodsProvider);
-  for (final value in <AsyncValue<Object>>[tasks, projects, habits, events, routines, workouts, foods]) {
+  final care = ref.watch(trashedCareJobsProvider);
+  for (final value in <AsyncValue<Object>>[
+    tasks,
+    projects,
+    habits,
+    events,
+    routines,
+    workouts,
+    foods,
+    care,
+  ]) {
     if (value.hasError) return AsyncError(value.error!, value.stackTrace ?? StackTrace.current);
   }
   if (!tasks.hasValue ||
@@ -31,7 +42,8 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
       !events.hasValue ||
       !routines.hasValue ||
       !workouts.hasValue ||
-      !foods.hasValue) {
+      !foods.hasValue ||
+      !care.hasValue) {
     return const AsyncLoading();
   }
 
@@ -92,6 +104,14 @@ final binItemsProvider = Provider<AsyncValue<List<BinItem>>>((ref) {
         deletedAt: f.deletedAt!,
         detail: '${f.serving} · ${formatKcal(f.macros.kcal)} kcal',
       ),
+    for (final j in care.requireValue)
+      BinItem(
+        kind: BinKind.careJob,
+        id: j.id,
+        title: j.title,
+        deletedAt: j.deletedAt!,
+        detail: '${j.schedule.describe()} · history kept',
+      ),
   ]..sort((a, b) => b.deletedAt.compareTo(a.deletedAt));
   return AsyncData(items);
 });
@@ -105,6 +125,7 @@ class RecycleBinActions {
     this._routines,
     this._workouts,
     this._nutrition,
+    this._care,
   );
 
   final TaskActions _tasks;
@@ -113,6 +134,7 @@ class RecycleBinActions {
   final RoutineActions _routines;
   final WorkoutActions _workouts;
   final NutritionActions _nutrition;
+  final HomeCareActions _care;
 
   Future<void> restore(BinItem item) => switch (item.kind) {
     BinKind.mission => _tasks.restore(item.id),
@@ -122,6 +144,7 @@ class RecycleBinActions {
     BinKind.routine => _routines.restore(item.id),
     BinKind.workout => _workouts.restore(item.id),
     BinKind.food => _nutrition.restore(item.id),
+    BinKind.careJob => _care.restore(item.id),
   };
 
   /// Deletes the item for good. Callers confirm with the user first.
@@ -133,6 +156,7 @@ class RecycleBinActions {
     BinKind.routine => _routines.deletePermanently(item.id),
     BinKind.workout => _workouts.deletePermanently(item.id),
     BinKind.food => _nutrition.deletePermanently(item.id),
+    BinKind.careJob => _care.deletePermanently(item.id),
   };
 
   /// Permanently deletes everything in the bin. Returns how many records went.
@@ -142,7 +166,8 @@ class RecycleBinActions {
       await _calendar.emptyTrash() +
       await _routines.emptyTrash() +
       await _workouts.emptyTrash() +
-      await _nutrition.emptyTrash();
+      await _nutrition.emptyTrash() +
+      await _care.emptyTrash();
 }
 
 final recycleBinActionsProvider = Provider<RecycleBinActions>(
@@ -153,5 +178,6 @@ final recycleBinActionsProvider = Provider<RecycleBinActions>(
     ref.watch(routineActionsProvider),
     ref.watch(workoutActionsProvider),
     ref.watch(nutritionActionsProvider),
+    ref.watch(homeCareActionsProvider),
   ),
 );

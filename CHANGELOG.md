@@ -6,6 +6,19 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Home care** (Home, Garden and Pets): recurring chores, plant care, pet and aquarium care and
+  household maintenance. Repeat every few days, weeks or months (counted from when you last did it),
+  on fixed weekdays, or on a day of the month. Each job shows when it is due, with Done, Done
+  earlier (with a note) and Skip; a job page shows times done, last done, on-time rate and the full
+  history. Common jobs to start from. Due jobs appear on Home with Done in place.
+- **Home care reminders** at times you choose (9:00 and 19:00 by default): one notification lists
+  the jobs still due, and repeats at each time until they are done.
+- Deleted jobs go to the Recycle Bin; jobs and history are included in backups.
+
+### Fixed
+- Section header links ("All jobs", "Targets"…) are now their own accessibility node.
+
+### Added
 - **Details pages for Water, Sleep and Nutrition**: tap the picture on a Track panel (or its
   "Details" tag) for 7, 30 or 90 days of history — a chart against your goal or target, stats at a
   glance (goal days, streaks, best day, typical drink; sleep debt, typical bedtime and wake-up,

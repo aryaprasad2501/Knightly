@@ -10,6 +10,7 @@ import '../../../core/database/database_provider.dart';
 import '../../../core/database/ids.dart';
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
+import '../../home_care/domain/care.dart';
 import '../domain/backup_format.dart';
 
 /// A safety copy of the data as it was just before a restore.
@@ -67,6 +68,8 @@ class BackupService {
       final sets = await (_db.select(_db.workoutSets)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final foods = await (_db.select(_db.foods)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final meals = await (_db.select(_db.mealEntries)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final careJobs = await (_db.select(_db.careJobs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final careLogs = await (_db.select(_db.careLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -283,6 +286,36 @@ class BackupService {
               'updatedAt': _time(e.updatedAt),
             },
         ],
+        'careJobs': [
+          for (final j in careJobs)
+            {
+              'id': j.id,
+              'uuid': j.uuid,
+              'name': j.name,
+              'area': j.area,
+              'subject': j.subject,
+              'schedule': j.schedule,
+              'startDate': j.startDate,
+              'notes': j.notes,
+              'createdAt': _time(j.createdAt),
+              'updatedAt': _time(j.updatedAt),
+              'deletedAt': _time(j.deletedAt),
+            },
+        ],
+        'careLogs': [
+          for (final l in careLogs)
+            {
+              'id': l.id,
+              'uuid': l.uuid,
+              'jobId': l.jobId,
+              'date': l.date,
+              'dueDate': l.dueDate,
+              'skipped': l.skipped,
+              'note': l.note,
+              'loggedAt': _time(l.loggedAt),
+              'updatedAt': _time(l.updatedAt),
+            },
+        ],
       };
     });
 
@@ -382,6 +415,8 @@ class BackupService {
       workoutSets: [for (final r in tables['workoutSets']!) _workoutSetRow(r)],
       foods: [for (final r in tables['foods']!) _foodRow(r)],
       meals: [for (final r in tables['mealEntries']!) _mealRow(r)],
+      careJobs: [for (final r in tables['careJobs']!) _careJobRow(r)],
+      careLogs: [for (final r in tables['careLogs']!) _careLogRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -460,6 +495,14 @@ class BackupService {
       final food = m.foodId.value;
       if (food != null && !foodIds.contains(food)) throw _damaged;
     }
+    unique(p.careJobs.map((r) => r.id.value));
+    unique(p.careJobs.map((r) => r.uuid.value));
+    unique(p.careLogs.map((r) => r.id.value));
+    unique(p.careLogs.map((r) => r.uuid.value));
+    final careJobIds = {for (final r in p.careJobs) r.id.value};
+    for (final l in p.careLogs) {
+      if (!careJobIds.contains(l.jobId.value)) throw _damaged;
+    }
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -471,6 +514,8 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.careLogs).go();
+      await _db.delete(_db.careJobs).go();
       await _db.delete(_db.mealEntries).go();
       await _db.delete(_db.foods).go();
       await _db.delete(_db.workoutSets).go();
@@ -504,6 +549,8 @@ class BackupService {
         b.insertAll(_db.workoutSets, parsed.workoutSets);
         b.insertAll(_db.foods, parsed.foods);
         b.insertAll(_db.mealEntries, parsed.meals);
+        b.insertAll(_db.careJobs, parsed.careJobs);
+        b.insertAll(_db.careLogs, parsed.careLogs);
       });
     });
     return parsed.summary;
@@ -757,6 +804,42 @@ class BackupService {
     );
   }
 
+  CareJobsCompanion _careJobRow(Map<String, Object?> r) {
+    final area = _int(r, 'area');
+    if (area < 0 || area >= CareArea.values.length) throw _damaged;
+    final schedule = _string(r, 'schedule', min: 1);
+    try {
+      CareSchedule.decode(schedule);
+    } on Object {
+      throw _damaged;
+    }
+    return CareJobsCompanion.insert(
+      id: Value(_int(r, 'id')),
+      uuid: Value(_uuid(r)),
+      name: _string(r, 'name', min: 1, max: 80),
+      area: area,
+      subject: Value(_optionalString(r, 'subject')),
+      schedule: schedule,
+      startDate: _date(r, 'startDate'),
+      notes: Value(_optionalString(r, 'notes')),
+      createdAt: Value(_requiredTime(r, 'createdAt')),
+      updatedAt: Value(_requiredTime(r, 'updatedAt')),
+      deletedAt: Value(_optionalTime(r, 'deletedAt')),
+    );
+  }
+
+  CareLogsCompanion _careLogRow(Map<String, Object?> r) => CareLogsCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    jobId: _int(r, 'jobId'),
+    date: _date(r, 'date'),
+    dueDate: _date(r, 'dueDate'),
+    skipped: Value(r['skipped'] is bool ? r['skipped']! as bool : throw _damaged),
+    note: Value(_optionalString(r, 'note')),
+    loggedAt: _requiredTime(r, 'loggedAt'),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+  );
+
   static double _double(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is num && v.isFinite && v >= 0) return v.toDouble();
@@ -831,6 +914,8 @@ class _Parsed {
     required this.workoutSets,
     required this.foods,
     required this.meals,
+    required this.careJobs,
+    required this.careLogs,
   });
 
   final BackupSummary summary;
@@ -850,6 +935,8 @@ class _Parsed {
   final List<WorkoutSetsCompanion> workoutSets;
   final List<FoodsCompanion> foods;
   final List<MealEntriesCompanion> meals;
+  final List<CareJobsCompanion> careJobs;
+  final List<CareLogsCompanion> careLogs;
 }
 
 final backupServiceProvider = Provider<BackupService>(

@@ -77,7 +77,7 @@ class LocalNotifications implements NotificationGateway {
   static const _channel = AndroidNotificationDetails(
     'reminders',
     'Reminders',
-    channelDescription: 'Event and routine reminders you set in Knightly',
+    channelDescription: 'Event, routine and Home care reminders you set in Knightly',
     importance: Importance.high,
     priority: Priority.high,
     icon: 'ic_stat_knightly',
@@ -146,7 +146,7 @@ class LocalNotifications implements NotificationGateway {
   Future<void> showTest() => _plugin.show(
     id: 0,
     title: 'Knightly reminders work',
-    body: 'Event and routine reminders will look like this.',
+    body: 'Your reminders will look like this.',
     notificationDetails: const NotificationDetails(android: _channel),
   );
 

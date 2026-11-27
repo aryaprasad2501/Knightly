@@ -66,6 +66,10 @@ PANELS = {
     'dk_nutrition': ('DK-02_Command_Center.png', (0.15, 0.479, 1.0)),
     # The coffee table: candle, flowers and books by the window.
     'sc_nutrition': ('SC-02_Shadow_Lounge.png', (0.36, 0.655, 1.0)),
+    # The lit fortress on its cliff (wall emblem patched).
+    'dk_homecare': ('DK-07_Fortress_of_Discipline.png', (0.0, 0.08, 1.0)),
+    # Blossom tree, moon and the far castle above the garden.
+    'sc_homecare': ('SC-07_Moon_Garden.png', (0.0, 0.15, 1.0)),
 }
 
 # source file -> [(box in source px, vertical offset of the source patch)]

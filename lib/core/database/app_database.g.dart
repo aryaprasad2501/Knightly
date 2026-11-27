@@ -7663,6 +7663,1022 @@ class MealEntriesCompanion extends UpdateCompanion<MealEntryRow> {
   }
 }
 
+class $CareJobsTable extends CareJobs with TableInfo<$CareJobsTable, CareJobRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CareJobsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+  );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    clientDefault: newUuid,
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    additionalChecks: GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 80),
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _areaMeta = const VerificationMeta('area');
+  @override
+  late final GeneratedColumn<int> area = GeneratedColumn<int>(
+    'area',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _subjectMeta = const VerificationMeta('subject');
+  @override
+  late final GeneratedColumn<String> subject = GeneratedColumn<String>(
+    'subject',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _scheduleMeta = const VerificationMeta('schedule');
+  @override
+  late final GeneratedColumn<String> schedule = GeneratedColumn<String>(
+    'schedule',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta('startDate');
+  @override
+  late final GeneratedColumn<String> startDate = GeneratedColumn<String>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _notesMeta = const VerificationMeta('notes');
+  @override
+  late final GeneratedColumn<String> notes = GeneratedColumn<String>(
+    'notes',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  @override
+  late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
+    'deleted_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    uuid,
+    name,
+    area,
+    subject,
+    schedule,
+    startDate,
+    notes,
+    createdAt,
+    updatedAt,
+    deletedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'care_jobs';
+  @override
+  VerificationContext validateIntegrity(Insertable<CareJobRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(_uuidMeta, uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(_nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('area')) {
+      context.handle(_areaMeta, area.isAcceptableOrUnknown(data['area']!, _areaMeta));
+    } else if (isInserting) {
+      context.missing(_areaMeta);
+    }
+    if (data.containsKey('subject')) {
+      context.handle(_subjectMeta, subject.isAcceptableOrUnknown(data['subject']!, _subjectMeta));
+    }
+    if (data.containsKey('schedule')) {
+      context.handle(_scheduleMeta, schedule.isAcceptableOrUnknown(data['schedule']!, _scheduleMeta));
+    } else if (isInserting) {
+      context.missing(_scheduleMeta);
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(_startDateMeta, startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta));
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('notes')) {
+      context.handle(_notesMeta, notes.isAcceptableOrUnknown(data['notes']!, _notesMeta));
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta, createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CareJobRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CareJobRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      uuid: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}uuid'])!,
+      name: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      area: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}area'])!,
+      subject: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}subject']),
+      schedule: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}schedule'])!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}start_date'],
+      )!,
+      notes: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}notes']),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}deleted_at'],
+      ),
+    );
+  }
+
+  @override
+  $CareJobsTable createAlias(String alias) {
+    return $CareJobsTable(attachedDatabase, alias);
+  }
+}
+
+class CareJobRow extends DataClass implements Insertable<CareJobRow> {
+  final int id;
+  final String uuid;
+  final String name;
+
+  /// 0 home · 1 garden · 2 pets.
+  final int area;
+
+  /// Which plant, pet, room or appliance; optional.
+  final String? subject;
+
+  /// `every:3:days`, `days:6,7` or `monthday:1` (see `CareSchedule`).
+  final String schedule;
+
+  /// When the first turn is due, `yyyy-MM-dd`.
+  final String startDate;
+  final String? notes;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? deletedAt;
+  const CareJobRow({
+    required this.id,
+    required this.uuid,
+    required this.name,
+    required this.area,
+    this.subject,
+    required this.schedule,
+    required this.startDate,
+    this.notes,
+    required this.createdAt,
+    required this.updatedAt,
+    this.deletedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['uuid'] = Variable<String>(uuid);
+    map['name'] = Variable<String>(name);
+    map['area'] = Variable<int>(area);
+    if (!nullToAbsent || subject != null) {
+      map['subject'] = Variable<String>(subject);
+    }
+    map['schedule'] = Variable<String>(schedule);
+    map['start_date'] = Variable<String>(startDate);
+    if (!nullToAbsent || notes != null) {
+      map['notes'] = Variable<String>(notes);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || deletedAt != null) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt);
+    }
+    return map;
+  }
+
+  CareJobsCompanion toCompanion(bool nullToAbsent) {
+    return CareJobsCompanion(
+      id: Value(id),
+      uuid: Value(uuid),
+      name: Value(name),
+      area: Value(area),
+      subject: subject == null && nullToAbsent ? const Value.absent() : Value(subject),
+      schedule: Value(schedule),
+      startDate: Value(startDate),
+      notes: notes == null && nullToAbsent ? const Value.absent() : Value(notes),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
+    );
+  }
+
+  factory CareJobRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CareJobRow(
+      id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String>(json['uuid']),
+      name: serializer.fromJson<String>(json['name']),
+      area: serializer.fromJson<int>(json['area']),
+      subject: serializer.fromJson<String?>(json['subject']),
+      schedule: serializer.fromJson<String>(json['schedule']),
+      startDate: serializer.fromJson<String>(json['startDate']),
+      notes: serializer.fromJson<String?>(json['notes']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String>(uuid),
+      'name': serializer.toJson<String>(name),
+      'area': serializer.toJson<int>(area),
+      'subject': serializer.toJson<String?>(subject),
+      'schedule': serializer.toJson<String>(schedule),
+      'startDate': serializer.toJson<String>(startDate),
+      'notes': serializer.toJson<String?>(notes),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'deletedAt': serializer.toJson<DateTime?>(deletedAt),
+    };
+  }
+
+  CareJobRow copyWith({
+    int? id,
+    String? uuid,
+    String? name,
+    int? area,
+    Value<String?> subject = const Value.absent(),
+    String? schedule,
+    String? startDate,
+    Value<String?> notes = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> deletedAt = const Value.absent(),
+  }) => CareJobRow(
+    id: id ?? this.id,
+    uuid: uuid ?? this.uuid,
+    name: name ?? this.name,
+    area: area ?? this.area,
+    subject: subject.present ? subject.value : this.subject,
+    schedule: schedule ?? this.schedule,
+    startDate: startDate ?? this.startDate,
+    notes: notes.present ? notes.value : this.notes,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
+  );
+  CareJobRow copyWithCompanion(CareJobsCompanion data) {
+    return CareJobRow(
+      id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      name: data.name.present ? data.name.value : this.name,
+      area: data.area.present ? data.area.value : this.area,
+      subject: data.subject.present ? data.subject.value : this.subject,
+      schedule: data.schedule.present ? data.schedule.value : this.schedule,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      notes: data.notes.present ? data.notes.value : this.notes,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CareJobRow(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('name: $name, ')
+          ..write('area: $area, ')
+          ..write('subject: $subject, ')
+          ..write('schedule: $schedule, ')
+          ..write('startDate: $startDate, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, uuid, name, area, subject, schedule, startDate, notes, createdAt, updatedAt, deletedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CareJobRow &&
+          other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.name == this.name &&
+          other.area == this.area &&
+          other.subject == this.subject &&
+          other.schedule == this.schedule &&
+          other.startDate == this.startDate &&
+          other.notes == this.notes &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.deletedAt == this.deletedAt);
+}
+
+class CareJobsCompanion extends UpdateCompanion<CareJobRow> {
+  final Value<int> id;
+  final Value<String> uuid;
+  final Value<String> name;
+  final Value<int> area;
+  final Value<String?> subject;
+  final Value<String> schedule;
+  final Value<String> startDate;
+  final Value<String?> notes;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> deletedAt;
+  const CareJobsCompanion({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.name = const Value.absent(),
+    this.area = const Value.absent(),
+    this.subject = const Value.absent(),
+    this.schedule = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  });
+  CareJobsCompanion.insert({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    required String name,
+    required int area,
+    this.subject = const Value.absent(),
+    required String schedule,
+    required String startDate,
+    this.notes = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+  }) : name = Value(name),
+       area = Value(area),
+       schedule = Value(schedule),
+       startDate = Value(startDate);
+  static Insertable<CareJobRow> custom({
+    Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<String>? name,
+    Expression<int>? area,
+    Expression<String>? subject,
+    Expression<String>? schedule,
+    Expression<String>? startDate,
+    Expression<String>? notes,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? deletedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (name != null) 'name': name,
+      if (area != null) 'area': area,
+      if (subject != null) 'subject': subject,
+      if (schedule != null) 'schedule': schedule,
+      if (startDate != null) 'start_date': startDate,
+      if (notes != null) 'notes': notes,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+    });
+  }
+
+  CareJobsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? uuid,
+    Value<String>? name,
+    Value<int>? area,
+    Value<String?>? subject,
+    Value<String>? schedule,
+    Value<String>? startDate,
+    Value<String?>? notes,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? deletedAt,
+  }) {
+    return CareJobsCompanion(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      name: name ?? this.name,
+      area: area ?? this.area,
+      subject: subject ?? this.subject,
+      schedule: schedule ?? this.schedule,
+      startDate: startDate ?? this.startDate,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      deletedAt: deletedAt ?? this.deletedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (area.present) {
+      map['area'] = Variable<int>(area.value);
+    }
+    if (subject.present) {
+      map['subject'] = Variable<String>(subject.value);
+    }
+    if (schedule.present) {
+      map['schedule'] = Variable<String>(schedule.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<String>(startDate.value);
+    }
+    if (notes.present) {
+      map['notes'] = Variable<String>(notes.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<DateTime>(deletedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CareJobsCompanion(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('name: $name, ')
+          ..write('area: $area, ')
+          ..write('subject: $subject, ')
+          ..write('schedule: $schedule, ')
+          ..write('startDate: $startDate, ')
+          ..write('notes: $notes, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CareLogsTable extends CareLogs with TableInfo<$CareLogsTable, CareLogRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CareLogsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'),
+  );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+    clientDefault: newUuid,
+  );
+  static const VerificationMeta _jobIdMeta = const VerificationMeta('jobId');
+  @override
+  late final GeneratedColumn<int> jobId = GeneratedColumn<int>(
+    'job_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES care_jobs (id) ON DELETE CASCADE'),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _dueDateMeta = const VerificationMeta('dueDate');
+  @override
+  late final GeneratedColumn<String> dueDate = GeneratedColumn<String>(
+    'due_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _skippedMeta = const VerificationMeta('skipped');
+  @override
+  late final GeneratedColumn<bool> skipped = GeneratedColumn<bool>(
+    'skipped',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("skipped" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _loggedAtMeta = const VerificationMeta('loggedAt');
+  @override
+  late final GeneratedColumn<DateTime> loggedAt = GeneratedColumn<DateTime>(
+    'logged_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, uuid, jobId, date, dueDate, skipped, note, loggedAt, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'care_logs';
+  @override
+  VerificationContext validateIntegrity(Insertable<CareLogRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(_uuidMeta, uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta));
+    }
+    if (data.containsKey('job_id')) {
+      context.handle(_jobIdMeta, jobId.isAcceptableOrUnknown(data['job_id']!, _jobIdMeta));
+    } else if (isInserting) {
+      context.missing(_jobIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('due_date')) {
+      context.handle(_dueDateMeta, dueDate.isAcceptableOrUnknown(data['due_date']!, _dueDateMeta));
+    } else if (isInserting) {
+      context.missing(_dueDateMeta);
+    }
+    if (data.containsKey('skipped')) {
+      context.handle(_skippedMeta, skipped.isAcceptableOrUnknown(data['skipped']!, _skippedMeta));
+    }
+    if (data.containsKey('note')) {
+      context.handle(_noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
+    }
+    if (data.containsKey('logged_at')) {
+      context.handle(_loggedAtMeta, loggedAt.isAcceptableOrUnknown(data['logged_at']!, _loggedAtMeta));
+    } else if (isInserting) {
+      context.missing(_loggedAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  CareLogRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CareLogRow(
+      id: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      uuid: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}uuid'])!,
+      jobId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}job_id'])!,
+      date: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}date'])!,
+      dueDate: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}due_date'])!,
+      skipped: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}skipped'])!,
+      note: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}note']),
+      loggedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}logged_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $CareLogsTable createAlias(String alias) {
+    return $CareLogsTable(attachedDatabase, alias);
+  }
+}
+
+class CareLogRow extends DataClass implements Insertable<CareLogRow> {
+  final int id;
+  final String uuid;
+  final int jobId;
+
+  /// The day it was done (or skipped), `yyyy-MM-dd`.
+  final String date;
+
+  /// The turn it covered: the day it was due, `yyyy-MM-dd`.
+  final String dueDate;
+  final bool skipped;
+  final String? note;
+  final DateTime loggedAt;
+  final DateTime updatedAt;
+  const CareLogRow({
+    required this.id,
+    required this.uuid,
+    required this.jobId,
+    required this.date,
+    required this.dueDate,
+    required this.skipped,
+    this.note,
+    required this.loggedAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['uuid'] = Variable<String>(uuid);
+    map['job_id'] = Variable<int>(jobId);
+    map['date'] = Variable<String>(date);
+    map['due_date'] = Variable<String>(dueDate);
+    map['skipped'] = Variable<bool>(skipped);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    map['logged_at'] = Variable<DateTime>(loggedAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CareLogsCompanion toCompanion(bool nullToAbsent) {
+    return CareLogsCompanion(
+      id: Value(id),
+      uuid: Value(uuid),
+      jobId: Value(jobId),
+      date: Value(date),
+      dueDate: Value(dueDate),
+      skipped: Value(skipped),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      loggedAt: Value(loggedAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory CareLogRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CareLogRow(
+      id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String>(json['uuid']),
+      jobId: serializer.fromJson<int>(json['jobId']),
+      date: serializer.fromJson<String>(json['date']),
+      dueDate: serializer.fromJson<String>(json['dueDate']),
+      skipped: serializer.fromJson<bool>(json['skipped']),
+      note: serializer.fromJson<String?>(json['note']),
+      loggedAt: serializer.fromJson<DateTime>(json['loggedAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String>(uuid),
+      'jobId': serializer.toJson<int>(jobId),
+      'date': serializer.toJson<String>(date),
+      'dueDate': serializer.toJson<String>(dueDate),
+      'skipped': serializer.toJson<bool>(skipped),
+      'note': serializer.toJson<String?>(note),
+      'loggedAt': serializer.toJson<DateTime>(loggedAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  CareLogRow copyWith({
+    int? id,
+    String? uuid,
+    int? jobId,
+    String? date,
+    String? dueDate,
+    bool? skipped,
+    Value<String?> note = const Value.absent(),
+    DateTime? loggedAt,
+    DateTime? updatedAt,
+  }) => CareLogRow(
+    id: id ?? this.id,
+    uuid: uuid ?? this.uuid,
+    jobId: jobId ?? this.jobId,
+    date: date ?? this.date,
+    dueDate: dueDate ?? this.dueDate,
+    skipped: skipped ?? this.skipped,
+    note: note.present ? note.value : this.note,
+    loggedAt: loggedAt ?? this.loggedAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  CareLogRow copyWithCompanion(CareLogsCompanion data) {
+    return CareLogRow(
+      id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      jobId: data.jobId.present ? data.jobId.value : this.jobId,
+      date: data.date.present ? data.date.value : this.date,
+      dueDate: data.dueDate.present ? data.dueDate.value : this.dueDate,
+      skipped: data.skipped.present ? data.skipped.value : this.skipped,
+      note: data.note.present ? data.note.value : this.note,
+      loggedAt: data.loggedAt.present ? data.loggedAt.value : this.loggedAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CareLogRow(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('jobId: $jobId, ')
+          ..write('date: $date, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('skipped: $skipped, ')
+          ..write('note: $note, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, uuid, jobId, date, dueDate, skipped, note, loggedAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CareLogRow &&
+          other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.jobId == this.jobId &&
+          other.date == this.date &&
+          other.dueDate == this.dueDate &&
+          other.skipped == this.skipped &&
+          other.note == this.note &&
+          other.loggedAt == this.loggedAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CareLogsCompanion extends UpdateCompanion<CareLogRow> {
+  final Value<int> id;
+  final Value<String> uuid;
+  final Value<int> jobId;
+  final Value<String> date;
+  final Value<String> dueDate;
+  final Value<bool> skipped;
+  final Value<String?> note;
+  final Value<DateTime> loggedAt;
+  final Value<DateTime> updatedAt;
+  const CareLogsCompanion({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.jobId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.dueDate = const Value.absent(),
+    this.skipped = const Value.absent(),
+    this.note = const Value.absent(),
+    this.loggedAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  CareLogsCompanion.insert({
+    this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    required int jobId,
+    required String date,
+    required String dueDate,
+    this.skipped = const Value.absent(),
+    this.note = const Value.absent(),
+    required DateTime loggedAt,
+    this.updatedAt = const Value.absent(),
+  }) : jobId = Value(jobId),
+       date = Value(date),
+       dueDate = Value(dueDate),
+       loggedAt = Value(loggedAt);
+  static Insertable<CareLogRow> custom({
+    Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<int>? jobId,
+    Expression<String>? date,
+    Expression<String>? dueDate,
+    Expression<bool>? skipped,
+    Expression<String>? note,
+    Expression<DateTime>? loggedAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (jobId != null) 'job_id': jobId,
+      if (date != null) 'date': date,
+      if (dueDate != null) 'due_date': dueDate,
+      if (skipped != null) 'skipped': skipped,
+      if (note != null) 'note': note,
+      if (loggedAt != null) 'logged_at': loggedAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  CareLogsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? uuid,
+    Value<int>? jobId,
+    Value<String>? date,
+    Value<String>? dueDate,
+    Value<bool>? skipped,
+    Value<String?>? note,
+    Value<DateTime>? loggedAt,
+    Value<DateTime>? updatedAt,
+  }) {
+    return CareLogsCompanion(
+      id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      jobId: jobId ?? this.jobId,
+      date: date ?? this.date,
+      dueDate: dueDate ?? this.dueDate,
+      skipped: skipped ?? this.skipped,
+      note: note ?? this.note,
+      loggedAt: loggedAt ?? this.loggedAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (jobId.present) {
+      map['job_id'] = Variable<int>(jobId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (dueDate.present) {
+      map['due_date'] = Variable<String>(dueDate.value);
+    }
+    if (skipped.present) {
+      map['skipped'] = Variable<bool>(skipped.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (loggedAt.present) {
+      map['logged_at'] = Variable<DateTime>(loggedAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CareLogsCompanion(')
+          ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('jobId: $jobId, ')
+          ..write('date: $date, ')
+          ..write('dueDate: $dueDate, ')
+          ..write('skipped: $skipped, ')
+          ..write('note: $note, ')
+          ..write('loggedAt: $loggedAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -7682,6 +8698,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $WorkoutSetsTable workoutSets = $WorkoutSetsTable(this);
   late final $FoodsTable foods = $FoodsTable(this);
   late final $MealEntriesTable mealEntries = $MealEntriesTable(this);
+  late final $CareJobsTable careJobs = $CareJobsTable(this);
+  late final $CareLogsTable careLogs = $CareLogsTable(this);
   late final Index tasksDueDate = Index('tasks_due_date', 'CREATE INDEX tasks_due_date ON tasks (due_date)');
   late final Index tasksCompletedAt = Index(
     'tasks_completed_at',
@@ -7727,6 +8745,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'meal_entries_date',
     'CREATE INDEX meal_entries_date ON meal_entries (date)',
   );
+  late final Index careLogsJob = Index('care_logs_job', 'CREATE INDEX care_logs_job ON care_logs (job_id)');
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -7748,6 +8767,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workoutSets,
     foods,
     mealEntries,
+    careJobs,
+    careLogs,
     tasksDueDate,
     tasksCompletedAt,
     tasksDeletedAt,
@@ -7760,6 +8781,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     workoutSetsWorkout,
     workoutSetsExercise,
     mealEntriesDate,
+    careLogsJob,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
@@ -7790,6 +8812,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     WritePropagation(
       on: TableUpdateQuery.onTableName('foods', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('meal_entries', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_jobs', limitUpdateKind: UpdateKind.delete),
+      result: [TableUpdate('care_logs', kind: UpdateKind.delete)],
     ),
   ]);
   @override
@@ -12493,6 +13519,644 @@ typedef $$MealEntriesTableProcessedTableManager =
       MealEntryRow,
       PrefetchHooks Function({bool foodId})
     >;
+typedef $$CareJobsTableCreateCompanionBuilder =
+    CareJobsCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      required String name,
+      required int area,
+      Value<String?> subject,
+      required String schedule,
+      required String startDate,
+      Value<String?> notes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+    });
+typedef $$CareJobsTableUpdateCompanionBuilder =
+    CareJobsCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      Value<String> name,
+      Value<int> area,
+      Value<String?> subject,
+      Value<String> schedule,
+      Value<String> startDate,
+      Value<String?> notes,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> deletedAt,
+    });
+
+final class $$CareJobsTableReferences extends BaseReferences<_$AppDatabase, $CareJobsTable, CareJobRow> {
+  $$CareJobsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$CareLogsTable, List<CareLogRow>> _careLogsRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.careLogs,
+        aliasName: $_aliasNameGenerator(db.careJobs.id, db.careLogs.jobId),
+      );
+
+  $$CareLogsTableProcessedTableManager get careLogsRefs {
+    final manager = $$CareLogsTableTableManager(
+      $_db,
+      $_db.careLogs,
+    ).filter((f) => f.jobId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_careLogsRefsTable($_db));
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: cache));
+  }
+}
+
+class $$CareJobsTableFilterComposer extends Composer<_$AppDatabase, $CareJobsTable> {
+  $$CareJobsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get area =>
+      $composableBuilder(column: $table.area, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get subject =>
+      $composableBuilder(column: $table.subject, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get schedule =>
+      $composableBuilder(column: $table.schedule, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+
+  Expression<bool> careLogsRefs(Expression<bool> Function($$CareLogsTableFilterComposer f) f) {
+    final $$CareLogsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.careLogs,
+      getReferencedColumn: (t) => t.jobId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CareLogsTableFilterComposer(
+            $db: $db,
+            $table: $db.careLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CareJobsTableOrderingComposer extends Composer<_$AppDatabase, $CareJobsTable> {
+  $$CareJobsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get area =>
+      $composableBuilder(column: $table.area, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get subject =>
+      $composableBuilder(column: $table.subject, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get schedule =>
+      $composableBuilder(column: $table.schedule, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get notes =>
+      $composableBuilder(column: $table.notes, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$CareJobsTableAnnotationComposer extends Composer<_$AppDatabase, $CareJobsTable> {
+  $$CareJobsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid => $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<String> get name => $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get area => $composableBuilder(column: $table.area, builder: (column) => column);
+
+  GeneratedColumn<String> get subject =>
+      $composableBuilder(column: $table.subject, builder: (column) => column);
+
+  GeneratedColumn<String> get schedule =>
+      $composableBuilder(column: $table.schedule, builder: (column) => column);
+
+  GeneratedColumn<String> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<String> get notes => $composableBuilder(column: $table.notes, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+
+  Expression<T> careLogsRefs<T extends Object>(
+    Expression<T> Function($$CareLogsTableAnnotationComposer a) f,
+  ) {
+    final $$CareLogsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.careLogs,
+      getReferencedColumn: (t) => t.jobId,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CareLogsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.careLogs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$CareJobsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CareJobsTable,
+          CareJobRow,
+          $$CareJobsTableFilterComposer,
+          $$CareJobsTableOrderingComposer,
+          $$CareJobsTableAnnotationComposer,
+          $$CareJobsTableCreateCompanionBuilder,
+          $$CareJobsTableUpdateCompanionBuilder,
+          (CareJobRow, $$CareJobsTableReferences),
+          CareJobRow,
+          PrefetchHooks Function({bool careLogsRefs})
+        > {
+  $$CareJobsTableTableManager(_$AppDatabase db, $CareJobsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$CareJobsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$CareJobsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$CareJobsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int> area = const Value.absent(),
+                Value<String?> subject = const Value.absent(),
+                Value<String> schedule = const Value.absent(),
+                Value<String> startDate = const Value.absent(),
+                Value<String?> notes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+              }) => CareJobsCompanion(
+                id: id,
+                uuid: uuid,
+                name: name,
+                area: area,
+                subject: subject,
+                schedule: schedule,
+                startDate: startDate,
+                notes: notes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                required String name,
+                required int area,
+                Value<String?> subject = const Value.absent(),
+                required String schedule,
+                required String startDate,
+                Value<String?> notes = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> deletedAt = const Value.absent(),
+              }) => CareJobsCompanion.insert(
+                id: id,
+                uuid: uuid,
+                name: name,
+                area: area,
+                subject: subject,
+                schedule: schedule,
+                startDate: startDate,
+                notes: notes,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                deletedAt: deletedAt,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$CareJobsTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({careLogsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (careLogsRefs) db.careLogs],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (careLogsRefs)
+                    await $_getPrefetchedData<CareJobRow, $CareJobsTable, CareLogRow>(
+                      currentTable: table,
+                      referencedTable: $$CareJobsTableReferences._careLogsRefsTable(db),
+                      managerFromTypedResult: (p0) => $$CareJobsTableReferences(db, table, p0).careLogsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.jobId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CareJobsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CareJobsTable,
+      CareJobRow,
+      $$CareJobsTableFilterComposer,
+      $$CareJobsTableOrderingComposer,
+      $$CareJobsTableAnnotationComposer,
+      $$CareJobsTableCreateCompanionBuilder,
+      $$CareJobsTableUpdateCompanionBuilder,
+      (CareJobRow, $$CareJobsTableReferences),
+      CareJobRow,
+      PrefetchHooks Function({bool careLogsRefs})
+    >;
+typedef $$CareLogsTableCreateCompanionBuilder =
+    CareLogsCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      required int jobId,
+      required String date,
+      required String dueDate,
+      Value<bool> skipped,
+      Value<String?> note,
+      required DateTime loggedAt,
+      Value<DateTime> updatedAt,
+    });
+typedef $$CareLogsTableUpdateCompanionBuilder =
+    CareLogsCompanion Function({
+      Value<int> id,
+      Value<String> uuid,
+      Value<int> jobId,
+      Value<String> date,
+      Value<String> dueDate,
+      Value<bool> skipped,
+      Value<String?> note,
+      Value<DateTime> loggedAt,
+      Value<DateTime> updatedAt,
+    });
+
+final class $$CareLogsTableReferences extends BaseReferences<_$AppDatabase, $CareLogsTable, CareLogRow> {
+  $$CareLogsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $CareJobsTable _jobIdTable(_$AppDatabase db) =>
+      db.careJobs.createAlias($_aliasNameGenerator(db.careLogs.jobId, db.careJobs.id));
+
+  $$CareJobsTableProcessedTableManager get jobId {
+    final $_column = $_itemColumn<int>('job_id')!;
+
+    final manager = $$CareJobsTableTableManager($_db, $_db.careJobs).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_jobIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$CareLogsTableFilterComposer extends Composer<_$AppDatabase, $CareLogsTable> {
+  $$CareLogsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$CareJobsTableFilterComposer get jobId {
+    final $$CareJobsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jobId,
+      referencedTable: $db.careJobs,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CareJobsTableFilterComposer(
+            $db: $db,
+            $table: $db.careJobs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CareLogsTableOrderingComposer extends Composer<_$AppDatabase, $CareLogsTable> {
+  $$CareLogsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$CareJobsTableOrderingComposer get jobId {
+    final $$CareJobsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jobId,
+      referencedTable: $db.careJobs,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CareJobsTableOrderingComposer(
+            $db: $db,
+            $table: $db.careJobs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CareLogsTableAnnotationComposer extends Composer<_$AppDatabase, $CareLogsTable> {
+  $$CareLogsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id => $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid => $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<String> get date => $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<String> get dueDate =>
+      $composableBuilder(column: $table.dueDate, builder: (column) => column);
+
+  GeneratedColumn<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => column);
+
+  GeneratedColumn<String> get note => $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get loggedAt =>
+      $composableBuilder(column: $table.loggedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$CareJobsTableAnnotationComposer get jobId {
+    final $$CareJobsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.jobId,
+      referencedTable: $db.careJobs,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$CareJobsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.careJobs,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$CareLogsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $CareLogsTable,
+          CareLogRow,
+          $$CareLogsTableFilterComposer,
+          $$CareLogsTableOrderingComposer,
+          $$CareLogsTableAnnotationComposer,
+          $$CareLogsTableCreateCompanionBuilder,
+          $$CareLogsTableUpdateCompanionBuilder,
+          (CareLogRow, $$CareLogsTableReferences),
+          CareLogRow,
+          PrefetchHooks Function({bool jobId})
+        > {
+  $$CareLogsTableTableManager(_$AppDatabase db, $CareLogsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$CareLogsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$CareLogsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$CareLogsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                Value<int> jobId = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<String> dueDate = const Value.absent(),
+                Value<bool> skipped = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<DateTime> loggedAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => CareLogsCompanion(
+                id: id,
+                uuid: uuid,
+                jobId: jobId,
+                date: date,
+                dueDate: dueDate,
+                skipped: skipped,
+                note: note,
+                loggedAt: loggedAt,
+                updatedAt: updatedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> uuid = const Value.absent(),
+                required int jobId,
+                required String date,
+                required String dueDate,
+                Value<bool> skipped = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                required DateTime loggedAt,
+                Value<DateTime> updatedAt = const Value.absent(),
+              }) => CareLogsCompanion.insert(
+                id: id,
+                uuid: uuid,
+                jobId: jobId,
+                date: date,
+                dueDate: dueDate,
+                skipped: skipped,
+                note: note,
+                loggedAt: loggedAt,
+                updatedAt: updatedAt,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$CareLogsTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({jobId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (jobId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.jobId,
+                                referencedTable: $$CareLogsTableReferences._jobIdTable(db),
+                                referencedColumn: $$CareLogsTableReferences._jobIdTable(db).id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$CareLogsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $CareLogsTable,
+      CareLogRow,
+      $$CareLogsTableFilterComposer,
+      $$CareLogsTableOrderingComposer,
+      $$CareLogsTableAnnotationComposer,
+      $$CareLogsTableCreateCompanionBuilder,
+      $$CareLogsTableUpdateCompanionBuilder,
+      (CareLogRow, $$CareLogsTableReferences),
+      CareLogRow,
+      PrefetchHooks Function({bool jobId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -12515,4 +14179,6 @@ class $AppDatabaseManager {
   $$WorkoutSetsTableTableManager get workoutSets => $$WorkoutSetsTableTableManager(_db, _db.workoutSets);
   $$FoodsTableTableManager get foods => $$FoodsTableTableManager(_db, _db.foods);
   $$MealEntriesTableTableManager get mealEntries => $$MealEntriesTableTableManager(_db, _db.mealEntries);
+  $$CareJobsTableTableManager get careJobs => $$CareJobsTableTableManager(_db, _db.careJobs);
+  $$CareLogsTableTableManager get careLogs => $$CareLogsTableTableManager(_db, _db.careLogs);
 }

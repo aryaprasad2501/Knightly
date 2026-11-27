@@ -6,7 +6,8 @@ enum BinKind {
   event('Event'),
   routine('Routine'),
   workout('Workout'),
-  food('Food');
+  food('Food'),
+  careJob('Home care job');
 
   const BinKind(this.label);
 

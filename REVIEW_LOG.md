@@ -18,6 +18,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 4 | CRUD gaps: past-day habits, water by day | c23346c | Track > habit week dots (past days); Water details > tap a day |
 
 | 5 | Dock styles + Home in the middle + rotation | 13798b6 | Settings > Dock style (try each + both random modes); dock order |
+| 6 | Theme fonts + app version | f5fcb4a | Titles/numbers in both themes; Settings > About shows the version |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

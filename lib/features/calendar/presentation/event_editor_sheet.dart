@@ -38,7 +38,7 @@ Future<void> showEventEditor(
   );
 }
 
-enum _Repeat { none, daily, weekdays, weekly, monthly, custom }
+enum _Repeat { none, daily, weekdays, weekly, monthly, yearly, custom }
 
 const _durations = [15, 30, 45, 60, 90, 120, 180, 240];
 
@@ -90,6 +90,7 @@ class _EventEditorState extends ConsumerState<_EventEditor> {
       _Repeat.weekdays,
     WeeklyRecurrence(:final weekdays) when weekdays.length == 1 => _Repeat.weekly,
     MonthlyRecurrence() => _Repeat.monthly,
+    YearlyRecurrence() => _Repeat.yearly,
     _ => _Repeat.custom,
   };
 
@@ -99,6 +100,7 @@ class _EventEditorState extends ConsumerState<_EventEditor> {
     _Repeat.weekdays => WeeklyRecurrence.weekdays(),
     _Repeat.weekly => WeeklyRecurrence({_date.weekday}),
     _Repeat.monthly => MonthlyRecurrence(_date.day),
+    _Repeat.yearly => YearlyRecurrence.on(_date),
     _Repeat.custom => _custom,
   };
 
@@ -108,6 +110,7 @@ class _EventEditorState extends ConsumerState<_EventEditor> {
     _Repeat.weekdays => 'Every weekday',
     _Repeat.weekly => WeeklyRecurrence({_date.weekday}).describe(),
     _Repeat.monthly => MonthlyRecurrence(_date.day).describe(),
+    _Repeat.yearly => YearlyRecurrence.on(_date).describe(),
     _Repeat.custom => _repeat == _Repeat.custom && _custom != null ? _custom!.describe() : 'Custom…',
   };
 
@@ -301,6 +304,7 @@ class _EventEditorState extends ConsumerState<_EventEditor> {
                 label('Type'),
                 Wrap(
                   spacing: KSpacing.sm,
+                  runSpacing: KSpacing.xs,
                   children: [
                     KChip(
                       label: EventKind.fixed.label,
@@ -318,6 +322,18 @@ class _EventEditorState extends ConsumerState<_EventEditor> {
                       onSelected: (_) => setState(() {
                         _kind = EventKind.flexible;
                         _time = null;
+                      }),
+                    ),
+                    // Birthdays and anniversaries: all day, every year, a reminder that morning.
+                    KChip(
+                      label: 'Birthday · yearly',
+                      glyph: KGlyphs.calendar,
+                      selected: _kind == EventKind.fixed && _time == null && _repeat == _Repeat.yearly,
+                      onSelected: (_) => setState(() {
+                        _kind = EventKind.fixed;
+                        _time = null;
+                        _repeat = _Repeat.yearly;
+                        if (_reminder == _noReminder) _reminder = 0;
                       }),
                     ),
                   ],

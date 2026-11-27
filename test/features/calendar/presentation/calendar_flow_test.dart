@@ -158,4 +158,25 @@ void main() {
     expect(find.text('Standup'), findsOneWidget);
     expect(find.text('1 missed · tap to review'), findsOneWidget);
   });
+
+  testWidgets('a birthday: all day, every year, reminded that morning', (tester) async {
+    usePhoneViewport(tester);
+    final db = await pumpSeededKnightlyApp(tester, now: now, seed: (_) async {});
+    await goToTab(tester, 'Calendar');
+    await tester.tap(find.text('New event'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, "Mum's birthday");
+    await tester.tap(find.text('Birthday · yearly'));
+    await tester.pumpAndSettle();
+    expect(find.text('Every year on 26 Nov'), findsOneWidget);
+    await tester.tap(find.widgetWithText(KButton, 'Add event'));
+    await settleWithDatabase(tester);
+
+    final saved = (await tester.runAsync(
+      () => EventRepository(db, clock: () => now).watchEvents().first,
+    ))!.single;
+    expect(saved.recurrence, YearlyRecurrence(11, 26));
+    expect(saved.startTime, isNull);
+    expect(saved.reminderMinutes, 0);
+  });
 }

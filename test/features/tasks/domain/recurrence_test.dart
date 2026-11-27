@@ -84,4 +84,26 @@ void main() {
     expect(MonthlyRecurrence(22).describe(), 'Monthly on the 22nd');
     expect(MonthlyRecurrence(11).describe(), 'Monthly on the 11th');
   });
+
+  group('yearly', () {
+    test('comes back on the same day each year, and round-trips', () {
+      final r = YearlyRecurrence(3, 14);
+      expect(r.nextAfter(CalendarDate(2026, 1, 1)), CalendarDate(2026, 3, 14));
+      expect(r.nextAfter(CalendarDate(2026, 3, 14)), CalendarDate(2027, 3, 14));
+      expect(Recurrence.decode(r.encode()), r);
+      expect(r.encode(), 'yearly:03-14');
+      expect(r.describe(), 'Every year on 14 Mar');
+    });
+
+    test('29 February falls on the 28th in other years and back on the 29th in leap years', () {
+      final r = YearlyRecurrence(2, 29);
+      expect(r.nextAfter(CalendarDate(2028, 2, 29)), CalendarDate(2029, 2, 28));
+      expect(r.nextAfter(CalendarDate(2031, 3, 1)), CalendarDate(2032, 2, 29));
+    });
+
+    test('impossible dates are refused', () {
+      expect(() => YearlyRecurrence(2, 30), throwsArgumentError);
+      expect(() => YearlyRecurrence(13, 1), throwsArgumentError);
+    });
+  });
 }

@@ -39,7 +39,7 @@ Future<void> showTaskEditor(
   );
 }
 
-enum _Repeat { none, daily, weekdays, weekly, monthly, custom }
+enum _Repeat { none, daily, weekdays, weekly, monthly, yearly, custom }
 
 class _TaskEditor extends ConsumerStatefulWidget {
   const _TaskEditor({this.task, this.initialDue, this.initialProjectId});
@@ -98,6 +98,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
       _Repeat.weekdays,
     WeeklyRecurrence(:final weekdays) when weekdays.length == 1 => _Repeat.weekly,
     MonthlyRecurrence() => _Repeat.monthly,
+    YearlyRecurrence() => _Repeat.yearly,
     _ => _Repeat.custom,
   };
 
@@ -111,6 +112,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
       _Repeat.weekdays => WeeklyRecurrence.weekdays(),
       _Repeat.weekly => WeeklyRecurrence({due.weekday}),
       _Repeat.monthly => MonthlyRecurrence(due.day),
+      _Repeat.yearly => YearlyRecurrence.on(due),
       _Repeat.custom => _custom,
     };
   }
@@ -121,6 +123,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
     _Repeat.weekdays => 'Every weekday',
     _Repeat.weekly => WeeklyRecurrence({due.weekday}).describe(),
     _Repeat.monthly => MonthlyRecurrence(due.day).describe(),
+    _Repeat.yearly => YearlyRecurrence.on(due).describe(),
     _Repeat.custom => _repeat == _Repeat.custom && _custom != null ? _custom!.describe() : 'Custom…',
   };
 

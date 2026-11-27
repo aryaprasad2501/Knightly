@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Yearly events** (birthdays, anniversaries): "Every year" repeat in Calendar and missions, and a
+  "Birthday · yearly" chip in the event editor (all day, every year, reminder that morning).
 - **Mission checklists**: add steps in the mission editor; the card shows "2/5"; ticks save straight
   away; a repeating mission's next occurrence starts with the checklist unticked. Included in backups.
 - **Search missions** (search icon on Missions): matches title, notes, checklist and project, across open

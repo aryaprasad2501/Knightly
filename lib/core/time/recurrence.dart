@@ -2,8 +2,8 @@ import 'calendar_date.dart';
 
 /// How a repeating mission or Calendar event comes back.
 ///
-/// Kept deliberately small (no RRULE): every N days, on chosen weekdays, or on
-/// a day of the month. Stored as compact text via [encode] / [Recurrence.decode].
+/// Kept deliberately small (no RRULE): every N days, on chosen weekdays, on a
+/// day of the month, or once a year (birthdays). Stored as compact text via [encode] / [Recurrence.decode].
 sealed class Recurrence {
   const Recurrence();
 
@@ -36,6 +36,7 @@ sealed class Recurrence {
       'daily' => DailyRecurrence(int.parse(arg)),
       'weekly' => WeeklyRecurrence(arg.split(',').map(int.parse).toSet()),
       'monthly' => MonthlyRecurrence(int.parse(arg)),
+      'yearly' => YearlyRecurrence.parse(arg),
       _ => throw FormatException('Unknown recurrence', value),
     };
   }
@@ -149,4 +150,51 @@ final class MonthlyRecurrence extends Recurrence {
 
   @override
   int get hashCode => Object.hash('monthly', day);
+}
+
+/// Every year on [month]/[day] (birthdays, anniversaries). 29 February falls
+/// on the 28th in other years.
+final class YearlyRecurrence extends Recurrence {
+  YearlyRecurrence(this.month, this.day) {
+    if (month < 1 || month > 12) throw ArgumentError.value(month, 'month', 'must be 1..12');
+    if (day < 1 || day > CalendarDate.daysInMonth(2024, month)) {
+      throw ArgumentError.value(day, 'day', 'not a day of month $month');
+    }
+  }
+
+  /// The same day as [date], every year.
+  factory YearlyRecurrence.on(CalendarDate date) => YearlyRecurrence(date.month, date.day);
+
+  /// From the stored `MM-DD` text.
+  factory YearlyRecurrence.parse(String arg) {
+    final parts = arg.split('-');
+    if (parts.length != 2) throw FormatException('Bad yearly recurrence', arg);
+    return YearlyRecurrence(int.parse(parts[0]), int.parse(parts[1]));
+  }
+
+  final int month;
+  final int day;
+
+  static const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  CalendarDate _inYear(int year) =>
+      CalendarDate(year, month, day.clamp(1, CalendarDate.daysInMonth(year, month)));
+
+  @override
+  CalendarDate nextAfter(CalendarDate date) {
+    final thisYear = _inYear(date.year);
+    return thisYear.isAfter(date) ? thisYear : _inYear(date.year + 1);
+  }
+
+  @override
+  String encode() => 'yearly:${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+
+  @override
+  String describe() => 'Every year on $day ${_months[month - 1]}';
+
+  @override
+  bool operator ==(Object other) => other is YearlyRecurrence && other.month == month && other.day == day;
+
+  @override
+  int get hashCode => Object.hash('yearly', month, day);
 }

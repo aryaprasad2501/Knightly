@@ -13,11 +13,12 @@ import '../../core/design/tokens/k_spacing.dart';
 import '../../features/calendar/application/calendar_providers.dart';
 import '../../features/calendar/presentation/event_editor_sheet.dart';
 import '../../features/habits/presentation/habit_editor_sheet.dart';
-import '../../core/time/clock.dart';
 import '../../features/routines/presentation/routine_editor_sheet.dart';
-import '../../features/tasks/presentation/task_editor_sheet.dart';
 import '../../features/settings/presentation/welcome_sheet.dart';
 import '../../features/tasks/presentation/task_ui_actions.dart';
+import 'package:flutter/services.dart';
+import '../../core/design/components/k_confirmation_dialog.dart';
+import 'quick_add_sheet.dart';
 import '../router/app_routes.dart';
 
 /// Top-level destinations, in bottom-bar order. Must match the branch order in
@@ -66,11 +67,12 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   /// The command each screen puts on the dock, in [shellDestinations] order.
   KDockAction? _actionFor(int index, BuildContext context) => switch (index) {
-    // From Home a new mission is for today; from Tasks it follows the board's view.
-    0 when _on(AppModule.missions) => KDockAction(
+    // Home: a round "+" that opens a small panel of everything you can add.
+    0 => KDockAction(
       glyph: KGlyphs.plus,
-      label: 'New mission',
-      onPressed: () => showTaskEditor(context, initialDue: ref.read(todayProvider)),
+      label: 'Add',
+      iconOnly: true,
+      onPressed: () => showQuickAddSheet(context, ref),
     ),
     1 => KDockAction(
       glyph: KGlyphs.plus,
@@ -133,44 +135,69 @@ class _AppShellState extends ConsumerState<AppShell> {
     final solid = MediaQuery.viewPaddingOf(context).bottom + KSpacing.lg;
     const fade = 110.0;
 
-    // Back on another tab returns to Home first; only Home's Back leaves the app.
+    // Back on another tab returns to Home first; on Home it asks before
+    // leaving the app.
     return PopScope(
-      canPop: widget.navigationShell.currentIndex == 0,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) widget.navigationShell.goBranch(0);
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) async {
+        if (didPop) return;
+        if (widget.navigationShell.currentIndex != 0) {
+          widget.navigationShell.goBranch(0);
+          return;
+        }
+        final leave = await showKConfirmationDialog(
+          context,
+          title: 'Leave Knightly?',
+          message: 'Your data stays on this phone. Reminders keep coming.',
+          confirmLabel: 'Leave',
+        );
+        if (leave) await SystemNavigator.pop();
       },
       child: Scaffold(
         extendBody: true,
-        body: Stack(
-          children: [
-            for (var i = 0; i < widget.children.length; i++)
-              _BranchLayer(
-                active: i == widget.navigationShell.currentIndex,
-                child: KPageChrome(
-                  onSettings: () => context.push(AppRoutes.settings),
-                  child: widget.children[i],
+        // Swipe left or right to move between tabs. Horizontal scrolls and
+        // swipe-to-act rows inside a page win the gesture, so they still work.
+        body: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onHorizontalDragEnd: (d) {
+            final v = d.primaryVelocity ?? 0;
+            if (v.abs() < 500) return;
+            final at = visible.indexOf(current);
+            if (at < 0) return;
+            final to = at + (v < 0 ? 1 : -1);
+            if (to >= 0 && to < visible.length) _onSelected(visible[to]);
+          },
+          child: Stack(
+            children: [
+              for (var i = 0; i < widget.children.length; i++)
+                _BranchLayer(
+                  active: i == widget.navigationShell.currentIndex,
+                  child: KPageChrome(
+                    onSettings: () => context.push(AppRoutes.settings),
+                    child: widget.children[i],
+                  ),
                 ),
-              ),
-            // Fades content into the canvas behind the floating dock.
-            Positioned(
-              left: 0,
-              right: 0,
-              bottom: 0,
-              height: fade + solid,
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: [0, fade / (fade + solid), 1],
-                      colors: [canvas.withValues(alpha: 0), canvas, canvas],
+              // Fades content into the canvas behind the floating dock.
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                height: fade + solid,
+                child: IgnorePointer(
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: [0, fade / (fade + solid), 1],
+                        colors: [canvas.withValues(alpha: 0), canvas, canvas],
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         bottomNavigationBar: KNavigationBar(
           destinations: [for (final i in visible) shellDestinations[i]],

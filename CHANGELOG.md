@@ -6,6 +6,13 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Swipe between tabs** left and right.
+- **Leave Knightly?** — Back on Home now asks before closing the app.
+- **Home "+"**: a round add button that opens a small panel — mission, event, habit, routine, water,
+  food, sleep, workout or Home care job.
+
+### Changed
+- The briefing shows four gauges across; the rest scroll.
 - **More reminders** (Settings › Notifications › What to remind): timed missions at their time or
   10/30/60 min before (on by default), water every 1–4 h in a window until the goal is met, an
   evening wind-down, and a habits check when habits are still due.

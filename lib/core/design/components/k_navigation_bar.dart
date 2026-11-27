@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../icons/k_glyph.dart';
 import '../theme/theme_context.dart';
 import 'k_button.dart';
+import 'k_icon_button.dart';
 import 'k_ornaments.dart';
 import '../theme/knightly_style.dart';
 import '../theme/knightly_palette.dart';
@@ -29,11 +30,21 @@ class KNavDestination {
 /// The screen-specific command shown above the dock (e.g. "New mission").
 @immutable
 class KDockAction {
-  const KDockAction({required this.glyph, required this.label, required this.onPressed});
+  const KDockAction({
+    required this.glyph,
+    required this.label,
+    required this.onPressed,
+    this.iconOnly = false,
+  });
 
   final KGlyphData glyph;
+
+  /// The button's text, or its tooltip and spoken name when [iconOnly].
   final String label;
   final VoidCallback onPressed;
+
+  /// A round "+" style button instead of a labelled one.
+  final bool iconOnly;
 }
 
 /// Floating command dock (a shaded capsule): five destinations with an emblem indicator that
@@ -108,6 +119,15 @@ class KNavigationBar extends StatelessWidget {
                   ),
                   child: action == null
                       ? const SizedBox.shrink()
+                      : action!.iconOnly
+                      ? KIconButton(
+                          key: ValueKey(action!.label),
+                          glyph: action!.glyph,
+                          tooltip: action!.label,
+                          variant: KIconButtonVariant.filled,
+                          size: 56,
+                          onPressed: action!.onPressed,
+                        )
                       : KButton(
                           key: ValueKey(action!.label),
                           label: action!.label,

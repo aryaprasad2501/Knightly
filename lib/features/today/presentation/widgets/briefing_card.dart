@@ -345,30 +345,40 @@ class _BriefingCardState extends ConsumerState<BriefingCard> with TickerProvider
                 ),
                 if (gauges.isNotEmpty) ...[
                   const SizedBox(height: KSpacing.lg),
-                  // At most seven gauges, built together so screen readers reach them all.
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    clipBehavior: Clip.none,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (final (i, g) in gauges.indexed) ...[
-                          if (i > 0) const SizedBox(width: KSpacing.xs),
-                          () {
-                            // Gauges rise in one after another and fill.
-                            final local = ((t * (gauges.length + 3) - i) / 3).clamp(0.0, 1.0);
-                            return Opacity(
-                              opacity: local,
-                              alwaysIncludeSemantics: true,
-                              child: Transform.translate(
-                                offset: Offset(0, 14 * (1 - local)),
-                                child: g.copyWith(fill: local),
-                              ),
-                            );
-                          }(),
-                        ],
-                      ],
-                    ),
+                  // Four gauges across; any more scroll. Built together so screen
+                  // readers reach them all.
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      const gap = KSpacing.xs;
+                      final width = (constraints.maxWidth - gap * 3) / 4;
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        clipBehavior: Clip.none,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (final (i, g) in gauges.indexed) ...[
+                              if (i > 0) const SizedBox(width: gap),
+                              () {
+                                // Gauges rise in one after another and fill.
+                                final local = ((t * (gauges.length + 3) - i) / 3).clamp(0.0, 1.0);
+                                return Opacity(
+                                  opacity: local,
+                                  alwaysIncludeSemantics: true,
+                                  child: Transform.translate(
+                                    offset: Offset(0, 14 * (1 - local)),
+                                    child: SizedBox(
+                                      width: width,
+                                      child: g.copyWith(fill: local),
+                                    ),
+                                  ),
+                                );
+                              }(),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ],
               ],
@@ -439,7 +449,7 @@ class _Gauge extends StatelessWidget {
         onTap: onTap,
         radius: 40,
         child: SizedBox(
-          width: 76,
+          width: double.infinity,
           child: Column(
             children: [
               SizedBox.square(

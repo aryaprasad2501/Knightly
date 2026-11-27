@@ -118,7 +118,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Nutrition (2026-11-27)
 - [x] Home care — chores, garden, pets, maintenance with reminders (2026-11-27)
 - [ ] Wishlist & Purchase Planner (separate module; shopping lists live here, not in Home care)
-- [ ] Home care: location-based "back home" reminders (needs a geofencing package — ask first)
+- [x] Home care "When I get home" reminders (2026-11-28) — arrival trigger still to be checked on a real phone
 - [x] Workouts details page (charts and stats like Water / Sleep / Nutrition) (2026-11-28)
 - [x] Insights command centre (2026-11-27)
 - [ ] Weekly review (a written summary on top of Insights)

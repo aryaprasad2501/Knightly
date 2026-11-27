@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Home care "When I get home"** (Home care › Reminders): set home where you stand; arriving home
+  brings a notification of the jobs still due. Uses Android geofencing (location "Allow all the
+  time"); your location never leaves the phone.
 - **Home-screen widget** "Knightly · Today": commitments done, water so far and the next mission;
   tap to open. Long-press your home screen › Widgets › Knightly.
 - **Sounds**: soft clicks for switching tabs, ticking things done and toggles — mechanical in Dark
@@ -24,7 +27,12 @@ versions follow `pubspec.yaml`.
 - **Home "+"**: a round add button that opens a small panel — mission, event, habit, routine, water,
   food, sleep, workout or Home care job.
 
+### Fixed
+- **Reminders now fire in release builds**: the notification icon was being stripped from release
+  builds, so scheduling failed ("invalid_icon").
+
 ### Changed
+- Android 8.0 (API 26) is now the minimum (needed for geofencing).
 - The briefing shows four gauges across; the rest scroll.
 - **More reminders** (Settings › Notifications › What to remind): timed missions at their time or
   10/30/60 min before (on by default), water every 1–4 h in a window until the goal is met, an

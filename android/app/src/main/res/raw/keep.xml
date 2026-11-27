@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Resources referenced only by name from Dart/plugins (notification icon), or easy for the
+     shrinker to drop: keep them in release builds. Without this, reminders fail with
+     "invalid_icon" in release. -->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ic_stat_knightly,@drawable/splash_blank,@layout/knightly_widget,@drawable/widget_background" />

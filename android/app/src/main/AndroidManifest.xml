@@ -12,6 +12,11 @@
       dataExtractionRules does the same on Android 12+ while still allowing a
       local device-to-device transfer. Users keep copies with Backup & restore.
     -->
+    <!-- Location only for Home care "when I get home" (opt-in; the geofence lives on the phone). -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <application
         android:label="Knightly"
         android:name="${applicationName}"
@@ -55,6 +60,18 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Home care "when I get home" (native_geofence): the arrival receiver, re-registering after
+             reboot, and the plugin's job service. -->
+        <receiver android:name="com.chunkytofustudios.native_geofence.receivers.NativeGeofenceBroadcastReceiver"
+            android:exported="true" />
+        <receiver android:name="com.chunkytofustudios.native_geofence.receivers.NativeGeofenceRebootBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <service android:name="com.chunkytofustudios.native_geofence.NativeGeofenceForegroundService"
+            android:permission="android.permission.BIND_JOB_SERVICE" android:exported="true" />
         <!-- Home-screen widget: "Knightly · Today" (home_widget). -->
         <receiver android:name=".KnightlyWidgetProvider" android:exported="false">
             <intent-filter>

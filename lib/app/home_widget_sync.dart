@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:home_widget/home_widget.dart';
 
 import '../core/modules/app_module.dart';
 import '../features/habits/application/habits_providers.dart';
+import '../features/home_care/application/home_care_providers.dart';
+import '../features/home_care/data/home_arrival.dart';
 import '../features/routines/application/routines_providers.dart';
 import '../features/tasks/application/tasks_providers.dart';
 import '../features/water/application/water_providers.dart';
@@ -74,6 +77,12 @@ class _HomeWidgetSyncState extends ConsumerState<HomeWidgetSync> {
     if (!ref.read(homeWidgetEnabledProvider)) return;
     ref.listenManual(todayWidgetDataProvider, (prev, next) {
       if (prev != next) _push(next);
+    }, fireImmediately: true);
+    // Keep the "welcome home" note current while that reminder is on.
+    ref.listenManual(careDueNamesProvider, (prev, next) {
+      if (ref.read(careArrivalProvider).valueOrNull == true && !listEquals(prev, next)) {
+        HomeArrival.writeDueNote(next);
+      }
     }, fireImmediately: true);
   }
 

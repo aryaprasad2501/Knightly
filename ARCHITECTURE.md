@@ -354,6 +354,8 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 | `package_info_plus` | ^9.0.1 | runtime | App version shown in Settings and on the licences page (user-approved 2026-11-28). No network, no permission. |
 | `just_audio` | ^0.10.6 | runtime | Short interface sounds from bundled assets (`core/sound/k_sounds.dart`), user-approved 2026-11-28. Players are created lazily per sound; failures are ignored. |
 | `home_widget` | ^0.9.2 | runtime | Android home-screen widget (`KnightlyWidgetProvider.kt`, `res/layout/knightly_widget.xml`); Dart writes figures via `app/home_widget_sync.dart` when they change. User-approved 2026-11-28. |
+| `geolocator` | ^14.0.2 | runtime | One location fix to mark "home" (device GPS, no Play-services prompt) and the location permission flow. User-approved 2026-11-28. |
+| `native_geofence` | ^1.2.1 | runtime | Android GeofencingClient for Home care arrival reminders; callback `homeArrived` reads a due-jobs note written by the app. Needs minSdk 26 and background location. User-approved 2026-11-28. |
 
 Files the user picks (backup save/open) go through Android's system file
 picker via a small `knightly/documents` method channel in `MainActivity.kt`
@@ -467,3 +469,4 @@ codegen not needed yet).
 | D92 | 2026-11-27 | Insights follows the phone's tilt via gravity (accelerometer), smoothed and slowly re-centred (`KDeviceTilt`, shared by `InsightsTilt`): the room shifts against it, the reactor turns with it, panels lean and tip towards a pressing finger | Gravity is steadier than integrating the gyroscope; one sensor stream, layer moves only. |
 | D93 | 2026-11-28 | Module-wide reminders are one setting (`reminders.modules`: missions lead / water nudges / wind-down / habits check) planned with the rest in `planReminders`; mission reminders default to on at the mission's time, the others off | Simple, backed-up, no schema change; per-record reminder fields can come later. |
 | D94 | 2026-11-28 | Dock styles are painted bodies (`k_dock_styles.dart`) around one shared tab stack, so the selected indicator and transitions are identical in every style. Setting `appearance.dock_style` (capsule / reactor / crest / every 2 starts / every 30 min; start count in `appearance.dock_launches`). The dock shows Home in the middle; branch indexes are unchanged | User request; keeps navigation code and tests stable. |
+| D95 | 2026-11-28 | `res/raw/keep.xml` keeps resources referenced only by name (notification icon, splash, widget) through release resource shrinking | Release reminders failed with invalid_icon without it. |

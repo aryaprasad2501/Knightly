@@ -109,6 +109,86 @@ class _CareReminders extends ConsumerWidget {
             onPressed: () => notifier.set(CareReminderTimes.defaults),
           ),
         ],
+        const SizedBox(height: KSpacing.xl),
+        const _ArrivalRow(),
+      ],
+    );
+  }
+}
+
+/// "When I get home": mark this place as home; on arrival, a notification
+/// lists the jobs still due.
+class _ArrivalRow extends ConsumerStatefulWidget {
+  const _ArrivalRow();
+
+  @override
+  ConsumerState<_ArrivalRow> createState() => _ArrivalRowState();
+}
+
+class _ArrivalRowState extends ConsumerState<_ArrivalRow> {
+  String? _problem;
+  bool _busy = false;
+
+  Future<void> _setHome() async {
+    setState(() {
+      _busy = true;
+      _problem = null;
+    });
+    final problem = await ref.read(careArrivalProvider.notifier).setHomeHere();
+    if (mounted) {
+      setState(() {
+        _busy = false;
+        _problem = problem;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.palette;
+    final text = context.textStyles;
+    final on = ref.watch(careArrivalProvider).valueOrNull ?? false;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('When I get home', style: text.titleSmall),
+        const SizedBox(height: KSpacing.xs),
+        Text(
+          on
+              ? 'On. Arriving home brings a reminder of the jobs still due. Your location stays on this phone.'
+              : 'Stand at home and set it: arriving home then reminds you of the jobs still due. Needs '
+                    'location "Allow all the time"; your location never leaves this phone.',
+          style: text.bodySmall?.copyWith(color: p.textSecondary),
+        ),
+        if (_problem != null) ...[
+          const SizedBox(height: KSpacing.xs),
+          Text(_problem!, style: text.bodySmall?.copyWith(color: p.warning)),
+        ],
+        const SizedBox(height: KSpacing.sm),
+        Row(
+          children: [
+            if (on) ...[
+              Expanded(
+                child: KButton(
+                  label: 'Turn off',
+                  variant: KButtonVariant.secondary,
+                  expand: true,
+                  onPressed: _busy ? null : () => ref.read(careArrivalProvider.notifier).turnOff(),
+                ),
+              ),
+              const SizedBox(width: KSpacing.md),
+            ],
+            Expanded(
+              child: KButton(
+                label: on ? 'Move home here' : 'Set home here',
+                glyph: KGlyphs.home,
+                expand: true,
+                loading: _busy,
+                onPressed: _setHome,
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }

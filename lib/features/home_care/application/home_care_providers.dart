@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../../settings/data/settings_repository.dart';
+import '../data/home_arrival.dart';
 import '../data/home_care_repository.dart';
 import '../domain/care.dart';
 
@@ -102,4 +103,36 @@ class HomeCareActions {
 final homeCareActionsProvider = Provider<HomeCareActions>((ref) {
   final clock = ref.watch(clockProvider);
   return HomeCareActions(ref.watch(homeCareRepositoryProvider), () => CalendarDate.of(clock()));
+});
+
+/// "When I get home" reminders (setting `homecare.arrival`). Turning it on
+/// marks the current place as home and asks for location access.
+class CareArrival extends AsyncNotifier<bool> {
+  static const storageKey = 'homecare.arrival';
+
+  @override
+  Future<bool> build() async => await ref.watch(settingsRepositoryProvider).read(storageKey) == 'on';
+
+  /// Sets home here. Returns a problem to show, or null when it worked.
+  Future<String?> setHomeHere() async {
+    final problem = await HomeArrival.setHomeHere();
+    if (problem != null) return problem;
+    await ref.read(settingsRepositoryProvider).write(storageKey, 'on');
+    state = const AsyncData(true);
+    return null;
+  }
+
+  Future<void> turnOff() async {
+    await HomeArrival.clear();
+    await ref.read(settingsRepositoryProvider).write(storageKey, 'off');
+    state = const AsyncData(false);
+  }
+}
+
+final careArrivalProvider = AsyncNotifierProvider<CareArrival, bool>(CareArrival.new);
+
+/// Names of the jobs due now (for the arrival note).
+final careDueNamesProvider = Provider<List<String>>((ref) {
+  final all = ref.watch(careJobStatesProvider).valueOrNull ?? const <CareJobState>[];
+  return [for (final s in dueOn(all, ref.watch(todayProvider))) s.job.title];
 });

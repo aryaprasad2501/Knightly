@@ -122,9 +122,14 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [ ] Workouts details page (charts and stats like Water / Sleep / Nutrition)
 - [x] Insights command centre (2026-11-27)
 - [ ] Weekly review (a written summary on top of Insights)
+- [ ] Insights correlations (e.g. sleep vs habit completion) — in the spec, not built
+- [ ] Water reminders and a sleep wind-down reminder — in the spec, not built
+- [ ] Workout templates — in the spec, not built
+- [ ] Global quick-add and search — cross-cutting spec items, not built
+- [ ] Today: evening review entry point — in the spec, not built
 - [ ] Re-measure Insights in Low mode on the Knightly_LowEnd AVD (crashed on boot 2026-11-27)
 - [x] Local notifications/reminders (events and routines; 2026-11-26)
-- [ ] Data export/import (JSON) and local backup
+- [x] Data export/import (JSON) and local backup (Settings › Backup, safety copies)
 - [ ] Localisation (`intl`), units settings
 - [ ] Home-screen widgets
 
@@ -132,8 +137,8 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 
 - [ ] Upgrade Flutter SDK (3.35.6 → current stable) and move to Riverpod 3 (ARCHITECTURE D3)
 - [ ] Confirm final application ID before first Play Store upload (D1)
-- [ ] Release signing config (release currently signs with debug keys)
-- [ ] Initialise git repository and first commit
+- [ ] Release signing: config is ready (`key.properties`, docs/RELEASE_SIGNING.md) — the user creates the upload key
+- [x] Initialise git repository and first commit
 - [ ] Re-check on a physical device: cold-start black-band glitch seen once on the emulator (Stage 0), frosted dock performance
 - [ ] Consider golden tests for key components once fonts load in tests (needs a font-loading test helper)
 - [ ] Add an app version row to Settings › About (needs `package_info_plus` or a build-time constant — decide)

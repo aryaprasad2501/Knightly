@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Insights tilt**: tilt the phone and the score reactor turns with it while the room shifts
+  behind; panels lean too and tip towards your finger when pressed. Off in Low mode and with
+  Reduce motion.
 - **Home care on Track**: its own section with the panel picture, what is due (Done in place) and
   buttons for all jobs and a new job.
 - **Your own Home care categories** (+ Own): e.g. Car, Office or Bike, alongside Home, Garden and

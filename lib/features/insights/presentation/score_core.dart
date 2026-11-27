@@ -10,6 +10,7 @@ import '../../../core/design/theme/knightly_style.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../domain/insights.dart';
 import 'holo_panel.dart';
+import 'insights_tilt.dart';
 
 /// The centrepiece: the productivity score inside a reactor of rings, one ring
 /// per area measured, tilted in 3D. It floats, leans with the scroll, can be
@@ -110,16 +111,19 @@ class _ScoreCoreState extends State<ScoreCore> with SingleTickerProviderStateMix
           hold: widget.hold,
           duration: const Duration(milliseconds: 1400),
           builder: (context, sweep) => AnimatedBuilder(
-            animation: Listenable.merge([sweep, widget.time, widget.scroll]),
+            animation: Listenable.merge([sweep, widget.time, widget.scroll, InsightsTilt.of(context)]),
             builder: (context, _) {
               final t = widget.time.value;
+              final device = InsightsTilt.of(context).value;
               final lean = (widget.scroll.value * 0.0009).clamp(0.0, 0.35);
               final float = widget.effects.ambient ? math.sin(t * 1.1) * 5 : 0.0;
               final m = Matrix4.identity()
                 ..setEntry(3, 2, 0.0016)
-                ..translateByDouble(0, float, 0, 1)
-                ..rotateX(0.32 + lean + _tilt.dy)
-                ..rotateY(_tilt.dx + (widget.effects.ambient ? math.sin(t * 0.4) * 0.05 : 0));
+                ..translateByDouble(device.dx * 10, float + device.dy * 6, 0, 1)
+                ..rotateX(0.32 + lean + _tilt.dy - device.dy * 0.38)
+                ..rotateY(
+                  _tilt.dx + device.dx * 0.48 + (widget.effects.ambient ? math.sin(t * 0.4) * 0.05 : 0),
+                );
               final shown = score == null ? null : (score * sweep.value).round();
               return SizedBox(
                 height: 290,

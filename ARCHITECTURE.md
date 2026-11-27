@@ -350,6 +350,7 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 | `flutter_local_notifications` | ^20.1.0 | runtime | Local reminders (event and routine) through Android's alarm manager and notification channels, incl. boot re-scheduling. Writing this ourselves would mean a large Kotlin plugin. No network. Needs core library desugaring (`desugar_jdk_libs` 2.1.4). |
 | `timezone` | ^0.10.1 | runtime | Required by `zonedSchedule`. Only `tz.UTC` is used (plans are absolute instants), so the time-zone database is never loaded. |
 | `path_provider` | ^2.1.5 | runtime | App-private folder for restore safety copies. Already resolved (same version) as a dependency of `drift_flutter`; now declared because Knightly calls it directly. |
+| `sensors_plus` | ^7.1.1 | runtime | Accelerometer for the Insights tilt (user request, 2026-11-27). Read only while Insights is on screen with full effects; off in Low mode / Reduce motion. No network, no permission. |
 
 Files the user picks (backup save/open) go through Android's system file
 picker via a small `knightly/documents` method channel in `MainActivity.kt`
@@ -460,3 +461,4 @@ codegen not needed yet).
 | D89 | 2026-11-27 | Home care custom categories: `CareArea.custom` (stored 3) plus a nullable `care_jobs.category` name (schema v12, `from11To12` adds the column). Backups carry `category`; older files restore without it | The user wanted categories beyond Home / Garden / Pets without a separate table. |
 | D90 | 2026-11-27 | Track section order is a setting (`track.order`, panel names; unknown names ignored, missing ones appended in default order); sections whose module is off keep their slot | Personal layout without a schema change; backups carry it. |
 | D91 | 2026-11-27 | The Android system splash shows no icon (`splash_blank` on 12+, bare canvas on older); the Flutter boot sequence is the brand intro | The old crest vector looked out of date next to the approved icon. |
+| D92 | 2026-11-27 | Insights follows the phone's tilt via gravity (accelerometer), smoothed and slowly re-centred (`KDeviceTilt`, shared by `InsightsTilt`): the room shifts against it, the reactor turns with it, panels lean and tip towards a pressing finger | Gravity is steadier than integrating the gyroscope; one sensor stream, layer moves only. |

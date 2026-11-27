@@ -3,6 +3,7 @@ import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:knightly/core/design/motion/k_device_tilt.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
 import 'package:knightly/features/settings/presentation/welcome_sheet.dart';
 import 'package:knightly/app/knightly_app.dart';
@@ -70,6 +71,8 @@ Future<AppDatabase> pumpKnightlyApp(
         liveSceneEnabledProvider.overrideWithValue(false),
         // The first-run welcome is tested on its own.
         welcomeEnabledProvider.overrideWithValue(false),
+        // No motion sensor in tests.
+        deviceTiltEnabledProvider.overrideWithValue(false),
         if (now != null) clockProvider.overrideWithValue(() => now),
         ...overrides,
       ],

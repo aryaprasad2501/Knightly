@@ -11,6 +11,7 @@ import '../../../core/design/theme/k_hud_colors.dart';
 import '../../../core/design/theme/knightly_style.dart';
 import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
+import 'insights_tilt.dart';
 
 /// Starts [onVisible] once, the first time this widget scrolls into view.
 /// Its child gets the entrance progress (0 → 1).
@@ -161,8 +162,43 @@ class HoloPanel extends StatefulWidget {
   State<HoloPanel> createState() => _HoloPanelState();
 }
 
-class _HoloPanelState extends State<HoloPanel> {
+class _HoloPanelState extends State<HoloPanel> with SingleTickerProviderStateMixin {
   bool _open = false;
+
+  /// Where a finger is pressing, −1…1 across the panel; springs back to zero.
+  final _touch = ValueNotifier<Offset>(Offset.zero);
+  late final AnimationController _release;
+  Offset _from = Offset.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _release = AnimationController(vsync: this, duration: const Duration(milliseconds: 420))
+      ..addListener(() => _touch.value = _from * (1 - Curves.easeOutBack.transform(_release.value)));
+  }
+
+  @override
+  void dispose() {
+    _release.dispose();
+    _touch.dispose();
+    super.dispose();
+  }
+
+  void _press(PointerEvent e, Size size) {
+    if (!widget.effects.animates || size.isEmpty) return;
+    _release.stop();
+    final p = e.localPosition;
+    _touch.value = Offset(
+      (p.dx / size.width * 2 - 1).clamp(-1.0, 1.0),
+      (p.dy / size.height * 2 - 1).clamp(-1.0, 1.0),
+    );
+  }
+
+  void _lift() {
+    if (_touch.value == Offset.zero) return;
+    _from = _touch.value;
+    _release.forward(from: 0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -266,7 +302,7 @@ class _HoloPanelState extends State<HoloPanel> {
         ),
         builder: (context, child) {
           final t = progress.value;
-          if (t >= 1) return child!;
+          if (t >= 1) return _tilted(context, child!);
           // Swings in from the side like a screen sliding out of the wall,
           // turning to face you as it lands.
           final m = Matrix4.identity()
@@ -283,6 +319,37 @@ class _HoloPanelState extends State<HoloPanel> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+extension on _HoloPanelState {
+  /// The landed panel leans a little with the phone and tips towards a
+  /// pressing finger, like a pane of glass on a hinge.
+  Widget _tilted(BuildContext context, Widget child) {
+    if (!widget.effects.animates) return child;
+    final device = InsightsTilt.of(context);
+    return LayoutBuilder(
+      builder: (context, constraints) => Listener(
+        onPointerDown: (e) => _press(e, constraints.biggest),
+        onPointerMove: (e) => _press(e, constraints.biggest),
+        onPointerUp: (_) => _lift(),
+        onPointerCancel: (_) => _lift(),
+        child: AnimatedBuilder(
+          animation: Listenable.merge([device, _touch]),
+          child: child,
+          builder: (context, child) {
+            final d = device.value, f = _touch.value;
+            if (d == Offset.zero && f == Offset.zero) return child!;
+            final m = Matrix4.identity()
+              ..setEntry(3, 2, 0.0011)
+              ..rotateY(d.dx * 0.07 + f.dx * 0.1)
+              ..rotateX(-d.dy * 0.05 - f.dy * 0.08)
+              ..scaleByDouble(f == Offset.zero ? 1 : 0.985, f == Offset.zero ? 1 : 0.985, 1, 1);
+            return Transform(transform: m, alignment: Alignment.center, child: child);
+          },
+        ),
       ),
     );
   }

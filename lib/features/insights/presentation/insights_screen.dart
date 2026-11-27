@@ -9,6 +9,7 @@ import '../../../core/design/components/k_share_bar.dart';
 import '../../../core/design/icons/k_glyph.dart';
 import '../../../core/design/icons/k_glyphs.dart';
 import '../../../core/design/layout/k_page.dart';
+import '../../../core/design/motion/k_device_tilt.dart';
 import '../../../core/design/motion/k_effects.dart';
 import '../../../core/design/theme/k_hud_colors.dart';
 import '../../../core/design/theme/knightly_style.dart';
@@ -22,6 +23,7 @@ import 'insights_activation.dart';
 import 'insights_charts.dart';
 import 'insights_environment.dart';
 import 'insights_ticker.dart';
+import 'insights_tilt.dart';
 import 'score_core.dart';
 
 /// Insights: a personal command centre. Every figure comes from what is
@@ -94,105 +96,111 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
     final p = context.palette;
 
     return InsightsClock(
-      builder: (context, time, effects) => Scaffold(
-        backgroundColor: p.canvas,
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: InsightsEnvironment(time: time, scroll: _offset, effects: effects),
-            ),
-            CustomScrollView(
-              controller: _scroll,
-              slivers: [
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(
-                    KSpacing.gutter,
-                    insets.top + KSpacing.xl,
-                    KSpacing.gutter + 40,
-                    KSpacing.lg,
-                  ),
-                  sliver: SliverToBoxAdapter(child: _Header(period: _period)),
+      builder: (context, time, effects) => KDeviceTilt(
+        active: effects.ambient,
+        builder: (context, tilt) => InsightsTilt(
+          tilt: tilt,
+          child: Scaffold(
+            backgroundColor: p.canvas,
+            body: Stack(
+              children: [
+                Positioned.fill(
+                  child: InsightsEnvironment(time: time, scroll: _offset, effects: effects),
                 ),
-                if (snapshot.valueOrNull case final snap?)
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(0, 0, 0, KSpacing.md),
-                    sliver: SliverToBoxAdapter(
-                      child: InsightsTicker(items: _tickerItems(snap), time: time, effects: effects),
-                    ),
-                  ),
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: KSpacing.gutter),
-                  sliver: SliverToBoxAdapter(
-                    child: KChoiceChips<InsightPeriod>(
-                      options: {for (final x in InsightPeriod.values) x: x.label},
-                      value: _period,
-                      onChanged: (x) => setState(() => _period = x),
-                    ),
-                  ),
-                ),
-                SliverPadding(
-                  padding: EdgeInsets.fromLTRB(
-                    KSpacing.gutter,
-                    KSpacing.md,
-                    KSpacing.gutter,
-                    insets.bottom + 140,
-                  ),
-                  sliver: snapshot.when(
-                    loading: () => const SliverToBoxAdapter(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 120),
-                        child: Center(child: KLoadingIndicator()),
+                CustomScrollView(
+                  controller: _scroll,
+                  slivers: [
+                    SliverPadding(
+                      padding: EdgeInsets.fromLTRB(
+                        KSpacing.gutter,
+                        insets.top + KSpacing.xl,
+                        KSpacing.gutter + 40,
+                        KSpacing.lg,
                       ),
+                      sliver: SliverToBoxAdapter(child: _Header(period: _period)),
                     ),
-                    error: (_, _) => SliverToBoxAdapter(
-                      child: HoloPanel(
-                        fromLeft: _nextSide(),
-                        title: 'Insights could not be loaded',
-                        glyph: KGlyphs.alert,
-                        effects: effects,
-                        child: Text(
-                          'Something went wrong reading this device\'s storage. Restart Knightly to try again.',
-                          style: context.textStyles.bodyMedium,
+                    if (snapshot.valueOrNull case final snap?)
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, KSpacing.md),
+                        sliver: SliverToBoxAdapter(
+                          child: InsightsTicker(items: _tickerItems(snap), time: time, effects: effects),
+                        ),
+                      ),
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: KSpacing.gutter),
+                      sliver: SliverToBoxAdapter(
+                        child: KChoiceChips<InsightPeriod>(
+                          options: {for (final x in InsightPeriod.values) x: x.label},
+                          value: _period,
+                          onChanged: (x) => setState(() => _period = x),
                         ),
                       ),
                     ),
-                    data: (s) => SliverList.list(children: _panels(context, s, time, effects)),
-                  ),
+                    SliverPadding(
+                      padding: EdgeInsets.fromLTRB(
+                        KSpacing.gutter,
+                        KSpacing.md,
+                        KSpacing.gutter,
+                        insets.bottom + 140,
+                      ),
+                      sliver: snapshot.when(
+                        loading: () => const SliverToBoxAdapter(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 120),
+                            child: Center(child: KLoadingIndicator()),
+                          ),
+                        ),
+                        error: (_, _) => SliverToBoxAdapter(
+                          child: HoloPanel(
+                            fromLeft: _nextSide(),
+                            title: 'Insights could not be loaded',
+                            glyph: KGlyphs.alert,
+                            effects: effects,
+                            child: Text(
+                              'Something went wrong reading this device\'s storage. Restart Knightly to try again.',
+                              style: context.textStyles.bodyMedium,
+                            ),
+                          ),
+                        ),
+                        data: (s) => SliverList.list(children: _panels(context, s, time, effects)),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            // The status bar band.
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              height: insets.top + KSpacing.xl,
-              child: IgnorePointer(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      stops: [0, insets.top / (insets.top + KSpacing.xl), 1],
-                      colors: [p.canvas, p.canvas, p.canvas.withValues(alpha: 0)],
+                // The status bar band.
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: insets.top + KSpacing.xl,
+                  child: IgnorePointer(
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: [0, insets.top / (insets.top + KSpacing.xl), 1],
+                          colors: [p.canvas, p.canvas, p.canvas.withValues(alpha: 0)],
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
+                if (chrome != null)
+                  Positioned(
+                    top: insets.top + KSpacing.xs,
+                    right: KSpacing.gutter - KSpacing.sm,
+                    child: KIconButton(
+                      glyph: context.byStyle(KGlyphs.gearTactical, KGlyphs.gearFeline),
+                      tooltip: 'Settings',
+                      variant: KIconButtonVariant.tonal,
+                      onPressed: chrome.onSettings,
+                    ),
+                  ),
+                if (_introRunning) Positioned.fill(child: InsightsActivationOverlay(progress: _intro)),
+              ],
             ),
-            if (chrome != null)
-              Positioned(
-                top: insets.top + KSpacing.xs,
-                right: KSpacing.gutter - KSpacing.sm,
-                child: KIconButton(
-                  glyph: context.byStyle(KGlyphs.gearTactical, KGlyphs.gearFeline),
-                  tooltip: 'Settings',
-                  variant: KIconButtonVariant.tonal,
-                  onPressed: chrome.onSettings,
-                ),
-              ),
-            if (_introRunning) Positioned.fill(child: InsightsActivationOverlay(progress: _intro)),
-          ],
+          ),
         ),
       ),
     );

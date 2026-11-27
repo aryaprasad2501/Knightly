@@ -11,6 +11,7 @@ import '../../../core/design/motion/k_effects.dart';
 import '../../../core/design/theme/k_hud_colors.dart';
 import '../../../core/design/theme/knightly_style.dart';
 import '../../../core/design/theme/theme_context.dart';
+import 'insights_tilt.dart';
 
 /// A clock for ambient motion shared by the Insights screen: ticks at 30 Hz
 /// while full effects are on, the tab is visible and the live backdrop is on;
@@ -170,16 +171,39 @@ class _InsightsEnvironmentState extends State<InsightsEnvironment> {
     final tactical = family == KStyleFamily.tactical;
     _loadCave(tactical);
     final room = _cave;
+    final tilt = InsightsTilt.of(context);
     return IgnorePointer(
       child: ExcludeSemantics(
-        child: RepaintBoundary(
-          child: CustomPaint(
-            size: Size.infinite,
-            painter: tactical
-                ? _HudPainter(widget.time, widget.scroll, hud, canvas, _cache, _rings, dpr, _cave, rich: rich)
-                : room != null
-                ? _FelineHudPainter(widget.time, widget.scroll, hud, canvas, _rings, dpr, room, rich: rich)
-                : _NebulaPainter(widget.time, widget.scroll, hud, canvas, _cache, dpr, rich: rich),
+        // Tilting the phone moves the room the other way, as if looking
+        // past the HUD into it; one layer move, nothing repaints.
+        child: AnimatedBuilder(
+          animation: tilt,
+          builder: (context, child) => Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.identity()
+              ..translateByDouble(-tilt.value.dx * 20, -tilt.value.dy * 14, 0, 1)
+              ..scaleByDouble(1.08, 1.08, 1, 1),
+            child: child,
+          ),
+          child: RepaintBoundary(
+            child: CustomPaint(
+              size: Size.infinite,
+              painter: tactical
+                  ? _HudPainter(
+                      widget.time,
+                      widget.scroll,
+                      hud,
+                      canvas,
+                      _cache,
+                      _rings,
+                      dpr,
+                      _cave,
+                      rich: rich,
+                    )
+                  : room != null
+                  ? _FelineHudPainter(widget.time, widget.scroll, hud, canvas, _rings, dpr, room, rich: rich)
+                  : _NebulaPainter(widget.time, widget.scroll, hud, canvas, _cache, dpr, rich: rich),
+            ),
           ),
         ),
       ),

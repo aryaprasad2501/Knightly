@@ -95,7 +95,7 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 - [x] Staggered section entrance (`KReveal`), emblem in theme-switch curtain
 - [x] New components `KActivityRings`, `KToggle` (gallery + tests); Track performance rings
 - [x] Screenshots of every page, both themes: `docs/screenshots/` (before) and `docs/screenshots_live/` (after)
-- [ ] Per-theme display fonts — needs approval to download font files
+- [x] Per-theme display fonts (Chakra Petch / Cormorant Garamond / JetBrains Mono, 2026-11-28)
 - [~] Theme pack (`KNIGHTLY_THEME_PACK/`): batch 1 (#1–39, #81–96: branding, wallpapers, live layers, textures) generated, awaiting approval
 - [ ] Theme pack batch 2: icons (#55–80), page visuals (#97–108); batch 3: animations (#40–54); batch 4: fonts and sounds (downloads awaiting approval, `DOWNLOAD_REQUESTS.txt`)
 - [ ] Wire approved pack assets into the app (wallpaper + layer stack per page world)
@@ -141,4 +141,4 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Initialise git repository and first commit
 - [ ] Re-check on a physical device: cold-start black-band glitch seen once on the emulator (Stage 0), frosted dock performance
 - [ ] Consider golden tests for key components once fonts load in tests (needs a font-loading test helper)
-- [ ] Add an app version row to Settings › About (needs `package_info_plus` or a build-time constant — decide)
+- [x] App version in Settings › About (package_info_plus, 2026-11-28)

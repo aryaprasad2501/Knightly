@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../core/design/components/k_dock_styles.dart';
 import '../../../core/time/clock.dart';
@@ -137,4 +138,14 @@ final dockStyleProvider = Provider<KDockStyle>((ref) {
       rotation[((ref.read(dockModeProvider.notifier).launches - 1) ~/ 2) % rotation.length],
     DockMode.everyHalfHour => rotation[(ref.watch(_halfHourProvider).valueOrNull ?? 0) % rotation.length],
   };
+});
+
+/// "1.0.0 (12)" from the installed app; null where it can't be read (tests).
+final appVersionProvider = FutureProvider<String?>((ref) async {
+  try {
+    final info = await PackageInfo.fromPlatform();
+    return info.buildNumber.isEmpty ? info.version : '${info.version} (${info.buildNumber})';
+  } on Object {
+    return null;
+  }
 });

@@ -29,3 +29,8 @@ External assets
   None downloaded yet. Downloads (fonts, sounds, optional photo wallpapers) happen only
   after approval of an exact file list; each will be recorded here with URL,
   licence, author and date.
+
+2026-11-28 fonts (user-approved D1–D3), from github.com/google/fonts (SIL OFL 1.1; OFL.txt next to each):
+  Chakra Petch SemiBold/Bold — ofl/chakrapetch
+  Cormorant Garamond (variable, upright only) — ofl/cormorantgaramond
+  JetBrains Mono (variable, upright only) — ofl/jetbrainsmono

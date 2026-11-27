@@ -61,7 +61,13 @@ Future<void> main() async {
 /// Bundled fonts are SIL OFL 1.1; their licences appear on the licences page.
 void _registerFontLicenses() {
   LicenseRegistry.addLicense(() async* {
-    for (final (family, path) in const [('Inter', 'inter'), ('Sora', 'sora')]) {
+    for (final (family, path) in const [
+      ('Inter', 'inter'),
+      ('Sora', 'sora'),
+      ('Chakra Petch', 'chakrapetch'),
+      ('Cormorant Garamond', 'cormorant'),
+      ('JetBrains Mono', 'jetbrainsmono'),
+    ]) {
       final text = await rootBundle.loadString('assets/fonts/$path/OFL.txt');
       yield LicenseEntryWithLineBreaks([family], text);
     }

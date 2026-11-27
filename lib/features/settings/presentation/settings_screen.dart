@@ -173,7 +173,19 @@ class SettingsScreen extends ConsumerWidget {
           title: 'Open-source licences',
           subtitle: 'Fonts and libraries Knightly is built with',
           trailing: chevron,
-          onTap: () => showLicensePage(context: context, applicationName: 'Knightly', useRootNavigator: true),
+          onTap: () => showLicensePage(
+            context: context,
+            applicationName: 'Knightly',
+            applicationVersion: ref.read(appVersionProvider).valueOrNull,
+            useRootNavigator: true,
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        Center(
+          child: Text(
+            'Knightly ${ref.watch(appVersionProvider).valueOrNull ?? ''}'.trim(),
+            style: context.textStyles.bodySmall?.copyWith(color: context.palette.textMuted),
+          ),
         ),
         // Compile-time constant: this section is stripped from release builds.
         if (kDebugMode) ...[

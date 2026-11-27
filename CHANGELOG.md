@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Theme fonts**: Dark Knight titles in Chakra Petch with JetBrains Mono readouts; Shadow Cat
+  titles in Cormorant Garamond. Inter stays for reading. (Open Font License, bundled.)
+- **App version** under Settings › About and on the licences page.
 - **Dock styles** (Settings › Dock style): Arc reactor (raised hub in the middle, default), Crest
   (angular bar under a crest) or Capsule — or let it change every 2 app starts or every 30 minutes.
   Home now sits in the middle of the dock; swiping follows the dock order.

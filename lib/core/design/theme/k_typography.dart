@@ -5,10 +5,11 @@ import 'knightly_style.dart';
 
 /// Knightly type system, one voice per theme.
 ///
-/// - **Dark Knight (tactical):** Sora 700 display with open, positive tracking
-///   (set in capitals by `KPage`), tabular readouts, heavy tracked labels.
-/// - **Shadow Cat (feline):** Sora 600 display with tight, elegant tracking and
-///   airy line height, lighter labels with wide spacing.
+/// - **Dark Knight (tactical):** Chakra Petch display (angular, technical) with
+///   open tracking (set in capitals by `KPage`), JetBrains Mono readouts,
+///   heavy tracked labels.
+/// - **Shadow Cat (feline):** Cormorant Garamond display (an elegant serif)
+///   with airy line height, lighter labels with wide spacing.
 /// - **Inter** carries all reading text in both, for legibility.
 ///
 /// Each family has its own display slot ([displayFamilyFor]) so a dedicated
@@ -17,10 +18,20 @@ import 'knightly_style.dart';
 abstract final class KTypography {
   static const String displayFamily = 'Sora';
   static const String textFamily = 'Inter';
+  static const String tacticalDisplay = 'ChakraPetch';
+  static const String felineDisplay = 'Cormorant';
+  static const String readoutFamily = 'JetBrainsMono';
 
   static const List<FontFeature> tabularFigures = [FontFeature.tabularFigures()];
 
-  static String displayFamilyFor(KStyleFamily family) => displayFamily;
+  static String displayFamilyFor(KStyleFamily family) =>
+      family == KStyleFamily.tactical ? tacticalDisplay : felineDisplay;
+
+  /// Variable fonts (Cormorant, JetBrains Mono) need their weight axis set.
+  static List<FontVariation>? _axis(String family, FontWeight weight) =>
+      family == felineDisplay || family == readoutFamily
+      ? [FontVariation('wght', weight.value.toDouble())]
+      : null;
 
   static TextTheme textTheme(KnightlyPalette p, KStyleFamily family) {
     final tactical = family == KStyleFamily.tactical;
@@ -28,10 +39,12 @@ abstract final class KTypography {
 
     TextStyle display(double size, double tracking, FontWeight weight, {double height = 1.15}) => TextStyle(
       fontFamily: displayFont,
-      fontSize: size,
+      // The serif runs small for its size; give it a little more.
+      fontSize: tactical ? size : size * 1.12,
       height: height,
-      letterSpacing: tracking,
+      letterSpacing: tactical ? tracking : tracking * 0.4,
       fontWeight: weight,
+      fontVariations: _axis(displayFont, weight),
       color: p.textPrimary,
     );
 
@@ -93,11 +106,12 @@ abstract final class KTypography {
   static KnightlyNumerals numerals(KnightlyPalette p, KStyleFamily family) {
     final tactical = family == KStyleFamily.tactical;
     TextStyle numeral(double size, FontWeight weight, double tracking) => TextStyle(
-      fontFamily: tactical ? displayFamilyFor(family) : textFamily,
-      fontSize: size,
+      fontFamily: tactical ? readoutFamily : textFamily,
+      fontSize: tactical ? size * 0.94 : size,
       height: 1.1,
-      letterSpacing: tracking,
+      letterSpacing: tactical ? tracking - 0.4 : tracking,
       fontWeight: weight,
+      fontVariations: tactical ? _axis(readoutFamily, weight) : null,
       color: p.textPrimary,
       fontFeatures: tabularFigures,
     );

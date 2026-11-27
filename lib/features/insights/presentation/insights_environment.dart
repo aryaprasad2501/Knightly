@@ -91,7 +91,10 @@ class _InsightsClockState extends ConsumerState<InsightsClock> with WidgetsBindi
 /// The room behind Insights. Dark Knight: a holographic command HUD in steel
 /// blue and ice — rings of instrument arcs turning behind the score, a faint
 /// bat silhouette in their centre, a hex mesh, circuit traces and data
-/// streams at the edges, over a perspective grid floor with a scan beam. Shadow Cat: a violet nebula that breathes, two slow orbits and
+/// streams at the edges, over a perspective grid floor with a scan beam.
+/// Shadow Cat: an observatory re-lit in violet and rose under a soft HUD of
+/// moon phases and orbits, with petals drifting and sparks rising (a violet
+/// nebula shows while the picture loads). Shadow Cat: a violet nebula that breathes, two slow orbits and
 /// twinkling motes rising like embers. Painted, never blurred.
 ///
 /// The still parts are baked into one bitmap per size; each frame draws it
@@ -111,19 +114,21 @@ class _InsightsEnvironmentState extends State<InsightsEnvironment> {
   final _cache = _Baked();
   final _rings = _Baked();
 
-  /// The cave (Dark Knight only), decoded once.
-  static const _caveAsset = AssetImage('assets/backdrops/dk_insights.webp');
+  /// The room behind the HUD for each theme, decoded once.
+  static const _dkRoom = AssetImage('assets/backdrops/dk_insights.webp');
+  static const _scRoom = AssetImage('assets/backdrops/sc_insights.webp');
   ui.Image? _cave;
+  bool? _caveTactical;
   ImageStream? _stream;
   ImageStreamListener? _listener;
 
   void _loadCave(bool tactical) {
-    if (!tactical) {
+    if (_caveTactical != tactical) {
       _release();
-      return;
+      _caveTactical = tactical;
     }
     if (_stream != null) return;
-    final stream = _caveAsset.resolve(createLocalImageConfiguration(context));
+    final stream = (tactical ? _dkRoom : _scRoom).resolve(createLocalImageConfiguration(context));
     final listener = ImageStreamListener((info, _) {
       if (!mounted) {
         info.dispose();
@@ -162,14 +167,18 @@ class _InsightsEnvironmentState extends State<InsightsEnvironment> {
     final canvas = context.palette.canvas;
     final dpr = math.min(MediaQuery.devicePixelRatioOf(context), 2.0);
     final rich = widget.effects != KEffects.low;
-    _loadCave(family == KStyleFamily.tactical);
+    final tactical = family == KStyleFamily.tactical;
+    _loadCave(tactical);
+    final room = _cave;
     return IgnorePointer(
       child: ExcludeSemantics(
         child: RepaintBoundary(
           child: CustomPaint(
             size: Size.infinite,
-            painter: family == KStyleFamily.tactical
+            painter: tactical
                 ? _HudPainter(widget.time, widget.scroll, hud, canvas, _cache, _rings, dpr, _cave, rich: rich)
+                : room != null
+                ? _FelineHudPainter(widget.time, widget.scroll, hud, canvas, _rings, dpr, room, rich: rich)
                 : _NebulaPainter(widget.time, widget.scroll, hud, canvas, _cache, dpr, rich: rich),
           ),
         ),
@@ -354,39 +363,8 @@ class _HudPainter extends CustomPainter {
     }
   }
 
-  /// The cave, slightly larger than the screen so it can drift left and right
-  /// and rise with the scroll; darkened where the cards sit.
-  void _drawCave(Canvas c, Size size, ui.Image image, double t, double lift) {
-    final w = size.width, h = size.height;
-    final iw = image.width.toDouble(), ih = image.height.toDouble();
-    final cover = math.max(w / iw, h / ih) * 1.1;
-    final dw = iw * cover, dh = ih * cover;
-    final sway = rich ? math.sin(t * 0.09) * (dw - w) * 0.45 : 0.0;
-    final dx = (w - dw) / 2 + sway;
-    final dy = (h - dh) / 2 - (lift * 0.06).clamp(0.0, (dh - h) / 2 + 40);
-    c.drawImageRect(
-      image,
-      Rect.fromLTWH(0, 0, iw, ih),
-      Rect.fromLTWH(dx, dy, dw, dh),
-      Paint()..filterQuality = FilterQuality.medium,
-    );
-    final rect = Offset.zero & size;
-    c.drawRect(
-      rect,
-      Paint()
-        ..shader = LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            canvas.withValues(alpha: 0.35),
-            canvas.withValues(alpha: 0.1),
-            canvas.withValues(alpha: 0.35),
-            canvas.withValues(alpha: 0.7),
-          ],
-          stops: const [0, 0.3, 0.6, 1],
-        ).createShader(rect),
-    );
-  }
+  void _drawCave(Canvas c, Size size, ui.Image image, double t, double lift) =>
+      _paintCave(c, size, image, t, lift, canvas, rich: rich);
 
   /// Bats crossing the cave now and then, wings beating.
   void _bats(Canvas c, Size s, double t, double lift) {
@@ -647,6 +625,256 @@ class _HudPainter extends CustomPainter {
   @override
   bool shouldRepaint(_HudPainter old) =>
       old.hud != hud || old.rich != rich || old.canvas != canvas || old.dpr != dpr || old.cave != cave;
+}
+
+/// Draws a backdrop picture slightly larger than the screen so it can drift
+/// left and right and rise with the scroll, darkened where the cards sit.
+void _paintCave(
+  Canvas c,
+  Size size,
+  ui.Image image,
+  double t,
+  double lift,
+  Color canvas, {
+  required bool rich,
+}) {
+  final w = size.width, h = size.height;
+  final iw = image.width.toDouble(), ih = image.height.toDouble();
+  final cover = math.max(w / iw, h / ih) * 1.1;
+  final dw = iw * cover, dh = ih * cover;
+  final sway = rich ? math.sin(t * 0.09) * (dw - w) * 0.45 : 0.0;
+  final dx = (w - dw) / 2 + sway;
+  final dy = (h - dh) / 2 - (lift * 0.06).clamp(0.0, (dh - h) / 2 + 40);
+  c.drawImageRect(
+    image,
+    Rect.fromLTWH(0, 0, iw, ih),
+    Rect.fromLTWH(dx, dy, dw, dh),
+    Paint()..filterQuality = FilterQuality.medium,
+  );
+  final rect = Offset.zero & size;
+  c.drawRect(
+    rect,
+    Paint()
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          canvas.withValues(alpha: 0.35),
+          canvas.withValues(alpha: 0.1),
+          canvas.withValues(alpha: 0.35),
+          canvas.withValues(alpha: 0.7),
+        ],
+        stops: const [0, 0.3, 0.6, 1],
+      ).createShader(rect),
+  );
+}
+
+/// Shadow Cat: an observatory at night, re-lit in violet and rose, with a
+/// soft holographic HUD — a ring of moon phases, dotted orbits and sweeping
+/// arcs turning behind the score, a faint sitting cat in their heart, petals
+/// drifting down and sparks rising.
+class _FelineHudPainter extends CustomPainter {
+  _FelineHudPainter(
+    this.time,
+    this.scroll,
+    this.hud,
+    this.canvas,
+    this.rings,
+    this.dpr,
+    this.room, {
+    required this.rich,
+  }) : super(repaint: Listenable.merge([time, scroll]));
+
+  final ValueListenable<double> time;
+  final ValueListenable<double> scroll;
+  final KHudColors hud;
+  final Color canvas;
+  final _Baked rings;
+  final double dpr;
+  final ui.Image room;
+  final bool rich;
+
+  Paint _stroke(double w, Color c, [StrokeCap cap = StrokeCap.round]) => Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = w
+    ..strokeCap = cap
+    ..color = c;
+
+  void _ringSheet(Canvas c, Size size) {
+    const d = _ringMax * 2;
+    for (var i = 0; i < 5; i++) {
+      final center = Offset(d * i + _ringMax, _ringMax);
+      switch (i) {
+        case 0:
+          // A fine ring strung with beads.
+          const r = 150.0;
+          c.drawCircle(center, r, _stroke(1, hud.bright.withValues(alpha: 0.28)));
+          for (var k = 0; k < 48; k++) {
+            final a = k / 48 * math.pi * 2;
+            final p = center + Offset(math.cos(a), math.sin(a)) * (r + 7);
+            c.drawCircle(
+              p,
+              k % 6 == 0 ? 2.4 : 1.2,
+              Paint()..color = hud.secondaryBright.withValues(alpha: k % 6 == 0 ? 0.8 : 0.4),
+            );
+          }
+        case 1:
+          // Sweeping arcs with soft ends.
+          const r = 190.0;
+          final rect = Rect.fromCircle(center: center, radius: r);
+          for (final (start, len, color) in [
+            (0.2, 1.3, hud.primary),
+            (1.9, 0.7, hud.secondary),
+            (3.1, 1.6, hud.primary),
+            (5.1, 0.6, hud.secondaryBright),
+          ]) {
+            c.drawArc(rect, start, len, false, _stroke(10, color.withValues(alpha: 0.1)));
+            c.drawArc(rect, start, len, false, _stroke(2.6, color.withValues(alpha: 0.7)));
+          }
+        case 2:
+          // Eight moon phases around the ring.
+          const r = 238.0;
+          c.drawCircle(center, r, _stroke(0.8, hud.primary.withValues(alpha: 0.25)));
+          for (var k = 0; k < 8; k++) {
+            final a = k / 8 * math.pi * 2;
+            final p = center + Offset(math.cos(a), math.sin(a)) * r;
+            const mr = 9.0;
+            c.drawCircle(p, mr + 6, Paint()..color = hud.secondary.withValues(alpha: 0.12));
+            final lit = Path()..addOval(Rect.fromCircle(center: p, radius: mr));
+            final phase = (k / 8) * 2 - 1; // -1 … 1
+            final shade = Path()
+              ..addOval(Rect.fromCircle(center: p.translate(phase * mr * 1.9, 0), radius: mr));
+            c.drawPath(
+              Path.combine(PathOperation.difference, lit, shade),
+              Paint()..color = hud.secondaryBright.withValues(alpha: 0.85),
+            );
+            c.drawCircle(p, mr, _stroke(0.7, hud.bright.withValues(alpha: 0.4)));
+          }
+        case 3:
+          // A dotted outer orbit with four sparkles.
+          const r = 292.0;
+          for (var k = 0; k < 72; k++) {
+            final a = k / 72 * math.pi * 2;
+            c.drawCircle(
+              center + Offset(math.cos(a), math.sin(a)) * r,
+              1,
+              Paint()..color = hud.bright.withValues(alpha: 0.35),
+            );
+          }
+          for (final a in [0.5, 2.1, 3.7, 5.3]) {
+            final p = center + Offset(math.cos(a), math.sin(a)) * r;
+            final star = Path()
+              ..moveTo(p.dx, p.dy - 7)
+              ..quadraticBezierTo(p.dx, p.dy, p.dx + 7, p.dy)
+              ..quadraticBezierTo(p.dx, p.dy, p.dx, p.dy + 7)
+              ..quadraticBezierTo(p.dx, p.dy, p.dx - 7, p.dy)
+              ..quadraticBezierTo(p.dx, p.dy, p.dx, p.dy - 7)
+              ..close();
+            c.drawPath(star, Paint()..color = hud.secondaryBright.withValues(alpha: 0.85));
+          }
+        case 4:
+          // An original sitting cat, faint, in the heart of the HUD.
+          final cat = _cat(center, 100);
+          c.drawPath(cat, Paint()..color = hud.primary.withValues(alpha: 0.09));
+          c.drawPath(cat, _stroke(1, hud.secondaryBright.withValues(alpha: 0.16)));
+      }
+    }
+  }
+
+  /// A sitting cat seen from behind: pointed ears, round head, a body that
+  /// widens to the haunches and a tail curling round the front.
+  static Path _cat(Offset c, double size) {
+    final s = size / 100;
+    Offset p(double x, double y) => c + Offset(x * s, y * s);
+    final body = Path()
+      ..moveTo(p(-14, -38).dx, p(-14, -38).dy)
+      ..lineTo(p(-22, -66).dx, p(-22, -66).dy)
+      ..lineTo(p(-6, -50).dx, p(-6, -50).dy)
+      ..quadraticBezierTo(p(0, -52).dx, p(0, -52).dy, p(6, -50).dx, p(6, -50).dy)
+      ..lineTo(p(22, -66).dx, p(22, -66).dy)
+      ..lineTo(p(14, -38).dx, p(14, -38).dy)
+      ..quadraticBezierTo(p(22, -26).dx, p(22, -26).dy, p(12, -18).dx, p(12, -18).dy)
+      ..quadraticBezierTo(p(40, 10).dx, p(40, 10).dy, p(34, 52).dx, p(34, 52).dy)
+      ..quadraticBezierTo(p(60, 56).dx, p(60, 56).dy, p(52, 38).dx, p(52, 38).dy)
+      ..quadraticBezierTo(p(70, 48).dx, p(70, 48).dy, p(56, 62).dx, p(56, 62).dy)
+      ..quadraticBezierTo(p(30, 70).dx, p(30, 70).dy, p(0, 62).dx, p(0, 62).dy)
+      ..quadraticBezierTo(p(-38, 62).dx, p(-38, 62).dy, p(-36, 40).dx, p(-36, 40).dy)
+      ..quadraticBezierTo(p(-36, 0).dx, p(-36, 0).dy, p(-12, -18).dx, p(-12, -18).dy)
+      ..quadraticBezierTo(p(-22, -26).dx, p(-22, -26).dy, p(-14, -38).dx, p(-14, -38).dy)
+      ..close();
+    return body;
+  }
+
+  static final _motes = List.generate(28, (i) {
+    final r = math.Random(i * 7919 + 13);
+    return (r.nextDouble(), r.nextDouble(), r.nextDouble() * math.pi * 2, 0.6 + r.nextDouble() * 1.6);
+  });
+
+  @override
+  void paint(Canvas c, Size size) {
+    final w = size.width, h = size.height;
+    if (w <= 0 || h <= 0) return;
+    final t = time.value;
+    final lift = scroll.value;
+    _paintCave(c, size, room, t, lift, canvas, rich: rich);
+
+    const d = _ringMax * 2;
+    final sheet = rings.get((hud, 'feline-rings'), const Size(d * 5, d), math.min(dpr, 1.5), _ringSheet);
+    final center = Offset(w / 2, _coreY - lift * 0.85);
+    if (center.dy > -_ringMax) {
+      final src = sheet.width / 5;
+      void ring(int i, double angle, [double scale = 1]) {
+        c.save();
+        c.translate(center.dx, center.dy);
+        c.rotate(angle);
+        c.scale(scale, scale);
+        c.drawImageRect(
+          sheet,
+          Rect.fromLTWH(src * i, 0, src, sheet.height.toDouble()),
+          const Rect.fromLTWH(-_ringMax, -_ringMax, d, d),
+          Paint()..filterQuality = FilterQuality.low,
+        );
+        c.restore();
+      }
+
+      ring(4, 0, 1 + (rich ? math.sin(t * 0.7) * 0.02 : 0));
+      ring(0, -t * 0.04);
+      ring(1, t * 0.1);
+      ring(2, t * 0.025);
+      ring(3, -t * 0.05);
+    }
+
+    if (!rich) return;
+    // Petals drifting sideways and down, tumbling.
+    final petal = Paint();
+    for (var i = 0; i < 10; i++) {
+      final k = (t * 0.03 + i / 10) % 1;
+      final x = ((i * 0.137 + k * 0.6) % 1.2 - 0.1) * w + math.sin(t * 0.6 + i) * 18;
+      final y = k * h * 0.85 - lift * 0.1;
+      c.save();
+      c.translate(x, y);
+      c.rotate(t * 1.5 + i);
+      c.scale(1, 0.55 + 0.45 * math.sin(t * 2 + i));
+      petal.color = (i.isEven ? hud.secondaryBright : hud.secondary).withValues(alpha: 0.8);
+      c.drawOval(const Rect.fromLTWH(-5, -3, 10, 6), petal);
+      c.restore();
+    }
+    // Sparks rising and twinkling.
+    final dot = Paint();
+    for (final (x, y, phase, sz) in _motes) {
+      final yy = ((y - t * 0.012 * sz) % 1) * h;
+      final a = 0.3 + 0.5 * (0.5 + 0.5 * math.sin(t * 1.4 + phase));
+      final p = Offset(x * w + math.sin(t * 0.5 + phase) * 6, yy);
+      dot.color = hud.bright.withValues(alpha: a * 0.25);
+      c.drawCircle(p, sz * 2.6, dot);
+      dot.color = hud.bright.withValues(alpha: a);
+      c.drawCircle(p, sz * 0.7, dot);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_FelineHudPainter old) =>
+      old.hud != hud || old.rich != rich || old.canvas != canvas || old.dpr != dpr || old.room != room;
 }
 
 class _NebulaPainter extends CustomPainter {

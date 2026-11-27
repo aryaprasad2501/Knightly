@@ -236,7 +236,7 @@ class _KPageState extends State<KPage> {
               top: insets.top + KSpacing.xs,
               right: KSpacing.gutter - KSpacing.sm,
               child: KIconButton(
-                glyph: KGlyphs.settings,
+                glyph: context.byStyle(KGlyphs.gearTactical, KGlyphs.gearFeline),
                 tooltip: 'Settings',
                 variant: KIconButtonVariant.tonal,
                 onPressed: chrome.onSettings,

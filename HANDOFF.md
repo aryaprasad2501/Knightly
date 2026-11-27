@@ -9,13 +9,15 @@ rates, activity buckets, trends, records, 7×8 heat), `insights_providers.dart` 
 `completedTasksSinceProvider`, `waterLogsSinceProvider`, `sleepNightsSinceProvider`, `mealEntriesSinceProvider`),
 presentation: `insights_screen.dart`, `insights_environment.dart` (DK: JARVIS-style HUD over the cave backdrop
 `dk_insights.webp` — DK-02 graded to steel blue by `prepare_backdrops.py` GRADED — baked ring sheet rotated per
-frame, flying bats, circuit traces, data streams; grid floor only while the cave loads; SC: baked nebula + orbits + motes),
+frame, flying bats, circuit traces, data streams; grid floor only while the cave loads; SC: observatory backdrop `sc_insights.webp` (SC-09 graded
+violet/rose) under `_FelineHudPainter` — moon-phase ring, orbits, faint original sitting cat, petals, sparks; SC: baked nebula + orbits + motes),
 `score_core.dart` (hexagon reactor / ring bloom; rings baked, trim live). The user tried a Batcave
 room + hologram city + round holo-table and preferred the first hexagon design with a JARVIS background and
 little yellow (`KHudColors.tactical` is blue/ice; gold only a rare accent), `holo_panel.dart` (3D side entrance, baked
 frames, expandable), `insights_charts.dart`, `insights_ticker.dart`, `insights_activation.dart` (1.3 s, first
 visit per launch). Dock: Insights replaced Settings; Settings = pushed `/settings` via gear (`KPageChrome`).
-Settings: Low mode, Reduce motion (`display_controllers.dart`); first-run `welcome_sheet.dart`. Core:
+Gear glyphs `gearTactical` / `gearFeline` (by theme). Dock: `_DockGlint` light pass every 7 s (off in Low
+mode / Reduce motion / live backdrop off; selected indicator and transitions untouched). Settings: Low mode, Reduce motion (`display_controllers.dart`); first-run `welcome_sheet.dart`. Core:
 `KHudColors`, `KEffects`, `KBakedPaint`. Reference art in `insight/` is git-ignored (contains franchise
 insignia; used only as reference). 402 tests. Verified on the Pixel 8 AVD in both themes. Perf: idle fine; the
 low-end AVD crashed on boot this session, so Low mode is not yet measured there. **Next:** Workouts details page

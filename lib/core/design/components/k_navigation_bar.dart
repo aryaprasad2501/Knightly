@@ -1,7 +1,10 @@
 import 'dart:math' as math;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../icons/k_glyph.dart';
 import '../theme/theme_context.dart';
@@ -13,6 +16,8 @@ import '../theme/k_shapes.dart';
 import '../tokens/k_motion.dart';
 import '../tokens/k_spacing.dart';
 import '../brand/k_emblems.dart';
+import '../ambient/k_ambient_scene.dart';
+import '../motion/k_effects.dart';
 
 @immutable
 class KNavDestination {
@@ -163,6 +168,8 @@ class KNavigationBar extends StatelessWidget {
                           ? _TacticalIndicator(color: p.accent, fill: p.accentMuted)
                           : _FelineIndicator(palette: p),
                     ),
+                    // A light that sweeps across the dock now and then.
+                    Positioned.fill(child: _DockGlint(tactical: tactical)),
                     Row(
                       children: [
                         for (var i = 0; i < destinations.length; i++)
@@ -188,6 +195,147 @@ class KNavigationBar extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Every few seconds a light passes along the dock and over its icons: a
+/// steel scan line with a bright head (tactical) or a soft rose sheen with a
+/// few sparkles (feline). It only animates during the pass; it stays off in
+/// Low mode, with Reduce motion and when the live backdrop is off.
+class _DockGlint extends ConsumerStatefulWidget {
+  const _DockGlint({required this.tactical});
+
+  final bool tactical;
+
+  @override
+  ConsumerState<_DockGlint> createState() => _DockGlintState();
+}
+
+class _DockGlintState extends ConsumerState<_DockGlint> with SingleTickerProviderStateMixin {
+  static const _every = Duration(seconds: 7);
+  late final AnimationController _pass;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _pass = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
+  }
+
+  bool get _allowed =>
+      ref.read(liveSceneEnabledProvider) &&
+      !ref.read(lowEffectsProvider) &&
+      !MediaQuery.disableAnimationsOf(context);
+
+  void _sync() {
+    if (!mounted) return;
+    if (_allowed && TickerMode.of(context)) {
+      _timer ??= Timer.periodic(_every, (_) {
+        if (mounted && !_pass.isAnimating) _pass.forward(from: 0);
+      });
+    } else {
+      _timer?.cancel();
+      _timer = null;
+      _pass.value = 0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pass.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.watch(liveSceneEnabledProvider);
+    ref.watch(lowEffectsProvider);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _sync());
+    final p = context.palette;
+    return IgnorePointer(
+      child: RepaintBoundary(
+        child: AnimatedBuilder(
+          animation: _pass,
+          builder: (context, _) => _pass.value == 0 || _pass.value == 1
+              ? const SizedBox.expand()
+              : CustomPaint(
+                  painter: _GlintPainter(
+                    t: Curves.easeInOutSine.transform(_pass.value),
+                    tactical: widget.tactical,
+                    light: widget.tactical ? p.accentStrong : p.accentStrong,
+                    glow: widget.tactical ? p.accent : p.signal,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+class _GlintPainter extends CustomPainter {
+  _GlintPainter({required this.t, required this.tactical, required this.light, required this.glow});
+
+  final double t;
+  final bool tactical;
+  final Color light;
+  final Color glow;
+
+  @override
+  void paint(Canvas c, Size s) {
+    final x = -s.width * 0.2 + t * s.width * 1.4;
+    final fade = math.sin(t * math.pi); // in and out
+    // A soft band of light crossing the dock and its icons.
+    final band = Rect.fromLTWH(x - 60, 0, 120, s.height);
+    c.drawRect(
+      band,
+      Paint()
+        ..shader = LinearGradient(
+          colors: [
+            glow.withValues(alpha: 0),
+            glow.withValues(alpha: 0.16 * fade),
+            glow.withValues(alpha: 0),
+          ],
+        ).createShader(band),
+    );
+    if (tactical) {
+      // A scan line along the top edge with a bright head.
+      final trail = Rect.fromLTWH(x - 90, 0, 90, 2);
+      c.drawRect(
+        trail,
+        Paint()
+          ..shader = LinearGradient(
+            colors: [
+              light.withValues(alpha: 0),
+              light.withValues(alpha: 0.9 * fade),
+            ],
+          ).createShader(trail),
+      );
+      c.drawRect(Rect.fromLTWH(x - 3, 0, 6, 2.4), Paint()..color = light.withValues(alpha: fade));
+      c.drawRect(
+        Rect.fromLTWH(s.width - x - 40, s.height - 1.5, 40, 1.5),
+        Paint()..color = glow.withValues(alpha: 0.5 * fade),
+      );
+    } else {
+      // A few sparkles trailing the sheen.
+      for (var i = 0; i < 3; i++) {
+        final px = x - 14 - i * 22;
+        final py = s.height * (0.25 + 0.25 * i);
+        final a = fade * (1 - i * 0.25);
+        final r = 3.2 - i * 0.6;
+        final star = Path()
+          ..moveTo(px, py - r)
+          ..quadraticBezierTo(px, py, px + r, py)
+          ..quadraticBezierTo(px, py, px, py + r)
+          ..quadraticBezierTo(px, py, px - r, py)
+          ..quadraticBezierTo(px, py, px, py - r)
+          ..close();
+        c.drawPath(star, Paint()..color = light.withValues(alpha: a));
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(_GlintPainter old) => old.t != t || old.tactical != tactical || old.light != light;
 }
 
 /// A faint plate with corner brackets and a small winged-blade marker.

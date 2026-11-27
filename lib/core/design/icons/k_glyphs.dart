@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui';
 
 import 'k_glyph.dart';
@@ -56,6 +57,15 @@ abstract final class KGlyphs {
   static const progress = KGlyphData('progress', body: _progressBody, detail: _progressDetail);
   static const paw = KGlyphData('paw', body: _pawBody);
 
+  // Settings, one per theme: a machined gear with a hex core (Dark Knight)
+  // and a soft eight-lobed gear with a cat's-eye core (Shadow Cat).
+  static const gearTactical = KGlyphData(
+    'gearTactical',
+    body: _gearTacticalBody,
+    detail: _gearTacticalDetail,
+  );
+  static const gearFeline = KGlyphData('gearFeline', body: _gearFelineBody, detail: _gearFelineDetail);
+
   static const List<KGlyphData> all = [
     home, calendar, tasks, track, settings, //
     plus, minus, close, check, back, chevronRight, chevronDown, search, trash,
@@ -64,7 +74,8 @@ abstract final class KGlyphs {
     moon, drop, bolt, flag, spark, shield,
     flame,
     archive,
-    habit, routine, dumbbell, leaf, chart, bell, backup, folder, edit, alarm, progress, paw,
+    habit, routine, dumbbell, leaf, chart, bell, backup, folder, edit, alarm, progress, paw, //
+    gearTactical, gearFeline,
   ];
 }
 
@@ -346,6 +357,54 @@ void _dumbbellDetail(Path p) => p
   ..lineTo(22, 12);
 
 /// Nutrition: a leaf.
+/// Eight square-cut teeth around a ring.
+void _gearTacticalBody(Path p) {
+  const c = Offset(12, 12);
+  final pts = <Offset>[];
+  for (var i = 0; i < 8; i++) {
+    final a = i * math.pi / 4 - math.pi / 2;
+    for (final (da, r) in [(-0.22, 6.8), (-0.14, 9.2), (0.14, 9.2), (0.22, 6.8)]) {
+      pts.add(c + Offset(math.cos(a + da), math.sin(a + da)) * r);
+    }
+  }
+  p.addPolygon(pts, true);
+}
+
+/// A hexagonal core.
+void _gearTacticalDetail(Path p) {
+  p.addPolygon([
+    for (var i = 0; i < 6; i++)
+      Offset(12 + math.cos(i * math.pi / 3) * 2.8, 12 + math.sin(i * math.pi / 3) * 2.8),
+  ], true);
+}
+
+/// Eight rounded lobes, like a flower-shaped gear.
+void _gearFelineBody(Path p) {
+  const c = Offset(12, 12);
+  const n = 8;
+  for (var i = 0; i <= n; i++) {
+    final a = i * math.pi * 2 / n - math.pi / 2;
+    final valley = c + Offset(math.cos(a), math.sin(a)) * 6.6;
+    if (i == 0) {
+      p.moveTo(valley.dx, valley.dy);
+      continue;
+    }
+    final mid = a - math.pi / n;
+    final tip = c + Offset(math.cos(mid), math.sin(mid)) * 10.6;
+    p.quadraticBezierTo(tip.dx, tip.dy, valley.dx, valley.dy);
+  }
+  p.close();
+}
+
+/// A cat's eye: an almond with a slit pupil.
+void _gearFelineDetail(Path p) => p
+  ..moveTo(8.6, 12)
+  ..quadraticBezierTo(12, 8.4, 15.4, 12)
+  ..quadraticBezierTo(12, 15.6, 8.6, 12)
+  ..close()
+  ..moveTo(12, 10.3)
+  ..lineTo(12, 13.7);
+
 /// Pets: a paw print — main pad and four toes.
 void _pawBody(Path p) => p
   ..moveTo(12, 12.2)

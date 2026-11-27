@@ -95,7 +95,10 @@ class _Welcome extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: KSpacing.lg),
-                tip(KGlyphs.settings, 'Settings are behind the gear at the top right of every tab.'),
+                tip(
+                  context.byStyle(KGlyphs.gearTactical, KGlyphs.gearFeline),
+                  'Settings are behind the gear at the top right of every tab.',
+                ),
                 tip(KGlyphs.chart, 'Insights brings everything you record together — tap it in the dock.'),
                 tip(KGlyphs.bolt, 'On an older phone? Turn on Low mode in Settings for lighter effects.'),
               ],

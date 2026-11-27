@@ -14,7 +14,8 @@ Panels: wide header art for tracker panels on Track (1080 x 450, WebP), cropped
 from the same wallpapers, again with every franchise logo out of frame.
 
 Graded backdrops: a crop re-lit in the theme's HUD colours (GRADED) — the
-Insights cave is DK-02 graded into steel blue and ice so it carries little gold.
+Insights cave is DK-02 graded into steel blue and ice so it carries little gold;
+Shadow Cat's is SC-09 graded into violet and rose.
 
 Logos: the two approved app icons, resized to 384 px for in-app use.
 
@@ -89,6 +90,13 @@ GRADED = {
         (0.025, 0.0, 0.975),
         [(0.0, (4, 9, 17)), (0.25, (18, 42, 76)), (0.55, (70, 130, 198)), (0.82, (160, 212, 248)), (1.0, (236, 248, 255))],
         0.12,
+    ),
+    # The observatory, in violet and rose for Shadow Cat's Insights.
+    'sc_insights': (
+        'SC-09_Silent_Training.png',
+        (0.0, 0.0, 1.0),
+        [(0.0, (9, 3, 16)), (0.25, (44, 14, 72)), (0.55, (138, 70, 214)), (0.8, (236, 120, 200)), (1.0, (255, 232, 246))],
+        0.3,
     ),
 }
 

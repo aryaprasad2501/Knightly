@@ -116,6 +116,7 @@ of re-implementing them:
 | sleep | `SleepSection` (`sleep_section.dart`) | Track tab |
 | sleep | `showSleepEditor()` (`sleep_editor_sheet.dart`) | Home "Log sleep" quick action |
 | workouts | `WorkoutsSection`, `startOrResumeWorkout()` (`workouts_section.dart`) | Track tab; Home "Start workout" |
+| nutrition | `NutritionSection`, `openLogFood()` (`nutrition_section.dart`) | Track tab; Home "Log food" |
 | water | `WaterSection` (`water_section.dart`) | Track tab |
 | water | `logWaterWithUndo()` (`water_section.dart`) | Home "Log water" quick action |
 | notifications | `ReminderHost` (`reminder_host.dart`) | App root (`knightly_app.dart`) |
@@ -199,7 +200,11 @@ Anything else in a feature's `presentation/` is private to that feature.
   updated_at) · v9 `workouts` (uuid, name, started_at, finished_at, notes,
   deleted_at; index on `started_at`) and `workout_sets` (workout_id → `ON DELETE
   CASCADE`, exercise_id + exercise_name snapshot, exercise/set order, reps,
-  weight_kg, duration_seconds, done; indexes on `workout_id`, `exercise_id`).
+  weight_kg, duration_seconds, done; indexes on `workout_id`, `exercise_id`) ·
+  v10 `foods` (uuid, name, serving, kcal/protein/carbs/fat per serving, created/
+  updated/deleted_at) and `meal_entries` (uuid, date, meal 0–3, logged_at, name,
+  food_id → `ON DELETE SET NULL`, library_id, portion, quantity, kcal/protein/
+  carbs/fat totals; index on `date`).
   The v3→v4 step rebuilds the three tables with `alterTable`, giving every
   existing row a fresh uuid and `updated_at = created_at`; foreign keys are off
   during the upgrade and `PRAGMA foreign_key_check` must be empty afterwards.
@@ -437,3 +442,5 @@ codegen not needed yet).
 | D76 | 2026-11-27 | Library browse follows gym apps: muscle-group chips (Full body, Chest … Neck, Cardio, Stretching), search over names, muscles, equipment, level and movement, and a filters sheet (equipment, level, type, compound/isolation). "Full body" = Olympic lifting, strongman, or compound work reaching 4+ muscle groups | Searching a muscle lists every exercise for it; filters combine. |
 | D77 | 2026-11-27 | One workout in progress at a time; sets are ticked as done and only ticked sets are kept on Finish. Weights in kg (user's choice). Volume = Σ reps × kg of done sets; estimated 1RM by Epley. Finished workouts are editable and go to the Recycle Bin when deleted | Matches Strong/Hevy-style logging; no half-finished sessions piling up. |
 | D78 | 2026-11-27 | `KSubpage.custom` (any body) for long lazily built lists; `KNumberField` component for compact numeric cells | The library has 876 rows; set tables need small inputs. |
+| D79 | 2026-11-27 | Nutrition bundles the USDA FoodData Central SR Legacy list (7,448 foods, public domain), downloaded once with the user's approval and trimmed by `tool/nutrition/build_foods.py` into `assets/data/foods.json` (per 100 g + up to 4 household measures; baby foods, branded and lab samples left out). The app never fetches it | Offline search with no API or account; the user approved it over the spec's "own foods only at first". Credited on the licences page and under the Track panel. |
+| D80 | 2026-11-27 | Meal entries copy the name and nutrient totals when logged (with the portion and quantity); `food_id` is set null if a food is deleted for good. Entries are removed with Undo (like water); the person's foods go to the Recycle Bin. Targets are one setting (`nutrition.targets`, "kcal,protein,carbs,fat", macros optional) | History stays right when foods change; one row per item keeps day totals a simple sum. |

@@ -23,7 +23,7 @@ enum AppModule {
   sleep('Sleep', 'Bedtime, wake time and sleep history', built: true),
   water('Water', 'Glasses of water against a daily goal', built: true),
   workouts('Workouts', 'Exercises, sets, reps and weights', built: true),
-  nutrition('Nutrition', 'Meals and calories'),
+  nutrition('Nutrition', 'Meals, calories and macros against daily targets', built: true),
   homeCare('Home, garden & pets', 'Chores, plant care and pet care with reminders');
 
   const AppModule(this.label, this.description, {this.built = false});

@@ -19,6 +19,7 @@ import '../../routines/presentation/routines_section.dart';
 import '../../sleep/presentation/sleep_section.dart';
 import '../../tasks/application/tasks_providers.dart';
 import '../../water/presentation/water_section.dart';
+import '../../nutrition/presentation/nutrition_section.dart';
 import '../../workouts/presentation/workouts_section.dart';
 
 /// The Track tab — a personal performance console: today's rings, then
@@ -46,6 +47,7 @@ class TrackScreen extends ConsumerWidget {
       if (on.contains(AppModule.water)) const WaterSection(),
       if (on.contains(AppModule.sleep)) const SleepSection(),
       if (on.contains(AppModule.workouts)) const WorkoutsSection(),
+      if (on.contains(AppModule.nutrition)) const NutritionSection(),
       if (on.any((m) => AppModule.trackers.contains(m) && !m.built)) const _MoreTrackers(),
     ];
 

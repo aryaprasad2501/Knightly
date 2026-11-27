@@ -26,6 +26,17 @@ abstract final class AppRoutes {
   static const workout = '/workouts/:id';
   static String workoutFor(int id) => '/workouts/$id';
 
+  /// The food diary for a day (today when no date). Build with [nutritionDayFor].
+  static const nutrition = '/nutrition';
+  static String nutritionDayFor(String date) => '/nutrition?date=$date';
+
+  /// Food search to log into a meal. Build with [nutritionAddFor].
+  static const nutritionAdd = '/nutrition/add';
+  static String nutritionAddFor(String date, int meal) => '/nutrition/add?date=$date&meal=$meal';
+
+  /// The person's own foods.
+  static const myFoods = '/nutrition/foods';
+
   // Development tools. Registered only in debug builds.
   static const devBuildStatus = '/dev/build-status';
   static const devGallery = '/dev/gallery';

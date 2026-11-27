@@ -5,6 +5,21 @@ versions follow `pubspec.yaml`.
 
 ## [Unreleased]
 
+## Phase 2 · step 8 — 2026-11-27 — Nutrition
+
+### Added
+- **Food list** with 7,448 foods (USDA FoodData Central, public domain, bundled — works offline):
+  search by any words, browse by category, calories and macros per 100 g with household measures
+  (1 large egg, 1 cup…) or grams.
+- **Food diary**: log food to breakfast, lunch, dinner or snacks, see each day's meals and totals,
+  move between days, tap an entry to change the amount or meal, remove with Undo. Recent items
+  come back for one-tap logging.
+- **My foods**: save your own dishes (name, serving, calories, protein, carbs, fat) and log them in
+  a tap; deleted foods go to the Recycle Bin. **Quick add** logs just the numbers.
+- **Daily targets**: calories plus optional protein, carbs and fat.
+- **Track › Nutrition**: today's calories against the target, macro bars, the four meals and the
+  last 7 days. Home: **Log food**. Included in backups; can be switched off in Settings › Modules.
+
 ## Phase 2 · step 7 — 2026-11-27 — Workouts
 
 ### Added

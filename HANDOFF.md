@@ -1,8 +1,21 @@
 # HANDOFF — current state
 
-_Last updated: 2026-11-27 · Phase 2 step 7 (Workouts) complete_
+_Last updated: 2026-11-27 · Phase 2 step 8 (Nutrition) complete_
 
 ## Where things stand
+
+**Latest (Phase 2 step 8 — Nutrition, 2026-11-27):** schema v10 (`features/nutrition/data/nutrition_tables.dart`:
+`foods` with bin, `meal_entries` with name/totals snapshot and `food_id` → SET NULL; migration v9→v10).
+Food list: `assets/data/foods.json` (7,448 foods, 919 KB) built by `tool/nutrition/build_foods.py` from the
+USDA FoodData Central SR Legacy CSV (approved 6.1 MB download, kept only in the session scratchpad).
+`domain/nutrition.dart` (Macros, Meal, targets, NutritionDay), `domain/food_library.dart` (search),
+`nutrition_repository.dart`, `nutrition_providers.dart` (targets setting `nutrition.targets`). Screens:
+`nutrition_section.dart` (Track), `food_search_screen.dart` (`/nutrition/add`), `nutrition_day_screen.dart`
+(`/nutrition`), `my_foods_screen.dart` (`/nutrition/foods`), sheets in `nutrition_sheets.dart`. Panel art
+`dk/sc_nutrition` (DK-02 desk, SC-02 table). Bin (foods), backup (since 10), module built, Home "Log food",
+USDA credit on the licences page. 353 tests. Verified on the Pixel 8 AVD (release build): v9→v10 upgrade,
+search, 1.5 large eggs logged = 107 kcal. **Next:** Workouts body stats (weight, height, BMI — user request),
+then Home care.
 
 **Latest (Phase 2 step 7 — Workouts, 2026-11-27):** schema v9 (`features/workouts/data/workouts_tables.dart`,
 migration v8→v9 + test). Library: `assets/data/exercises.json` built by `tool/exercises/build_library.py` from

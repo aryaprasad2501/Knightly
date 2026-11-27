@@ -62,6 +62,10 @@ PANELS = {
     'dk_workouts': ('DK-09_Training_Ground.png', (0.0, 0.405, 1.0)),
     # The moon window and the cat constellation wall.
     'sc_workouts': ('SC-09_Silent_Training.png', (0.0, 0.27, 1.0)),
+    # The desk of glowing chart screens and the brass lamp.
+    'dk_nutrition': ('DK-02_Command_Center.png', (0.15, 0.479, 1.0)),
+    # The coffee table: candle, flowers and books by the window.
+    'sc_nutrition': ('SC-02_Shadow_Lounge.png', (0.36, 0.655, 1.0)),
 }
 
 # source file -> [(box in source px, vertical offset of the source patch)]

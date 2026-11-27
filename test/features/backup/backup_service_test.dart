@@ -13,6 +13,8 @@ import 'package:knightly/features/calendar/domain/calendar_event.dart';
 import 'package:knightly/features/habits/data/habit_repository.dart';
 import 'package:knightly/features/habits/domain/habit.dart';
 import 'package:knightly/features/habits/domain/habit_schedule.dart';
+import 'package:knightly/features/nutrition/data/nutrition_repository.dart';
+import 'package:knightly/features/nutrition/domain/nutrition.dart';
 import 'package:knightly/features/routines/data/routine_repository.dart';
 import 'package:knightly/features/routines/domain/routine.dart';
 import 'package:knightly/features/settings/data/settings_repository.dart';
@@ -491,5 +493,52 @@ void main() {
       (w.name, w.isActive, w.sets.single.reps, w.sets.single.weightKg, w.sets.single.done),
       ('Push day', false, 20, 12.5, true),
     );
+  });
+
+  test('foods and meal entries are backed up and restored, binned foods included', () async {
+    final source = openDb();
+    final repo = NutritionRepository(source, clock: () => now);
+    final dal = await repo.createFood(
+      const FoodDraft(
+        name: 'Dal tadka',
+        serving: '1 bowl',
+        macros: Macros(kcal: 180, protein: 9, carbs: 22, fat: 6),
+      ),
+    );
+    final old = await repo.createFood(
+      const FoodDraft(name: 'Old snack', serving: '1 pack', macros: Macros(kcal: 90)),
+    );
+    await repo.trashFood(old);
+    await repo.log(
+      MealEntryDraft(
+        date: today,
+        meal: Meal.lunch,
+        name: 'Dal tadka',
+        foodId: dal,
+        portion: '1 bowl',
+        quantity: 1.5,
+        macros: const Macros(kcal: 270, protein: 13.5, carbs: 33, fat: 9),
+      ),
+    );
+    await repo.log(
+      MealEntryDraft(date: today, meal: Meal.snacks, name: 'Quick add', macros: const Macros(kcal: 120)),
+    );
+    final json = await serviceFor(source).exportJson();
+    final summary = serviceFor(source).validate(json);
+    expect((summary.foods, summary.mealEntries), (2, 2));
+
+    final target = openDb();
+    await serviceFor(target).restore(json);
+    final restored = NutritionRepository(target, clock: () => now);
+    final entries = await restored.watchEntries(since: today).first;
+    expect(
+      [for (final e in entries) (e.name, e.meal, e.portion, e.quantity, e.macros.kcal, e.foodId)],
+      [
+        ('Dal tadka', Meal.lunch, '1 bowl', 1.5, 270.0, dal),
+        ('Quick add', Meal.snacks, null, 1.0, 120.0, null),
+      ],
+    );
+    expect((await restored.watchFoods().first).single.name, 'Dal tadka');
+    expect((await restored.watchFoods(trashed: true).first).single.name, 'Old snack');
   });
 }

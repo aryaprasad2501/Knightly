@@ -3,6 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 
 import '../../features/calendar/data/calendar_tables.dart';
 import '../../features/habits/data/habits_tables.dart';
+import '../../features/nutrition/data/nutrition_tables.dart';
 import '../../features/routines/data/routines_tables.dart';
 import '../../features/sleep/data/sleep_tables.dart';
 import '../../features/tasks/data/tasks_tables.dart';
@@ -34,7 +35,8 @@ class AppSettings extends Table {
 /// History: v1 settings · v2 projects + tasks · v3 habits + habit check-ins ·
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
-/// routine_runs · v7 water_logs · v8 sleep_logs · v9 workouts, workout_sets.
+/// routine_runs · v7 water_logs · v8 sleep_logs · v9 workouts, workout_sets · v10 foods,
+/// meal_entries.
 @DriftDatabase(
   tables: [
     AppSettings,
@@ -51,13 +53,15 @@ class AppSettings extends Table {
     SleepLogs,
     Workouts,
     WorkoutSets,
+    Foods,
+    MealEntries,
   ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 9;
+  int get schemaVersion => 10;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -149,6 +153,12 @@ class AppDatabase extends _$AppDatabase {
       await m.createIndex(schema.workoutsStarted);
       await m.createIndex(schema.workoutSetsWorkout);
       await m.createIndex(schema.workoutSetsExercise);
+    },
+    // Nutrition: two new tables; nothing existing changes.
+    from9To10: (m, schema) async {
+      await m.createTable(schema.foods);
+      await m.createTable(schema.mealEntries);
+      await m.createIndex(schema.mealEntriesDate);
     },
   );
 

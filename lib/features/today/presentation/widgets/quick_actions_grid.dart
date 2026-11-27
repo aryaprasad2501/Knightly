@@ -7,6 +7,7 @@ import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../../../core/time/clock.dart';
+import '../../../nutrition/presentation/nutrition_section.dart';
 import '../../../routines/presentation/start_routine_sheet.dart';
 import '../../../sleep/presentation/sleep_editor_sheet.dart';
 import '../../../tasks/presentation/task_editor_sheet.dart';
@@ -26,7 +27,8 @@ class QuickActionsGrid extends ConsumerWidget {
       on.contains(AppModule.water) ||
       on.contains(AppModule.routines) ||
       on.contains(AppModule.sleep) ||
-      on.contains(AppModule.workouts);
+      on.contains(AppModule.workouts) ||
+      on.contains(AppModule.nutrition);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -57,6 +59,8 @@ class QuickActionsGrid extends ConsumerWidget {
           label: ref.watch(activeWorkoutProvider) == null ? 'Start workout' : 'Resume workout',
           onTap: () => startOrResumeWorkout(context, ref),
         ),
+      if (on.contains(AppModule.nutrition))
+        _ActionTile(glyph: KGlyphs.leaf, label: 'Log food', onTap: () => openLogFood(context, ref)),
       if (on.contains(AppModule.sleep))
         _ActionTile(
           glyph: KGlyphs.moon,

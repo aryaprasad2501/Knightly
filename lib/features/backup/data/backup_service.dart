@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/database/app_database.dart';
 import '../../../core/database/database_provider.dart';
 import '../../../core/database/ids.dart';
+import '../../../core/time/calendar_date.dart';
 import '../../../core/time/clock.dart';
 import '../domain/backup_format.dart';
 
@@ -64,6 +65,8 @@ class BackupService {
       final sleep = await (_db.select(_db.sleepLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final workouts = await (_db.select(_db.workouts)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final sets = await (_db.select(_db.workoutSets)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final foods = await (_db.select(_db.foods)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final meals = await (_db.select(_db.mealEntries)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -244,6 +247,42 @@ class BackupService {
               'updatedAt': _time(s.updatedAt),
             },
         ],
+        'foods': [
+          for (final f in foods)
+            {
+              'id': f.id,
+              'uuid': f.uuid,
+              'name': f.name,
+              'serving': f.serving,
+              'kcal': f.kcal,
+              'protein': f.protein,
+              'carbs': f.carbs,
+              'fat': f.fat,
+              'createdAt': _time(f.createdAt),
+              'updatedAt': _time(f.updatedAt),
+              'deletedAt': _time(f.deletedAt),
+            },
+        ],
+        'mealEntries': [
+          for (final e in meals)
+            {
+              'id': e.id,
+              'uuid': e.uuid,
+              'date': e.date,
+              'meal': e.meal,
+              'loggedAt': _time(e.loggedAt),
+              'name': e.name,
+              'foodId': e.foodId,
+              'libraryId': e.libraryId,
+              'portion': e.portion,
+              'quantity': e.quantity,
+              'kcal': e.kcal,
+              'protein': e.protein,
+              'carbs': e.carbs,
+              'fat': e.fat,
+              'updatedAt': _time(e.updatedAt),
+            },
+        ],
       };
     });
 
@@ -341,6 +380,8 @@ class BackupService {
       sleep: [for (final r in tables['sleepLogs']!) _sleepRow(r)],
       workouts: [for (final r in tables['workouts']!) _workoutRow(r)],
       workoutSets: [for (final r in tables['workoutSets']!) _workoutSetRow(r)],
+      foods: [for (final r in tables['foods']!) _foodRow(r)],
+      meals: [for (final r in tables['mealEntries']!) _mealRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -410,6 +451,15 @@ class BackupService {
     for (final s in p.workoutSets) {
       if (!workoutIds.contains(s.workoutId.value)) throw _damaged;
     }
+    unique(p.foods.map((r) => r.id.value));
+    unique(p.foods.map((r) => r.uuid.value));
+    unique(p.meals.map((r) => r.id.value));
+    unique(p.meals.map((r) => r.uuid.value));
+    final foodIds = {for (final r in p.foods) r.id.value};
+    for (final m in p.meals) {
+      final food = m.foodId.value;
+      if (food != null && !foodIds.contains(food)) throw _damaged;
+    }
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -421,6 +471,8 @@ class BackupService {
     final parsed = _parse(json);
     await _writeSafetyCopy();
     await _db.transaction(() async {
+      await _db.delete(_db.mealEntries).go();
+      await _db.delete(_db.foods).go();
       await _db.delete(_db.workoutSets).go();
       await _db.delete(_db.workouts).go();
       await _db.delete(_db.sleepLogs).go();
@@ -450,6 +502,8 @@ class BackupService {
         b.insertAll(_db.sleepLogs, parsed.sleep);
         b.insertAll(_db.workouts, parsed.workouts);
         b.insertAll(_db.workoutSets, parsed.workoutSets);
+        b.insertAll(_db.foods, parsed.foods);
+        b.insertAll(_db.mealEntries, parsed.meals);
       });
     });
     return parsed.summary;
@@ -659,6 +713,56 @@ class BackupService {
     );
   }
 
+  FoodsCompanion _foodRow(Map<String, Object?> r) => FoodsCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    name: _string(r, 'name', min: 1, max: 80),
+    serving: _string(r, 'serving', min: 1, max: 40),
+    kcal: _double(r, 'kcal'),
+    protein: Value(_double(r, 'protein')),
+    carbs: Value(_double(r, 'carbs')),
+    fat: Value(_double(r, 'fat')),
+    createdAt: Value(_requiredTime(r, 'createdAt')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    deletedAt: Value(_optionalTime(r, 'deletedAt')),
+  );
+
+  MealEntriesCompanion _mealRow(Map<String, Object?> r) {
+    final date = _string(r, 'date', min: 10, max: 10);
+    try {
+      CalendarDate.parse(date);
+    } on FormatException {
+      throw _damaged;
+    }
+    final meal = _int(r, 'meal');
+    if (meal < 0 || meal > 3) throw _damaged;
+    final portion = r['portion'];
+    if (portion != null && portion is! String) throw _damaged;
+    return MealEntriesCompanion.insert(
+      id: Value(_int(r, 'id')),
+      uuid: Value(_uuid(r)),
+      date: date,
+      meal: meal,
+      loggedAt: _requiredTime(r, 'loggedAt'),
+      name: _string(r, 'name', min: 1),
+      foodId: Value(_optionalInt(r, 'foodId')),
+      libraryId: Value(_optionalInt(r, 'libraryId')),
+      portion: Value(portion as String?),
+      quantity: Value(_double(r, 'quantity')),
+      kcal: _double(r, 'kcal'),
+      protein: Value(_double(r, 'protein')),
+      carbs: Value(_double(r, 'carbs')),
+      fat: Value(_double(r, 'fat')),
+      updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    );
+  }
+
+  static double _double(Map<String, Object?> r, String key) {
+    final v = r[key];
+    if (v is num && v.isFinite && v >= 0) return v.toDouble();
+    throw _damaged;
+  }
+
   static int _int(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is int) return v;
@@ -725,6 +829,8 @@ class _Parsed {
     required this.sleep,
     required this.workouts,
     required this.workoutSets,
+    required this.foods,
+    required this.meals,
   });
 
   final BackupSummary summary;
@@ -742,6 +848,8 @@ class _Parsed {
   final List<SleepLogsCompanion> sleep;
   final List<WorkoutsCompanion> workouts;
   final List<WorkoutSetsCompanion> workoutSets;
+  final List<FoodsCompanion> foods;
+  final List<MealEntriesCompanion> meals;
 }
 
 final backupServiceProvider = Provider<BackupService>(

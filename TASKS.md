@@ -115,7 +115,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Water (2026-11-26)
 - [x] Sleep (2026-11-27)
 - [x] Workouts (2026-11-27)
-- [ ] Nutrition
+- [x] Nutrition (2026-11-27)
 - [ ] Home management
 - [ ] Insights & weekly review
 - [x] Local notifications/reminders (events and routines; 2026-11-26)

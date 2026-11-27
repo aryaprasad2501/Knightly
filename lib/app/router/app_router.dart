@@ -12,6 +12,9 @@ import '../../features/routines/presentation/routine_run_screen.dart';
 import '../../features/settings/presentation/modules_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/tasks/presentation/tasks_screen.dart';
+import '../../features/nutrition/presentation/food_search_screen.dart';
+import '../../features/nutrition/presentation/my_foods_screen.dart';
+import '../../features/nutrition/presentation/nutrition_day_screen.dart';
 import '../../features/workouts/presentation/exercise_library_screen.dart';
 import '../../features/workouts/presentation/workout_history_screen.dart';
 import '../../features/workouts/presentation/workout_screen.dart';
@@ -62,6 +65,18 @@ GoRouter buildAppRouter({required bool includeDevTools}) {
         builder: (context, state) =>
             WorkoutScreen(workoutId: int.tryParse(state.pathParameters['id'] ?? '') ?? -1),
       ),
+      GoRoute(
+        path: AppRoutes.nutrition,
+        builder: (context, state) => NutritionDayScreen(date: state.uri.queryParameters['date']),
+      ),
+      GoRoute(
+        path: AppRoutes.nutritionAdd,
+        builder: (context, state) => FoodSearchScreen(
+          date: state.uri.queryParameters['date'],
+          meal: int.tryParse(state.uri.queryParameters['meal'] ?? ''),
+        ),
+      ),
+      GoRoute(path: AppRoutes.myFoods, builder: (context, state) => const MyFoodsScreen()),
       GoRoute(path: AppRoutes.notifications, builder: (context, state) => const NotificationsScreen()),
       GoRoute(
         path: AppRoutes.routineRun,

@@ -65,5 +65,11 @@ void _registerFontLicenses() {
       'Exercise data from free-exercise-db by yuhonas (github.com/yuhonas/free-exercise-db), '
       'released under The Unlicense: dedicated to the public domain.',
     );
+    // The bundled food list; U.S. government work, public domain.
+    yield const LicenseEntryWithLineBreaks(
+      ['USDA FoodData Central (food list)'],
+      'Food data from U.S. Department of Agriculture, Agricultural Research Service. '
+      'FoodData Central, SR Legacy (2018), fdc.nal.usda.gov. Public domain (CC0 1.0).',
+    );
   });
 }

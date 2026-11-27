@@ -5,7 +5,8 @@ enum BinKind {
   habit('Habit'),
   event('Event'),
   routine('Routine'),
-  workout('Workout');
+  workout('Workout'),
+  food('Food');
 
   const BinKind(this.label);
 

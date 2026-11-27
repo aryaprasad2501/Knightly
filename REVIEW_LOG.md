@@ -19,6 +19,7 @@ git diff review-start-2026-11-28..HEAD --stat
 
 | 5 | Dock styles + Home in the middle + rotation | 13798b6 | Settings > Dock style (try each + both random modes); dock order |
 | 6 | Theme fonts + app version | f5fcb4a | Titles/numbers in both themes; Settings > About shows the version |
+| 7 | Sounds, home widget, arrival reminders, **release reminder fix** | 792730c | Settings > Sounds; add the Knightly widget; Home care > Reminders > Set home here (check arrival on a real phone); reminders now fire in release |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

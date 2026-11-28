@@ -52,6 +52,10 @@ class HabitCheckIns extends Table {
   IntColumn get count => integer()();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 
+  /// A personal note for that day; null when none. A day with a note but no
+  /// check-in keeps its row with count 0. Added in schema v18.
+  TextColumn get note => text().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {habitId, date};
 }

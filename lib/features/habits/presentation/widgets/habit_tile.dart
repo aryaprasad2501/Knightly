@@ -11,9 +11,11 @@ import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/modules/app_module.dart';
 import '../../application/habits_providers.dart';
+import '../../../../core/time/clock.dart';
 import '../../domain/habit.dart';
 import '../../domain/habit_stats.dart';
 import '../habit_editor_sheet.dart';
+import 'habit_note_sheet.dart';
 import 'habit_week_strip.dart';
 
 /// One habit: check-in control, name, schedule, streak and the week strip.
@@ -86,11 +88,65 @@ class HabitTile extends ConsumerWidget {
                           if (stats.currentStreak > 0 &&
                               ref.watch(enabledModulesProvider).contains(AppModule.streaks))
                             _Streak(stats: stats),
+                          _NoteLink(habit: habit),
                         ],
                       ),
                       const SizedBox(height: KSpacing.sm),
                       HabitWeekStrip(stats: stats),
                     ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Today's note for the habit (tap to edit), or "Add note".
+class _NoteLink extends ConsumerWidget {
+  const _NoteLink({required this.habit});
+
+  final Habit habit;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = context.palette;
+    final today = ref.watch(todayProvider);
+    final note = (ref.watch(habitCheckInsProvider).value ?? const <HabitCheckIn>[])
+        .where((c) => c.habitId == habit.id && c.date == today)
+        .firstOrNull
+        ?.note;
+    return Semantics(
+      button: true,
+      label: note == null ? 'Add a note for ${habit.name}' : 'Note: $note. Tap to edit',
+      excludeSemantics: true,
+      onTap: () => showHabitNoteSheet(context, ref, habit),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => showHabitNoteSheet(context, ref, habit),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: KSpacing.xxs),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              KIcon(
+                KGlyphs.edit,
+                size: 13,
+                color: note == null ? p.textMuted : p.accentStrong,
+                strokeWidth: 2,
+              ),
+              const SizedBox(width: KSpacing.xxs),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 160),
+                child: Text(
+                  note ?? 'Add note',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: context.textStyles.bodySmall?.copyWith(
+                    color: note == null ? p.textMuted : p.textSecondary,
                   ),
                 ),
               ),

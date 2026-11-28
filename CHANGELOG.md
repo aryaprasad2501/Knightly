@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Habit check-in notes**: "Add note" under each habit (today), or long-press a day in the week
+  strip for an earlier day; the sheet lists recent notes. A note never counts as a check-in; unticking
+  a day keeps its note. Included in backups and sync.
 - **Full mission history**: Missions › Done shows the newest 200, then "Show older missions (N more)"
   loads 200 more each time; search now covers every completed mission.
 - **Reorder habits** (Track › Habits › Reorder): drag habits into your own order; new ones go last.

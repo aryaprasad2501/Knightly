@@ -54,11 +54,16 @@ class Habit {
 
 /// One day's check-ins for a habit.
 class HabitCheckIn {
-  const HabitCheckIn({required this.habitId, required this.date, required this.count});
+  const HabitCheckIn({required this.habitId, required this.date, required this.count, this.note});
+
+  static const maxNoteLength = 280;
 
   final int habitId;
   final CalendarDate date;
   final int count;
+
+  /// The person's note for the day, or null.
+  final String? note;
 }
 
 /// The user-editable fields of a habit, validated before saving.

@@ -129,7 +129,13 @@ class BackupService {
         ],
         'habitCheckIns': [
           for (final c in checkIns)
-            {'habitId': c.habitId, 'date': c.date, 'count': c.count, 'updatedAt': _time(c.updatedAt)},
+            {
+              'habitId': c.habitId,
+              'date': c.date,
+              'count': c.count,
+              'updatedAt': _time(c.updatedAt),
+              'note': c.note,
+            },
         ],
         'events': [
           for (final e in events)
@@ -686,6 +692,7 @@ class BackupService {
     date: _date(r, 'date'),
     count: _int(r, 'count'),
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
+    note: Value(_optionalString(r, 'note')),
   );
 
   EventsCompanion _eventRow(Map<String, Object?> r) => EventsCompanion.insert(

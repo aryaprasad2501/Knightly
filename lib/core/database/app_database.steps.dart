@@ -7735,6 +7735,863 @@ i1.GeneratedColumn<int> _column_80(String aliasedName) =>
       type: i1.DriftSqlType.int,
       $customConstraints: 'NULL',
     );
+
+final class Schema18 extends i0.VersionedSchema {
+  Schema18({required super.database}) : super(version: 18);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    syncOutbox,
+    syncTombstones,
+    syncMeta,
+    projects,
+    syncProjectsInsert,
+    syncProjectsUpdate,
+    syncProjectsDelete,
+    tasks,
+    syncTasksInsert,
+    syncTasksUpdate,
+    syncTasksDelete,
+    taskChecks,
+    syncTaskChecksInsert,
+    syncTaskChecksUpdate,
+    syncTaskChecksDelete,
+    habits,
+    syncHabitsInsert,
+    syncHabitsUpdate,
+    syncHabitsDelete,
+    events,
+    syncEventsInsert,
+    syncEventsUpdate,
+    syncEventsDelete,
+    routines,
+    syncRoutinesInsert,
+    syncRoutinesUpdate,
+    syncRoutinesDelete,
+    routineSteps,
+    syncRoutineStepsInsert,
+    syncRoutineStepsUpdate,
+    syncRoutineStepsDelete,
+    routineRuns,
+    syncRoutineRunsInsert,
+    syncRoutineRunsUpdate,
+    syncRoutineRunsDelete,
+    waterLogs,
+    syncWaterLogsInsert,
+    syncWaterLogsUpdate,
+    syncWaterLogsDelete,
+    sleepLogs,
+    syncSleepLogsInsert,
+    syncSleepLogsUpdate,
+    syncSleepLogsDelete,
+    workouts,
+    syncWorkoutsInsert,
+    syncWorkoutsUpdate,
+    syncWorkoutsDelete,
+    workoutSets,
+    syncWorkoutSetsInsert,
+    syncWorkoutSetsUpdate,
+    syncWorkoutSetsDelete,
+    workoutTemplates,
+    syncWorkoutTemplatesInsert,
+    syncWorkoutTemplatesUpdate,
+    syncWorkoutTemplatesDelete,
+    foods,
+    syncFoodsInsert,
+    syncFoodsUpdate,
+    syncFoodsDelete,
+    mealEntries,
+    syncMealEntriesInsert,
+    syncMealEntriesUpdate,
+    syncMealEntriesDelete,
+    careJobs,
+    syncCareJobsInsert,
+    syncCareJobsUpdate,
+    syncCareJobsDelete,
+    careLogs,
+    syncCareLogsInsert,
+    syncCareLogsUpdate,
+    syncCareLogsDelete,
+    habitCheckIns,
+    syncHabitCheckInsInsert,
+    syncHabitCheckInsUpdate,
+    syncHabitCheckInsDelete,
+    eventExceptions,
+    syncEventExceptionsInsert,
+    syncEventExceptionsUpdate,
+    syncEventExceptionsDelete,
+    appSettings,
+    syncAppSettingsInsert,
+    syncAppSettingsUpdate,
+    syncAppSettingsDelete,
+    careLogsJob,
+    mealEntriesDate,
+    workoutsStarted,
+    workoutSetsWorkout,
+    workoutSetsExercise,
+    waterLogsDate,
+    routineStepsRoutine,
+    routineRunsDate,
+    eventsStartDate,
+    habitCheckInsDate,
+    tasksDueDate,
+    tasksCompletedAt,
+    tasksDeletedAt,
+    taskChecksTask,
+  ];
+  late final Shape24 syncOutbox = Shape24(
+    source: i0.VersionedTable(
+      entityName: 'sync_outbox',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(entity, row_key)'],
+      columns: [_column_74, _column_75, _column_76],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape25 syncTombstones = Shape25(
+    source: i0.VersionedTable(
+      entityName: 'sync_tombstones',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(entity, doc_id)'],
+      columns: [_column_74, _column_77, _column_78],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape26 syncMeta = Shape26(
+    source: i0.VersionedTable(
+      entityName: 'sync_meta',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [_column_79, _column_1],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  late final Shape5 projects = Shape5(
+    source: i0.VersionedTable(
+      entityName: 'projects',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_5,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncProjectsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_projects_insert AFTER INSERT ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_projects_insert',
+  );
+  final i1.Trigger syncProjectsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_projects_update AFTER UPDATE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_projects_update',
+  );
+  final i1.Trigger syncProjectsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_projects_delete AFTER DELETE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'projects\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'projects\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_projects_delete',
+  );
+  late final Shape6 tasks = Shape6(
+    source: i0.VersionedTable(
+      entityName: 'tasks',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_6,
+        _column_7,
+        _column_8,
+        _column_9,
+        _column_10,
+        _column_11,
+        _column_12,
+        _column_13,
+        _column_14,
+        _column_5,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncTasksInsert = i1.Trigger(
+    'CREATE TRIGGER sync_tasks_insert AFTER INSERT ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_tasks_insert',
+  );
+  final i1.Trigger syncTasksUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_tasks_update AFTER UPDATE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_tasks_update',
+  );
+  final i1.Trigger syncTasksDelete = i1.Trigger(
+    'CREATE TRIGGER sync_tasks_delete AFTER DELETE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'tasks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'tasks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_tasks_delete',
+  );
+  late final Shape22 taskChecks = Shape22(
+    source: i0.VersionedTable(
+      entityName: 'task_checks',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_72,
+        _column_35,
+        _column_6,
+        _column_54,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncTaskChecksInsert = i1.Trigger(
+    'CREATE TRIGGER sync_task_checks_insert AFTER INSERT ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_task_checks_insert',
+  );
+  final i1.Trigger syncTaskChecksUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_task_checks_update AFTER UPDATE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_task_checks_update',
+  );
+  final i1.Trigger syncTaskChecksDelete = i1.Trigger(
+    'CREATE TRIGGER sync_task_checks_delete AFTER DELETE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'task_checks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'task_checks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_task_checks_delete',
+  );
+  late final Shape27 habits = Shape27(
+    source: i0.VersionedTable(
+      entityName: 'habits',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_15,
+        _column_16,
+        _column_17,
+        _column_18,
+        _column_5,
+        _column_2,
+        _column_19,
+        _column_80,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncHabitsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_habits_insert AFTER INSERT ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habits_insert',
+  );
+  final i1.Trigger syncHabitsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_habits_update AFTER UPDATE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habits_update',
+  );
+  final i1.Trigger syncHabitsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_habits_delete AFTER DELETE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habits\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habits\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_habits_delete',
+  );
+  late final Shape8 events = Shape8(
+    source: i0.VersionedTable(
+      entityName: 'events',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_6,
+        _column_7,
+        _column_15,
+        _column_18,
+        _column_25,
+        _column_26,
+        _column_12,
+        _column_27,
+        _column_5,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncEventsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_events_insert AFTER INSERT ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_events_insert',
+  );
+  final i1.Trigger syncEventsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_events_update AFTER UPDATE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_events_update',
+  );
+  final i1.Trigger syncEventsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_events_delete AFTER DELETE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'events\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'events\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_events_delete',
+  );
+  late final Shape10 routines = Shape10(
+    source: i0.VersionedTable(
+      entityName: 'routines',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_33,
+        _column_16,
+        _column_25,
+        _column_27,
+        _column_5,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncRoutinesInsert = i1.Trigger(
+    'CREATE TRIGGER sync_routines_insert AFTER INSERT ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routines_insert',
+  );
+  final i1.Trigger syncRoutinesUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_routines_update AFTER UPDATE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routines_update',
+  );
+  final i1.Trigger syncRoutinesDelete = i1.Trigger(
+    'CREATE TRIGGER sync_routines_delete AFTER DELETE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routines\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routines\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_routines_delete',
+  );
+  late final Shape11 routineSteps = Shape11(
+    source: i0.VersionedTable(
+      entityName: 'routine_steps',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_34,
+        _column_35,
+        _column_6,
+        _column_36,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncRoutineStepsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_routine_steps_insert AFTER INSERT ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_steps_insert',
+  );
+  final i1.Trigger syncRoutineStepsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_routine_steps_update AFTER UPDATE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_steps_update',
+  );
+  final i1.Trigger syncRoutineStepsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_routine_steps_delete AFTER DELETE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_steps\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_steps\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_routine_steps_delete',
+  );
+  late final Shape12 routineRuns = Shape12(
+    source: i0.VersionedTable(
+      entityName: 'routine_runs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_34,
+        _column_21,
+        _column_37,
+        _column_38,
+        _column_39,
+        _column_40,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncRoutineRunsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_routine_runs_insert AFTER INSERT ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_runs_insert',
+  );
+  final i1.Trigger syncRoutineRunsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_routine_runs_update AFTER UPDATE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_runs_update',
+  );
+  final i1.Trigger syncRoutineRunsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_routine_runs_delete AFTER DELETE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_runs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_runs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_routine_runs_delete',
+  );
+  late final Shape13 waterLogs = Shape13(
+    source: i0.VersionedTable(
+      entityName: 'water_logs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_21,
+        _column_41,
+        _column_42,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncWaterLogsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_water_logs_insert AFTER INSERT ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_water_logs_insert',
+  );
+  final i1.Trigger syncWaterLogsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_water_logs_update AFTER UPDATE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_water_logs_update',
+  );
+  final i1.Trigger syncWaterLogsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_water_logs_delete AFTER DELETE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'water_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'water_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_water_logs_delete',
+  );
+  late final Shape14 sleepLogs = Shape14(
+    source: i0.VersionedTable(
+      entityName: 'sleep_logs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_43,
+        _column_44,
+        _column_45,
+        _column_46,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncSleepLogsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_sleep_logs_insert AFTER INSERT ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_sleep_logs_insert',
+  );
+  final i1.Trigger syncSleepLogsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_sleep_logs_update AFTER UPDATE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_sleep_logs_update',
+  );
+  final i1.Trigger syncSleepLogsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_sleep_logs_delete AFTER DELETE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'sleep_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'sleep_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_sleep_logs_delete',
+  );
+  late final Shape15 workouts = Shape15(
+    source: i0.VersionedTable(
+      entityName: 'workouts',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_37,
+        _column_38,
+        _column_7,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncWorkoutsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_workouts_insert AFTER INSERT ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workouts_insert',
+  );
+  final i1.Trigger syncWorkoutsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_workouts_update AFTER UPDATE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workouts_update',
+  );
+  final i1.Trigger syncWorkoutsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_workouts_delete AFTER DELETE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workouts\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workouts\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_workouts_delete',
+  );
+  late final Shape16 workoutSets = Shape16(
+    source: i0.VersionedTable(
+      entityName: 'workout_sets',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_47,
+        _column_48,
+        _column_49,
+        _column_50,
+        _column_51,
+        _column_52,
+        _column_53,
+        _column_36,
+        _column_54,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncWorkoutSetsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_workout_sets_insert AFTER INSERT ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_sets_insert',
+  );
+  final i1.Trigger syncWorkoutSetsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_workout_sets_update AFTER UPDATE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_sets_update',
+  );
+  final i1.Trigger syncWorkoutSetsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_workout_sets_delete AFTER DELETE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_sets\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_sets\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_workout_sets_delete',
+  );
+  late final Shape23 workoutTemplates = Shape23(
+    source: i0.VersionedTable(
+      entityName: 'workout_templates',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_73,
+        _column_5,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncWorkoutTemplatesInsert = i1.Trigger(
+    'CREATE TRIGGER sync_workout_templates_insert AFTER INSERT ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_templates_insert',
+  );
+  final i1.Trigger syncWorkoutTemplatesUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_workout_templates_update AFTER UPDATE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_templates_update',
+  );
+  final i1.Trigger syncWorkoutTemplatesDelete = i1.Trigger(
+    'CREATE TRIGGER sync_workout_templates_delete AFTER DELETE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_templates\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_templates\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_workout_templates_delete',
+  );
+  late final Shape17 foods = Shape17(
+    source: i0.VersionedTable(
+      entityName: 'foods',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_55,
+        _column_56,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_5,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncFoodsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_foods_insert AFTER INSERT ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_foods_insert',
+  );
+  final i1.Trigger syncFoodsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_foods_update AFTER UPDATE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_foods_update',
+  );
+  final i1.Trigger syncFoodsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_foods_delete AFTER DELETE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'foods\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'foods\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_foods_delete',
+  );
+  late final Shape18 mealEntries = Shape18(
+    source: i0.VersionedTable(
+      entityName: 'meal_entries',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_21,
+        _column_60,
+        _column_41,
+        _column_4,
+        _column_61,
+        _column_62,
+        _column_63,
+        _column_64,
+        _column_56,
+        _column_57,
+        _column_58,
+        _column_59,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncMealEntriesInsert = i1.Trigger(
+    'CREATE TRIGGER sync_meal_entries_insert AFTER INSERT ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_meal_entries_insert',
+  );
+  final i1.Trigger syncMealEntriesUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_meal_entries_update AFTER UPDATE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_meal_entries_update',
+  );
+  final i1.Trigger syncMealEntriesDelete = i1.Trigger(
+    'CREATE TRIGGER sync_meal_entries_delete AFTER DELETE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'meal_entries\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'meal_entries\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_meal_entries_delete',
+  );
+  late final Shape21 careJobs = Shape21(
+    source: i0.VersionedTable(
+      entityName: 'care_jobs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_4,
+        _column_65,
+        _column_71,
+        _column_66,
+        _column_16,
+        _column_18,
+        _column_67,
+        _column_5,
+        _column_2,
+        _column_24,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncCareJobsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_care_jobs_insert AFTER INSERT ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_jobs_insert',
+  );
+  final i1.Trigger syncCareJobsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_care_jobs_update AFTER UPDATE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_jobs_update',
+  );
+  final i1.Trigger syncCareJobsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_care_jobs_delete AFTER DELETE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_jobs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_jobs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_care_jobs_delete',
+  );
+  late final Shape20 careLogs = Shape20(
+    source: i0.VersionedTable(
+      entityName: 'care_logs',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: [],
+      columns: [
+        _column_3,
+        _column_23,
+        _column_68,
+        _column_21,
+        _column_69,
+        _column_29,
+        _column_70,
+        _column_41,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncCareLogsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_care_logs_insert AFTER INSERT ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_logs_insert',
+  );
+  final i1.Trigger syncCareLogsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_care_logs_update AFTER UPDATE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_logs_update',
+  );
+  final i1.Trigger syncCareLogsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_care_logs_delete AFTER DELETE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_care_logs_delete',
+  );
+  late final Shape28 habitCheckIns = Shape28(
+    source: i0.VersionedTable(
+      entityName: 'habit_check_ins',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(habit_id, date)'],
+      columns: [_column_20, _column_21, _column_22, _column_2, _column_70],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncHabitCheckInsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_habit_check_ins_insert AFTER INSERT ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habit_check_ins_insert',
+  );
+  final i1.Trigger syncHabitCheckInsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_habit_check_ins_update AFTER UPDATE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habit_check_ins_update',
+  );
+  final i1.Trigger syncHabitCheckInsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_habit_check_ins_delete AFTER DELETE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habit_check_ins\' AND row_key = OLD.habit_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habit_check_ins\', (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_habit_check_ins_delete',
+  );
+  late final Shape9 eventExceptions = Shape9(
+    source: i0.VersionedTable(
+      entityName: 'event_exceptions',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY(event_id, date)'],
+      columns: [
+        _column_28,
+        _column_21,
+        _column_29,
+        _column_30,
+        _column_31,
+        _column_32,
+        _column_2,
+      ],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncEventExceptionsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_event_exceptions_insert AFTER INSERT ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_event_exceptions_insert',
+  );
+  final i1.Trigger syncEventExceptionsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_event_exceptions_update AFTER UPDATE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_event_exceptions_update',
+  );
+  final i1.Trigger syncEventExceptionsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_event_exceptions_delete AFTER DELETE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'event_exceptions\' AND row_key = OLD.event_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'event_exceptions\', (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_event_exceptions_delete',
+  );
+  late final Shape0 appSettings = Shape0(
+    source: i0.VersionedTable(
+      entityName: 'app_settings',
+      withoutRowId: false,
+      isStrict: false,
+      tableConstraints: ['PRIMARY KEY("key")'],
+      columns: [_column_0, _column_1, _column_2],
+      attachedDatabase: database,
+    ),
+    alias: null,
+  );
+  final i1.Trigger syncAppSettingsInsert = i1.Trigger(
+    'CREATE TRIGGER sync_app_settings_insert AFTER INSERT ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_app_settings_insert',
+  );
+  final i1.Trigger syncAppSettingsUpdate = i1.Trigger(
+    'CREATE TRIGGER sync_app_settings_update AFTER UPDATE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_app_settings_update',
+  );
+  final i1.Trigger syncAppSettingsDelete = i1.Trigger(
+    'CREATE TRIGGER sync_app_settings_delete AFTER DELETE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD."key" IS NOT NULL AND OLD."key" NOT LIKE \'backup.%\' AND OLD."key" NOT LIKE \'places.%\' AND OLD."key" NOT LIKE \'sync.%\' AND OLD."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN DELETE FROM sync_outbox WHERE entity = \'app_settings\' AND row_key = OLD."key";INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'app_settings\', OLD."key", strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_app_settings_delete',
+  );
+  final i1.Index careLogsJob = i1.Index(
+    'care_logs_job',
+    'CREATE INDEX care_logs_job ON care_logs (job_id)',
+  );
+  final i1.Index mealEntriesDate = i1.Index(
+    'meal_entries_date',
+    'CREATE INDEX meal_entries_date ON meal_entries (date)',
+  );
+  final i1.Index workoutsStarted = i1.Index(
+    'workouts_started',
+    'CREATE INDEX workouts_started ON workouts (started_at)',
+  );
+  final i1.Index workoutSetsWorkout = i1.Index(
+    'workout_sets_workout',
+    'CREATE INDEX workout_sets_workout ON workout_sets (workout_id)',
+  );
+  final i1.Index workoutSetsExercise = i1.Index(
+    'workout_sets_exercise',
+    'CREATE INDEX workout_sets_exercise ON workout_sets (exercise_id)',
+  );
+  final i1.Index waterLogsDate = i1.Index(
+    'water_logs_date',
+    'CREATE INDEX water_logs_date ON water_logs (date)',
+  );
+  final i1.Index routineStepsRoutine = i1.Index(
+    'routine_steps_routine',
+    'CREATE INDEX routine_steps_routine ON routine_steps (routine_id)',
+  );
+  final i1.Index routineRunsDate = i1.Index(
+    'routine_runs_date',
+    'CREATE INDEX routine_runs_date ON routine_runs (date)',
+  );
+  final i1.Index eventsStartDate = i1.Index(
+    'events_start_date',
+    'CREATE INDEX events_start_date ON events (start_date)',
+  );
+  final i1.Index habitCheckInsDate = i1.Index(
+    'habit_check_ins_date',
+    'CREATE INDEX habit_check_ins_date ON habit_check_ins (date)',
+  );
+  final i1.Index tasksDueDate = i1.Index(
+    'tasks_due_date',
+    'CREATE INDEX tasks_due_date ON tasks (due_date)',
+  );
+  final i1.Index tasksCompletedAt = i1.Index(
+    'tasks_completed_at',
+    'CREATE INDEX tasks_completed_at ON tasks (completed_at)',
+  );
+  final i1.Index tasksDeletedAt = i1.Index(
+    'tasks_deleted_at',
+    'CREATE INDEX tasks_deleted_at ON tasks (deleted_at)',
+  );
+  final i1.Index taskChecksTask = i1.Index(
+    'task_checks_task',
+    'CREATE INDEX task_checks_task ON task_checks (task_id)',
+  );
+}
+
+class Shape28 extends i0.VersionedTable {
+  Shape28({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get habitId =>
+      columnsByName['habit_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get date =>
+      columnsByName['date']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get count =>
+      columnsByName['count']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get updatedAt =>
+      columnsByName['updated_at']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get note =>
+      columnsByName['note']! as i1.GeneratedColumn<String>;
+}
+
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
@@ -7752,6 +8609,7 @@ i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
   required Future<void> Function(i1.Migrator m, Schema16 schema) from15To16,
   required Future<void> Function(i1.Migrator m, Schema17 schema) from16To17,
+  required Future<void> Function(i1.Migrator m, Schema18 schema) from17To18,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -7835,6 +8693,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from16To17(migrator, schema);
         return 17;
+      case 17:
+        final schema = Schema18(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from17To18(migrator, schema);
+        return 18;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -7858,6 +8721,7 @@ i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema15 schema) from14To15,
   required Future<void> Function(i1.Migrator m, Schema16 schema) from15To16,
   required Future<void> Function(i1.Migrator m, Schema17 schema) from16To17,
+  required Future<void> Function(i1.Migrator m, Schema18 schema) from17To18,
 }) => i0.VersionedSchema.stepByStepHelper(
   step: migrationSteps(
     from1To2: from1To2,
@@ -7876,5 +8740,6 @@ i1.OnUpgrade stepByStep({
     from14To15: from14To15,
     from15To16: from15To16,
     from16To17: from16To17,
+    from17To18: from17To18,
   ),
 );

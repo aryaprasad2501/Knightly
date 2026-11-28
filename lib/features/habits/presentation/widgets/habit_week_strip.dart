@@ -7,6 +7,7 @@ import '../../../../core/design/tokens/k_spacing.dart';
 import '../../../../core/time/clock.dart';
 import '../../../../core/time/habit_schedule.dart';
 import '../../application/habits_providers.dart';
+import 'habit_note_sheet.dart';
 import '../../domain/habit_stats.dart';
 
 /// Monday → Sunday of the current week as small marks. Missed days are drawn
@@ -64,10 +65,18 @@ class HabitWeekStrip extends ConsumerWidget {
               void toggle() => ref.read(habitActionsProvider).setCountOn(habit, day, done ? 0 : habit.target);
               return Semantics(
                 button: true,
-                label: '${_names[i]}: ${done ? 'done' : 'not done'}. Tap to ${done ? 'clear' : 'mark done'}',
+                label:
+                    '${_names[i]}: ${done ? 'done' : 'not done'}. Tap to ${done ? 'clear' : 'mark done'}, '
+                    'long press for a note',
                 excludeSemantics: true,
                 onTap: toggle,
-                child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: toggle, child: dot),
+                onLongPress: () => showHabitNoteSheet(context, ref, habit, date: day),
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: toggle,
+                  onLongPress: () => showHabitNoteSheet(context, ref, habit, date: day),
+                  child: dot,
+                ),
               );
             }(),
         ],

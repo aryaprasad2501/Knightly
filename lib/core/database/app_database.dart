@@ -41,7 +41,7 @@ class AppSettings extends Table {
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
 /// routine_runs · v7 water_logs · v8 sleep_logs · v9 workouts, workout_sets · v10 foods,
-/// meal_entries · v11 care_jobs, care_logs · v12 care_jobs.category · v13 task_checks · v14 workout_templates · v15 sync_outbox, sync_tombstones, sync_meta + change triggers · v16 triggers store UTC times with 'Z' and use upserts · v17 habits.position.
+/// meal_entries · v11 care_jobs, care_logs · v12 care_jobs.category · v13 task_checks · v14 workout_templates · v15 sync_outbox, sync_tombstones, sync_meta + change triggers · v16 triggers store UTC times with 'Z' and use upserts · v17 habits.position · v18 habit_check_ins.note.
 @DriftDatabase(
   include: {'sync_tracking.drift'},
   tables: [
@@ -71,7 +71,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 17;
+  int get schemaVersion => 18;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -384,6 +384,10 @@ class AppDatabase extends _$AppDatabase {
     // Habit order: one new nullable column.
     from16To17: (m, schema) async {
       await m.addColumn(schema.habits, schema.habits.position);
+    },
+    // Check-in notes: one new nullable column.
+    from17To18: (m, schema) async {
+      await m.addColumn(schema.habitCheckIns, schema.habitCheckIns.note);
     },
   );
 

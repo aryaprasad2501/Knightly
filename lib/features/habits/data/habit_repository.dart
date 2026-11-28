@@ -65,7 +65,7 @@ class HabitRepository {
           (rows) => [
             for (final r in rows)
               if (_parseDate(r.date) case final date?)
-                HabitCheckIn(habitId: r.habitId, date: date, count: r.count),
+                HabitCheckIn(habitId: r.habitId, date: date, count: r.count, note: r.note),
           ],
         );
   }
@@ -146,9 +146,18 @@ class HabitRepository {
       final habit = await (_db.select(_db.habits)..where((h) => h.id.equals(habitId))).getSingleOrNull();
       if (habit == null) return;
       if (count <= 0) {
-        await (_db.delete(
+        final row = await (_db.select(
           _db.habitCheckIns,
-        )..where((c) => c.habitId.equals(habitId) & c.date.equals(key))).go();
+        )..where((c) => c.habitId.equals(habitId) & c.date.equals(key))).getSingleOrNull();
+        if (row?.note != null) {
+          // Keep the day's note: only the check-in goes.
+          await (_db.update(_db.habitCheckIns)..where((c) => c.habitId.equals(habitId) & c.date.equals(key)))
+              .write(HabitCheckInsCompanion(count: const Value(0), updatedAt: Value(_clock())));
+        } else {
+          await (_db.delete(
+            _db.habitCheckIns,
+          )..where((c) => c.habitId.equals(habitId) & c.date.equals(key))).go();
+        }
       } else {
         await _db
             .into(_db.habitCheckIns)
@@ -165,6 +174,48 @@ class HabitRepository {
     });
   }
 
+  /// Saves the note for [habitId] on [date] (blank removes it). A day with
+  /// no check-in keeps a row with count 0 just for the note.
+  Future<void> setNote(int habitId, CalendarDate date, String note) {
+    if (date.isAfter(CalendarDate.of(_clock()))) {
+      throw const HabitValidationException("Notes can't be added for days that haven't happened yet.");
+    }
+    final text = note.trim();
+    if (text.length > HabitCheckIn.maxNoteLength) {
+      throw const HabitValidationException('Keep the note under ${HabitCheckIn.maxNoteLength} characters.');
+    }
+    final key = date.toStorage();
+    return _db.transaction(() async {
+      final where = (_db.update(_db.habitCheckIns)
+        ..where((c) => c.habitId.equals(habitId) & c.date.equals(key)));
+      final row = await (_db.select(
+        _db.habitCheckIns,
+      )..where((c) => c.habitId.equals(habitId) & c.date.equals(key))).getSingleOrNull();
+      if (row == null) {
+        if (text.isEmpty) return;
+        await _db
+            .into(_db.habitCheckIns)
+            .insert(
+              HabitCheckInsCompanion.insert(
+                habitId: habitId,
+                date: key,
+                count: 0,
+                note: Value(text),
+                updatedAt: Value(_clock()),
+              ),
+            );
+      } else if (text.isEmpty && row.count == 0) {
+        await (_db.delete(
+          _db.habitCheckIns,
+        )..where((c) => c.habitId.equals(habitId) & c.date.equals(key))).go();
+      } else {
+        await where.write(
+          HabitCheckInsCompanion(note: Value(text.isEmpty ? null : text), updatedAt: Value(_clock())),
+        );
+      }
+    });
+  }
+
   /// Sets the start date to the earlier of the creation day and the earliest
   /// check-in (dates are `yyyy-MM-dd`, so text order is date order).
   Future<void> _syncStartDate(HabitRow habit) async {
@@ -172,7 +223,10 @@ class HabitRepository {
     final row =
         await (_db.selectOnly(_db.habitCheckIns)
               ..addColumns([earliest])
-              ..where(_db.habitCheckIns.habitId.equals(habit.id)))
+              // A note alone (count 0) is not a check-in.
+              ..where(
+                _db.habitCheckIns.habitId.equals(habit.id) & _db.habitCheckIns.count.isBiggerThanValue(0),
+              ))
             .getSingle();
     final created = CalendarDate.of(habit.createdAt).toStorage();
     final first = row.read(earliest);

@@ -181,4 +181,44 @@ void main() {
     await repo.create(const HabitDraft(name: 'D', schedule: EveryDay()));
     expect(await names(), ['C', 'A', 'B', 'D']);
   });
+
+  group('check-in notes', () {
+    Future<HabitCheckIn?> dayOf(int habit, CalendarDate d) async =>
+        (await repo.watchCheckIns().first).where((c) => c.habitId == habit && c.date == d).firstOrNull;
+
+    test('a note alone does not count as done and does not move the start date', () async {
+      final id = await repo.create(const HabitDraft(name: 'Read', schedule: EveryDay()));
+      final yesterday = today.addDays(-1);
+      await repo.setNote(id, yesterday, '  Too tired ');
+      final c = (await dayOf(id, yesterday))!;
+      expect((c.count, c.note), (0, 'Too tired'));
+      final habit = (await repo.watchHabits().first).single;
+      expect(habit.startDate, today, reason: 'a note is not a check-in');
+    });
+
+    test('unticking keeps the note; clearing the note then removes the empty day', () async {
+      final id = await repo.create(const HabitDraft(name: 'Read', schedule: EveryDay()));
+      await repo.setCount(id, today, 1);
+      await repo.setNote(id, today, 'Chapter 4');
+      await repo.setCount(id, today, 0);
+      expect((await dayOf(id, today))?.note, 'Chapter 4');
+      await repo.setNote(id, today, '   ');
+      expect(await dayOf(id, today), isNull);
+    });
+
+    test('a note on a checked day keeps the check-in when cleared', () async {
+      final id = await repo.create(const HabitDraft(name: 'Read', schedule: EveryDay()));
+      await repo.setCount(id, today, 1);
+      await repo.setNote(id, today, 'Good');
+      await repo.setNote(id, today, '');
+      final c = (await dayOf(id, today))!;
+      expect((c.count, c.note), (1, null));
+    });
+
+    test('future days and over-long notes are refused', () async {
+      final id = await repo.create(const HabitDraft(name: 'Read', schedule: EveryDay()));
+      expect(() => repo.setNote(id, today.addDays(1), 'x'), throwsA(isA<HabitValidationException>()));
+      expect(() => repo.setNote(id, today, 'x' * 281), throwsA(isA<HabitValidationException>()));
+    });
+  });
 }

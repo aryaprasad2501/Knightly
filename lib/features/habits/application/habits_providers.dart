@@ -57,6 +57,7 @@ class HabitActions {
 
   Future<int> create(HabitDraft draft) => _repo.create(draft);
   Future<void> reorder(List<int> habitIds) => _repo.reorder(habitIds);
+  Future<void> setNote(int habitId, CalendarDate date, String note) => _repo.setNote(habitId, date, note);
   Future<void> update(int id, HabitDraft draft) => _repo.update(id, draft);
   Future<void> archive(int id) => _repo.archive(id);
   Future<void> restore(int id) => _repo.restore(id);

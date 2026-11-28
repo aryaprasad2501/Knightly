@@ -80,6 +80,7 @@ void main() {
     final water = await habits.create(HabitDraft(name: 'Water', schedule: TimesPerWeek(3), target: 3));
     await habits.setCount(read, today, 1);
     await habits.setCount(read, today.addDays(-1), 1);
+    await habits.setNote(read, today.addDays(-1), 'Two chapters');
     await habits.setCount(water, today, 2);
     await habits.archive(water);
     await db
@@ -121,7 +122,7 @@ void main() {
       for (final c in await (db.select(
         db.habitCheckIns,
       )..orderBy([(c) => OrderingTerm.asc(c.habitId), (c) => OrderingTerm.asc(c.date)])).get())
-        (c.habitId, c.date, c.count),
+        (c.habitId, c.date, c.count, c.note),
     ],
     [for (final t in await db.select(db.workoutTemplates).get()) (t.id, t.uuid, t.name, t.plan)],
     [

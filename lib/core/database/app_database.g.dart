@@ -9288,8 +9288,17 @@ class $HabitCheckInsTable extends HabitCheckIns with TableInfo<$HabitCheckInsTab
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
   @override
-  List<GeneratedColumn> get $columns => [habitId, date, count, updatedAt];
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [habitId, date, count, updatedAt, note];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -9317,6 +9326,9 @@ class $HabitCheckInsTable extends HabitCheckIns with TableInfo<$HabitCheckInsTab
     if (data.containsKey('updated_at')) {
       context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
     }
+    if (data.containsKey('note')) {
+      context.handle(_noteMeta, note.isAcceptableOrUnknown(data['note']!, _noteMeta));
+    }
     return context;
   }
 
@@ -9333,6 +9345,7 @@ class $HabitCheckInsTable extends HabitCheckIns with TableInfo<$HabitCheckInsTab
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      note: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}note']),
     );
   }
 
@@ -9351,11 +9364,16 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
   final String date;
   final int count;
   final DateTime updatedAt;
+
+  /// A personal note for that day; null when none. A day with a note but no
+  /// check-in keeps its row with count 0. Added in schema v18.
+  final String? note;
   const HabitCheckInRow({
     required this.habitId,
     required this.date,
     required this.count,
     required this.updatedAt,
+    this.note,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -9364,6 +9382,9 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
     map['date'] = Variable<String>(date);
     map['count'] = Variable<int>(count);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
     return map;
   }
 
@@ -9373,6 +9394,7 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
       date: Value(date),
       count: Value(count),
       updatedAt: Value(updatedAt),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
     );
   }
 
@@ -9383,6 +9405,7 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
       date: serializer.fromJson<String>(json['date']),
       count: serializer.fromJson<int>(json['count']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      note: serializer.fromJson<String?>(json['note']),
     );
   }
   @override
@@ -9393,14 +9416,22 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
       'date': serializer.toJson<String>(date),
       'count': serializer.toJson<int>(count),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'note': serializer.toJson<String?>(note),
     };
   }
 
-  HabitCheckInRow copyWith({int? habitId, String? date, int? count, DateTime? updatedAt}) => HabitCheckInRow(
+  HabitCheckInRow copyWith({
+    int? habitId,
+    String? date,
+    int? count,
+    DateTime? updatedAt,
+    Value<String?> note = const Value.absent(),
+  }) => HabitCheckInRow(
     habitId: habitId ?? this.habitId,
     date: date ?? this.date,
     count: count ?? this.count,
     updatedAt: updatedAt ?? this.updatedAt,
+    note: note.present ? note.value : this.note,
   );
   HabitCheckInRow copyWithCompanion(HabitCheckInsCompanion data) {
     return HabitCheckInRow(
@@ -9408,6 +9439,7 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
       date: data.date.present ? data.date.value : this.date,
       count: data.count.present ? data.count.value : this.count,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      note: data.note.present ? data.note.value : this.note,
     );
   }
 
@@ -9417,13 +9449,14 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
           ..write('habitId: $habitId, ')
           ..write('date: $date, ')
           ..write('count: $count, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('note: $note')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(habitId, date, count, updatedAt);
+  int get hashCode => Object.hash(habitId, date, count, updatedAt, note);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -9431,7 +9464,8 @@ class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
           other.habitId == this.habitId &&
           other.date == this.date &&
           other.count == this.count &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.note == this.note);
 }
 
 class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
@@ -9439,12 +9473,14 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
   final Value<String> date;
   final Value<int> count;
   final Value<DateTime> updatedAt;
+  final Value<String?> note;
   final Value<int> rowid;
   const HabitCheckInsCompanion({
     this.habitId = const Value.absent(),
     this.date = const Value.absent(),
     this.count = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.note = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   HabitCheckInsCompanion.insert({
@@ -9452,6 +9488,7 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
     required String date,
     required int count,
     this.updatedAt = const Value.absent(),
+    this.note = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : habitId = Value(habitId),
        date = Value(date),
@@ -9461,6 +9498,7 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
     Expression<String>? date,
     Expression<int>? count,
     Expression<DateTime>? updatedAt,
+    Expression<String>? note,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -9468,6 +9506,7 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
       if (date != null) 'date': date,
       if (count != null) 'count': count,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (note != null) 'note': note,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -9477,6 +9516,7 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
     Value<String>? date,
     Value<int>? count,
     Value<DateTime>? updatedAt,
+    Value<String?>? note,
     Value<int>? rowid,
   }) {
     return HabitCheckInsCompanion(
@@ -9484,6 +9524,7 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
       date: date ?? this.date,
       count: count ?? this.count,
       updatedAt: updatedAt ?? this.updatedAt,
+      note: note ?? this.note,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -9503,6 +9544,9 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -9516,6 +9560,7 @@ class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
           ..write('date: $date, ')
           ..write('count: $count, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('note: $note, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -16496,6 +16541,7 @@ typedef $$HabitCheckInsTableCreateCompanionBuilder =
       required String date,
       required int count,
       Value<DateTime> updatedAt,
+      Value<String?> note,
       Value<int> rowid,
     });
 typedef $$HabitCheckInsTableUpdateCompanionBuilder =
@@ -16504,6 +16550,7 @@ typedef $$HabitCheckInsTableUpdateCompanionBuilder =
       Value<String> date,
       Value<int> count,
       Value<DateTime> updatedAt,
+      Value<String?> note,
       Value<int> rowid,
     });
 
@@ -16541,6 +16588,9 @@ class $$HabitCheckInsTableFilterComposer extends Composer<_$AppDatabase, $HabitC
   ColumnFilters<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => ColumnFilters(column));
+
   $$HabitsTableFilterComposer get habitId {
     final $$HabitsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -16577,6 +16627,9 @@ class $$HabitCheckInsTableOrderingComposer extends Composer<_$AppDatabase, $Habi
   ColumnOrderings<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => ColumnOrderings(column));
+
   $$HabitsTableOrderingComposer get habitId {
     final $$HabitsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -16610,6 +16663,8 @@ class $$HabitCheckInsTableAnnotationComposer extends Composer<_$AppDatabase, $Ha
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get note => $composableBuilder(column: $table.note, builder: (column) => column);
 
   $$HabitsTableAnnotationComposer get habitId {
     final $$HabitsTableAnnotationComposer composer = $composerBuilder(
@@ -16659,12 +16714,14 @@ class $$HabitCheckInsTableTableManager
                 Value<String> date = const Value.absent(),
                 Value<int> count = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitCheckInsCompanion(
                 habitId: habitId,
                 date: date,
                 count: count,
                 updatedAt: updatedAt,
+                note: note,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -16673,12 +16730,14 @@ class $$HabitCheckInsTableTableManager
                 required String date,
                 required int count,
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<String?> note = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => HabitCheckInsCompanion.insert(
                 habitId: habitId,
                 date: date,
                 count: count,
                 updatedAt: updatedAt,
+                note: note,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) =>

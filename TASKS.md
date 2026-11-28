@@ -78,7 +78,7 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 - [x] Check in for a past day this week (week strip, 2026-11-28)
 - [x] Reorder habits (2026-11-28)
 - [ ] Longer history view / calendar heatmap (natural fit for Insights)
-- [ ] Notes per check-in
+- [x] Notes per check-in (2026-11-28)
 
 ## Visual transformation — Dark Knight & Shadow Cat ✅
 

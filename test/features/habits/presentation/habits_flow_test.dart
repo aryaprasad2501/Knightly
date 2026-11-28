@@ -255,4 +255,21 @@ void main() {
     ];
     expect(names, ['Second habit', 'First habit']);
   });
+
+  testWidgets('add a note for today from the habit row', (tester) async {
+    usePhoneViewport(tester);
+    await pumpSeededKnightlyApp(
+      tester,
+      now: now,
+      seed: (db) => repoAt(db).create(const HabitDraft(name: 'Journal', schedule: EveryDay())),
+    );
+    await goToTab(tester, 'Track');
+    await tapVisible(tester, find.text('Add note').hitTestable().first);
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'Wrote two pages');
+    await tester.tap(find.text('Save note'));
+    await settleWithDatabase(tester);
+    expect(find.text('Wrote two pages').hitTestable(), findsOneWidget);
+    expect(find.text('Add note').hitTestable(), findsNothing);
+  });
 }

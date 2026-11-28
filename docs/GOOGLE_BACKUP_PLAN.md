@@ -1,6 +1,6 @@
 # Plan: keep data safe through uninstalls, and "Report a bug"
 
-Status: **proposal, waiting for the owner's choice.** Nothing here is built yet.
+Status: **superseded by docs/CLOUD_SYNC_PLAN.md** (owner chose Firebase sync). Kept for the reasoning.
 
 Today Knightly is 100% offline: Android cloud backup is switched off
 (`allowBackup="false"`), and the only copy outside the phone is a file you export

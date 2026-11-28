@@ -72,8 +72,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
   /// The checklist as edited here; saved with the mission.
   late final List<_Line> _lines = [
     if (widget.task != null)
-      for (final c
-          in ref.read(taskBoardProvider).value?.checksOf(widget.task!.id) ?? const <TaskCheck>[])
+      for (final c in ref.read(taskBoardProvider).value?.checksOf(widget.task!.id) ?? const <TaskCheck>[])
         _Line(id: c.id, title: c.title, done: c.done),
   ];
   final _newLine = TextEditingController();

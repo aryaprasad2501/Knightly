@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Workout templates**: "Save as template" on a finished workout keeps its exercises and sets; "Start
+  workout" then offers an empty workout or any template (sets come pre-filled, unticked). Templates
+  can be deleted there; included in backups.
 - **Weekly review** on Insights: a few plain sentences about the last 7 days (score change, strongest
   and weakest area, missions, longest streak, best day) and, once there is enough data, how sleep
   relates to finishing your habits.

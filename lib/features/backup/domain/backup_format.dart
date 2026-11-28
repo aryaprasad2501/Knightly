@@ -12,7 +12,8 @@
 ///            "events": [...], "eventExceptions": [...], "routines": [...], "routineSteps": [...],
 ///            "routineRuns": [...], "waterLogs": [...], "sleepLogs": [...],
 ///            "workouts": [...], "workoutSets": [...], "foods": [...], "mealEntries": [...],
-///            "careJobs": [...], "careLogs": [...], "taskChecks": [...]}
+///            "careJobs": [...], "careLogs": [...], "taskChecks": [...],
+///            "workoutTemplates": [...]}
 /// }
 /// ```
 ///
@@ -47,6 +48,7 @@ const backupTables = [
   'careJobs',
   'careLogs',
   'taskChecks',
+  'workoutTemplates',
 ];
 
 /// Tables added after the first backup format; files made before them (an
@@ -66,6 +68,7 @@ const backupTablesSince = {
   'careJobs': 11,
   'careLogs': 11,
   'taskChecks': 13,
+  'workoutTemplates': 14,
 };
 
 /// Settings that describe this device rather than the user's data; they are

@@ -82,6 +82,14 @@ void main() {
     await habits.setCount(read, today.addDays(-1), 1);
     await habits.setCount(water, today, 2);
     await habits.archive(water);
+    await db
+        .into(db.workoutTemplates)
+        .insert(
+          WorkoutTemplatesCompanion.insert(
+            name: 'Push day',
+            plan: '[{"exerciseId":"a","name":"A","sets":[{"reps":5}]}]',
+          ),
+        );
     return db;
   }
 
@@ -115,6 +123,7 @@ void main() {
       )..orderBy([(c) => OrderingTerm.asc(c.habitId), (c) => OrderingTerm.asc(c.date)])).get())
         (c.habitId, c.date, c.count),
     ],
+    [for (final t in await db.select(db.workoutTemplates).get()) (t.id, t.uuid, t.name, t.plan)],
     [
       for (final c in await db.select(db.taskChecks).get())
         (c.id, c.uuid, c.taskId, c.position, c.title, c.done),

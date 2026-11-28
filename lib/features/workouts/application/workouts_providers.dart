@@ -11,6 +11,7 @@ import '../data/workout_repository.dart';
 import '../domain/body_stats.dart';
 import '../domain/exercise.dart';
 import '../domain/workout.dart';
+import '../domain/workout_template.dart';
 
 /// Where the bundled library lives (see tool/exercises/build_library.py).
 const exerciseLibraryAsset = 'assets/data/exercises.json';
@@ -118,7 +119,16 @@ class WorkoutActions {
   Future<void> removeSet(int setId) => _repo.removeSet(setId);
   Future<void> removeExercise(int workoutId, int exerciseOrder) =>
       _repo.removeExercise(workoutId, exerciseOrder);
+  Future<int?> saveAsTemplate(int workoutId, String name) => _repo.saveAsTemplate(workoutId, name);
+  Future<void> renameTemplate(int id, String name) => _repo.renameTemplate(id, name);
+  Future<void> deleteTemplate(int id) => _repo.deleteTemplate(id);
+  Future<int> startFromTemplate(int templateId) => _repo.startFromTemplate(templateId);
 }
+
+/// Saved workout templates, by name.
+final workoutTemplatesProvider = StreamProvider<List<WorkoutTemplate>>(
+  (ref) => ref.watch(workoutRepositoryProvider).watchTemplates(),
+);
 
 final workoutActionsProvider = Provider<WorkoutActions>(
   (ref) => WorkoutActions(ref.watch(workoutRepositoryProvider)),

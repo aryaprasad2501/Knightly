@@ -71,6 +71,9 @@ class BackupService {
       final careJobs = await (_db.select(_db.careJobs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final careLogs = await (_db.select(_db.careLogs)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       final taskChecks = await (_db.select(_db.taskChecks)..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
+      final templates = await (_db.select(
+        _db.workoutTemplates,
+      )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
       return <String, List<Map<String, Object?>>>{
         'settings': [
           for (final s in settings)
@@ -330,6 +333,17 @@ class BackupService {
               'updatedAt': _time(c.updatedAt),
             },
         ],
+        'workoutTemplates': [
+          for (final t in templates)
+            {
+              'id': t.id,
+              'uuid': t.uuid,
+              'name': t.name,
+              'plan': t.plan,
+              'createdAt': _time(t.createdAt),
+              'updatedAt': _time(t.updatedAt),
+            },
+        ],
       };
     });
 
@@ -432,6 +446,7 @@ class BackupService {
       careJobs: [for (final r in tables['careJobs']!) _careJobRow(r)],
       careLogs: [for (final r in tables['careLogs']!) _careLogRow(r)],
       taskChecks: [for (final r in tables['taskChecks']!) _taskCheckRow(r)],
+      templates: [for (final r in tables['workoutTemplates']!) _templateRow(r)],
     );
     _checkRelations(parsed);
     return parsed;
@@ -524,6 +539,8 @@ class BackupService {
     for (final c in p.taskChecks) {
       if (!taskIds.contains(c.taskId.value)) throw _damaged;
     }
+    unique(p.templates.map((r) => r.id.value));
+    unique(p.templates.map((r) => r.uuid.value));
   }
 
   // ---- Restore --------------------------------------------------------------
@@ -536,6 +553,7 @@ class BackupService {
     await _writeSafetyCopy();
     await _db.transaction(() async {
       await _db.delete(_db.taskChecks).go();
+      await _db.delete(_db.workoutTemplates).go();
       await _db.delete(_db.careLogs).go();
       await _db.delete(_db.careJobs).go();
       await _db.delete(_db.mealEntries).go();
@@ -574,6 +592,7 @@ class BackupService {
         b.insertAll(_db.careJobs, parsed.careJobs);
         b.insertAll(_db.careLogs, parsed.careLogs);
         b.insertAll(_db.taskChecks, parsed.taskChecks);
+        b.insertAll(_db.workoutTemplates, parsed.templates);
       });
     });
     return parsed.summary;
@@ -874,6 +893,15 @@ class BackupService {
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
   );
 
+  WorkoutTemplatesCompanion _templateRow(Map<String, Object?> r) => WorkoutTemplatesCompanion.insert(
+    id: Value(_int(r, 'id')),
+    uuid: Value(_uuid(r)),
+    name: _string(r, 'name', min: 1, max: 60),
+    plan: _string(r, 'plan', min: 2),
+    createdAt: Value(_requiredTime(r, 'createdAt')),
+    updatedAt: Value(_requiredTime(r, 'updatedAt')),
+  );
+
   static double _double(Map<String, Object?> r, String key) {
     final v = r[key];
     if (v is num && v.isFinite && v >= 0) return v.toDouble();
@@ -951,6 +979,7 @@ class _Parsed {
     required this.careJobs,
     required this.careLogs,
     required this.taskChecks,
+    required this.templates,
   });
 
   final BackupSummary summary;
@@ -973,6 +1002,7 @@ class _Parsed {
   final List<CareJobsCompanion> careJobs;
   final List<CareLogsCompanion> careLogs;
   final List<TaskChecksCompanion> taskChecks;
+  final List<WorkoutTemplatesCompanion> templates;
 }
 
 final backupServiceProvider = Provider<BackupService>(

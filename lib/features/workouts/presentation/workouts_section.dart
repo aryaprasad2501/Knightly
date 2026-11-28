@@ -14,14 +14,31 @@ import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../application/workouts_providers.dart';
 import '../domain/workout.dart';
+import '../domain/workout_template.dart';
 import 'body_stats_card.dart';
+import 'workout_templates.dart';
 
 /// Starts a workout (or resumes the one in progress) and opens it. Public
 /// entry point (Track, Home quick action).
+///
+/// With saved templates and nothing in progress, asks what to start first.
 Future<void> startOrResumeWorkout(BuildContext context, WidgetRef ref) async {
   final router = GoRouter.of(context);
-  final id = await ref.read(workoutActionsProvider).start();
-  await router.push(AppRoutes.workoutFor(id));
+  var templates = const <WorkoutTemplate>[];
+  if (ref.read(activeWorkoutProvider) == null) {
+    // Riverpod 3 pauses providers nobody listens to: listen while waiting.
+    final sub = ref.listenManual(workoutTemplatesProvider, (_, _) {});
+    try {
+      templates = await ref.read(workoutTemplatesProvider.future);
+    } finally {
+      sub.close();
+    }
+  }
+  if (!context.mounted) return;
+  final id = templates.isEmpty
+      ? await ref.read(workoutActionsProvider).start()
+      : await pickWorkoutStart(context, ref, templates);
+  if (id != null) await router.push(AppRoutes.workoutFor(id));
 }
 
 /// The workouts part of the Track tab. Public entry point for Track.

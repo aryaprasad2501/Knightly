@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/design/components/k_button.dart';
@@ -5,6 +8,8 @@ import 'package:knightly/core/design/components/k_check_circle.dart';
 import 'package:knightly/core/design/components/k_chip.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
 import 'package:knightly/core/design/components/k_number_field.dart';
+import 'package:knightly/features/workouts/data/workout_repository.dart';
+import 'package:knightly/features/workouts/domain/exercise.dart';
 import 'package:knightly/features/workouts/presentation/body_stats_card.dart';
 import 'package:knightly/features/workouts/presentation/exercise_library_screen.dart';
 import 'package:knightly/features/workouts/presentation/workout_screen.dart';
@@ -132,5 +137,45 @@ void main() {
       find.descendant(of: find.byType(BodyStatsCard), matching: find.text('Healthy weight')),
       findsOneWidget,
     );
+  });
+
+  testWidgets('save a finished workout as a template, then start from it', (tester) async {
+    usePhoneViewport(tester);
+    final db = testDatabase();
+    await tester.runAsync(() async {
+      final repo = WorkoutRepository(db, clock: () => now.subtract(const Duration(days: 1)));
+      final library = ExerciseLibrary.fromJson(
+        jsonDecode(File('assets/data/exercises.json').readAsStringSync()) as Map<String, Object?>,
+      );
+      final id = await repo.start(name: 'Push day');
+      await repo.addExercise(id, library.filter(query: 'Barbell Bench Press - Medium Grip').first);
+      final w = (await repo.find(id))!;
+      await repo.updateSet(w.sets.single.id, reps: 8, weightKg: 60, done: true);
+      await repo.finish(id);
+    });
+    await pumpKnightlyApp(tester, db: db, now: now);
+    await goToTab(tester, 'Track');
+    await scrollTo(tester, find.text('Push day'));
+    await tapShown(tester, find.text('Push day').hitTestable().first);
+    await settle(tester);
+
+    await tapShown(tester, find.widgetWithText(KButton, 'Save as template'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(KButton, 'Save template'));
+    await settle(tester);
+    expect(find.text('Template saved'), findsOneWidget);
+    await tester.pump(const Duration(seconds: 6)); // let the snackbar go
+    await tester.pumpAndSettle();
+
+    await tester.pageBack();
+    await settle(tester);
+    await scrollTo(tester, find.byType(WorkoutsSection));
+    await tapShown(tester, inSection(find.widgetWithText(KButton, 'Start workout')));
+    await settle(tester);
+    expect(find.text('Start a workout'), findsOneWidget);
+    await tester.tap(find.text('Push day').hitTestable().last);
+    await settle(tester);
+    expect(find.byType(WorkoutScreen), findsOneWidget);
+    expect(find.text('IN PROGRESS'), findsOneWidget);
   });
 }

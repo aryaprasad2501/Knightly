@@ -6,6 +6,7 @@ import '../../../core/database/database_provider.dart';
 import '../../../core/time/clock.dart';
 import '../domain/exercise.dart';
 import '../domain/workout.dart';
+import '../domain/workout_template.dart';
 
 /// Workouts and their sets in the local database.
 class WorkoutRepository {
@@ -195,6 +196,78 @@ class WorkoutRepository {
   Future<void> removeExercise(int workoutId, int exerciseOrder) => (_db.delete(
     _db.workoutSets,
   )..where((s) => s.workoutId.equals(workoutId) & s.exerciseOrder.equals(exerciseOrder))).go();
+
+  // ---- Templates -----------------------------------------------------------
+
+  Stream<List<WorkoutTemplate>> watchTemplates() {
+    final query = _db.select(_db.workoutTemplates)..orderBy([(t) => OrderingTerm.asc(t.name)]);
+    return query.watch().map(
+      (rows) => [
+        for (final r in rows)
+          WorkoutTemplate(id: r.id, name: r.name, exercises: WorkoutTemplate.decodePlan(r.plan)),
+      ],
+    );
+  }
+
+  /// Saves [workoutId]'s exercises and done sets as a template called [name].
+  /// Returns the new id, or null when the workout has nothing to save.
+  Future<int?> saveAsTemplate(int workoutId, String name) async {
+    final workout = await find(workoutId);
+    if (workout == null) return null;
+    final plan = WorkoutTemplate.planOf(workout);
+    if (plan.isEmpty) return null;
+    final now = _clock();
+    return _db
+        .into(_db.workoutTemplates)
+        .insert(
+          WorkoutTemplatesCompanion.insert(
+            name: _name(name, now),
+            plan: WorkoutTemplate.encodePlan(plan),
+            createdAt: Value(now),
+            updatedAt: Value(now),
+          ),
+        );
+  }
+
+  Future<void> renameTemplate(int id, String name) =>
+      (_db.update(_db.workoutTemplates)..where((t) => t.id.equals(id))).write(
+        WorkoutTemplatesCompanion(name: Value(_name(name, _clock())), updatedAt: Value(_clock())),
+      );
+
+  Future<void> deleteTemplate(int id) =>
+      (_db.delete(_db.workoutTemplates)..where((t) => t.id.equals(id))).go();
+
+  /// Starts a workout from a template: its name, exercises and sets, all
+  /// unticked. With a workout already in progress, that one is returned
+  /// unchanged (one at a time).
+  Future<int> startFromTemplate(int templateId) => _db.transaction(() async {
+    final active =
+        await (_db.select(_db.workouts)
+              ..where((w) => w.finishedAt.isNull() & w.deletedAt.isNull())
+              ..limit(1))
+            .getSingleOrNull();
+    if (active != null) return active.id;
+    final row = await (_db.select(
+      _db.workoutTemplates,
+    )..where((t) => t.id.equals(templateId))).getSingleOrNull();
+    final id = await start(name: row?.name);
+    if (row == null) return id;
+    for (final (order, e) in WorkoutTemplate.decodePlan(row.plan).indexed) {
+      for (final (setOrder, s) in e.sets.indexed) {
+        await _insertSet(
+          workoutId: id,
+          exerciseId: e.exerciseId,
+          exerciseName: e.name,
+          exerciseOrder: order,
+          setOrder: setOrder,
+          reps: s.reps,
+          weightKg: s.weightKg,
+          durationSeconds: s.durationSeconds,
+        );
+      }
+    }
+    return id;
+  });
 
   // ---- Mapping -------------------------------------------------------------
 

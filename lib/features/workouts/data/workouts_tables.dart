@@ -50,3 +50,15 @@ class WorkoutSets extends Table {
   BoolColumn get done => boolean().withDefault(const Constant(false))();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
+
+/// A saved workout plan ("Push day"): exercises and their sets, started again
+/// with one tap. Added in schema v14. [plan] is `WorkoutTemplate.encodePlan()`.
+@DataClassName('WorkoutTemplateRow')
+class WorkoutTemplates extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get uuid => text().clientDefault(newUuid).unique()();
+  TextColumn get name => text().withLength(min: 1, max: 60)();
+  TextColumn get plan => text()();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
+}

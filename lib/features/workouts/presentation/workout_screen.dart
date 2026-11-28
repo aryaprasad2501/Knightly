@@ -20,6 +20,7 @@ import '../../../core/design/theme/theme_context.dart';
 import '../../../core/design/tokens/k_spacing.dart';
 import '../../../core/time/clock.dart';
 import '../application/workouts_providers.dart';
+import 'workout_templates.dart';
 import '../domain/workout.dart';
 import 'exercise_sheet.dart';
 
@@ -136,7 +137,14 @@ class WorkoutScreen extends ConsumerWidget {
               router.pop();
             },
           ),
-        ] else
+        ] else ...[
+          KButton(
+            label: 'Save as template',
+            glyph: KGlyphs.dumbbell,
+            expand: true,
+            onPressed: () => saveWorkoutAsTemplate(context, ref, workout),
+          ),
+          const SizedBox(height: KSpacing.sm),
           KButton(
             label: 'Delete workout',
             glyph: KGlyphs.trash,
@@ -157,6 +165,7 @@ class WorkoutScreen extends ConsumerWidget {
                 );
             },
           ),
+        ],
       ],
     );
   }

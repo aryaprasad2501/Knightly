@@ -124,7 +124,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Weekly review (a written summary on top of Insights) (2026-11-28)
 - [x] Insights correlation: sleep vs habit completion (2026-11-28); more pairs later
 - [x] Water reminders and a sleep wind-down reminder (2026-11-28)
-- [ ] Workout templates — in the spec, not built
+- [x] Workout templates (2026-11-28)
 - [ ] Global quick-add and search — cross-cutting spec items, not built
 - [ ] Today: evening review entry point — in the spec, not built
 - [ ] Re-measure Insights in Low mode on the Knightly_LowEnd AVD (crashed on boot 2026-11-27)

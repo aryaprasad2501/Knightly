@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -90,7 +90,7 @@ class _BriefingCardState extends ConsumerState<BriefingCard> with TickerProvider
         !still &&
         ref.read(liveSceneEnabledProvider) &&
         !ref.read(lowEffectsProvider) &&
-        TickerMode.of(context);
+        TickerMode.valuesOf(context).enabled;
     if (ambient && !_spin.isAnimating) {
       _spin.repeat();
     } else if (!ambient && _spin.isAnimating) {

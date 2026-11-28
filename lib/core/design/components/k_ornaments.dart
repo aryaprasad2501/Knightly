@@ -1,6 +1,6 @@
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Tactical HUD corner brackets: four L-shaped marks inset from the corners,
 /// like a targeting frame. [progress] (0–1) draws them in from the corners.

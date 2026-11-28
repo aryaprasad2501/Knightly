@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/design/theme/theme_context.dart';
 import '../../../../core/design/tokens/k_spacing.dart';

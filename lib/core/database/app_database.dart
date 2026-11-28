@@ -1,3 +1,7 @@
+// Shipped migration steps use drift's TableMigration, flagged experimental since Dart 3.14.
+// Those steps must never change (see AGENTS.md), so the notice is silenced here only.
+// ignore_for_file: experimental_member_use
+
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 

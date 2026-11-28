@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math' as math;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/design/ambient/k_ambient_scene.dart';
@@ -189,7 +189,7 @@ class _LiveMottoState extends ConsumerState<_LiveMotto> {
 
   void _sync() {
     if (!mounted) return;
-    final run = _live(context, ref) && TickerMode.of(context);
+    final run = _live(context, ref) && TickerMode.valuesOf(context).enabled;
     if (run == _running) return;
     _running = run;
     _timer?.cancel();

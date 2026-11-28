@@ -284,3 +284,12 @@ then `routines`, `routine_steps`, `routine_runs` as schema **v4** via
 `dart run drift_dev make-migrations`, repository + tests. UI (run-through mode, Home "Start
 routine", Routines bar) only after those pass. New UI must follow both style families and the
 60 fps rules (AGENTS.md rule 8).
+
+## Session end 2026-11-28 (autonomous run since tag `review-start-2026-11-28`)
+
+- Toolchain: Flutter 3.50.1 / Dart 3.14, Riverpod 3.5, Gradle 9.5, AGP 9.3.1, Kotlin 2.4.20, `material_ui` imports.
+- Checks: `flutter analyze` clean, 473 tests pass, debug APK builds; smoke-tested on the Pixel_8 AVD.
+- Every stage is listed in REVIEW_LOG.md with its commit and what to try.
+- Needs a real phone: geofence arrival (home + places) never fired on the emulator; home-screen widgets
+  were registered but not placed on a launcher.
+- Later (owner's plan, see TASKS.md): optional Google-account backup, then "Report a bug" to the owner's Gmail.

@@ -27,13 +27,13 @@ def outbox(table, key):
     # An upsert, not INSERT OR REPLACE: SQLite overrides a trigger's OR REPLACE
     # with the outer statement's policy (e.g. a foreign-key cascade).
     return (f"INSERT INTO sync_outbox (entity, row_key, changed_at) "
-            f"VALUES ('{table}', {key}, strftime('%Y-%m-%dT%H:%M:%f', 'now')) "
+            f"VALUES ('{table}', {key}, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) "
             f"ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;")
 
 
 def tomb(table, doc):
     return (f"INSERT INTO sync_tombstones (entity, doc_id, deleted_at) "
-            f"VALUES ('{table}', {doc}, strftime('%Y-%m-%dT%H:%M:%f', 'now')) "
+            f"VALUES ('{table}', {doc}, strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) "
             f"ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;")
 
 

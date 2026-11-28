@@ -10111,262 +10111,262 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final SyncMeta syncMeta = SyncMeta(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
   late final Trigger syncProjectsInsert = Trigger(
-    'CREATE TRIGGER sync_projects_insert AFTER INSERT ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_projects_insert AFTER INSERT ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_projects_insert',
   );
   late final Trigger syncProjectsUpdate = Trigger(
-    'CREATE TRIGGER sync_projects_update AFTER UPDATE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_projects_update AFTER UPDATE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_projects_update',
   );
   late final Trigger syncProjectsDelete = Trigger(
-    'CREATE TRIGGER sync_projects_delete AFTER DELETE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'projects\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'projects\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_projects_delete AFTER DELETE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'projects\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'projects\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_projects_delete',
   );
   late final $TasksTable tasks = $TasksTable(this);
   late final Trigger syncTasksInsert = Trigger(
-    'CREATE TRIGGER sync_tasks_insert AFTER INSERT ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_tasks_insert AFTER INSERT ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_tasks_insert',
   );
   late final Trigger syncTasksUpdate = Trigger(
-    'CREATE TRIGGER sync_tasks_update AFTER UPDATE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_tasks_update AFTER UPDATE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_tasks_update',
   );
   late final Trigger syncTasksDelete = Trigger(
-    'CREATE TRIGGER sync_tasks_delete AFTER DELETE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'tasks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'tasks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_tasks_delete AFTER DELETE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'tasks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'tasks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_tasks_delete',
   );
   late final $TaskChecksTable taskChecks = $TaskChecksTable(this);
   late final Trigger syncTaskChecksInsert = Trigger(
-    'CREATE TRIGGER sync_task_checks_insert AFTER INSERT ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_task_checks_insert AFTER INSERT ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_task_checks_insert',
   );
   late final Trigger syncTaskChecksUpdate = Trigger(
-    'CREATE TRIGGER sync_task_checks_update AFTER UPDATE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_task_checks_update AFTER UPDATE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_task_checks_update',
   );
   late final Trigger syncTaskChecksDelete = Trigger(
-    'CREATE TRIGGER sync_task_checks_delete AFTER DELETE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'task_checks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'task_checks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_task_checks_delete AFTER DELETE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'task_checks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'task_checks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_task_checks_delete',
   );
   late final $HabitsTable habits = $HabitsTable(this);
   late final Trigger syncHabitsInsert = Trigger(
-    'CREATE TRIGGER sync_habits_insert AFTER INSERT ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_habits_insert AFTER INSERT ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_habits_insert',
   );
   late final Trigger syncHabitsUpdate = Trigger(
-    'CREATE TRIGGER sync_habits_update AFTER UPDATE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_habits_update AFTER UPDATE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_habits_update',
   );
   late final Trigger syncHabitsDelete = Trigger(
-    'CREATE TRIGGER sync_habits_delete AFTER DELETE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habits\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habits\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_habits_delete AFTER DELETE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habits\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habits\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_habits_delete',
   );
   late final $EventsTable events = $EventsTable(this);
   late final Trigger syncEventsInsert = Trigger(
-    'CREATE TRIGGER sync_events_insert AFTER INSERT ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_events_insert AFTER INSERT ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_events_insert',
   );
   late final Trigger syncEventsUpdate = Trigger(
-    'CREATE TRIGGER sync_events_update AFTER UPDATE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_events_update AFTER UPDATE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_events_update',
   );
   late final Trigger syncEventsDelete = Trigger(
-    'CREATE TRIGGER sync_events_delete AFTER DELETE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'events\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'events\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_events_delete AFTER DELETE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'events\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'events\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_events_delete',
   );
   late final $RoutinesTable routines = $RoutinesTable(this);
   late final Trigger syncRoutinesInsert = Trigger(
-    'CREATE TRIGGER sync_routines_insert AFTER INSERT ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_routines_insert AFTER INSERT ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_routines_insert',
   );
   late final Trigger syncRoutinesUpdate = Trigger(
-    'CREATE TRIGGER sync_routines_update AFTER UPDATE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_routines_update AFTER UPDATE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_routines_update',
   );
   late final Trigger syncRoutinesDelete = Trigger(
-    'CREATE TRIGGER sync_routines_delete AFTER DELETE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routines\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routines\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_routines_delete AFTER DELETE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routines\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routines\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_routines_delete',
   );
   late final $RoutineStepsTable routineSteps = $RoutineStepsTable(this);
   late final Trigger syncRoutineStepsInsert = Trigger(
-    'CREATE TRIGGER sync_routine_steps_insert AFTER INSERT ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_routine_steps_insert AFTER INSERT ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_routine_steps_insert',
   );
   late final Trigger syncRoutineStepsUpdate = Trigger(
-    'CREATE TRIGGER sync_routine_steps_update AFTER UPDATE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_routine_steps_update AFTER UPDATE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_routine_steps_update',
   );
   late final Trigger syncRoutineStepsDelete = Trigger(
-    'CREATE TRIGGER sync_routine_steps_delete AFTER DELETE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_steps\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_steps\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_routine_steps_delete AFTER DELETE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_steps\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_steps\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_routine_steps_delete',
   );
   late final $RoutineRunsTable routineRuns = $RoutineRunsTable(this);
   late final Trigger syncRoutineRunsInsert = Trigger(
-    'CREATE TRIGGER sync_routine_runs_insert AFTER INSERT ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_routine_runs_insert AFTER INSERT ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_routine_runs_insert',
   );
   late final Trigger syncRoutineRunsUpdate = Trigger(
-    'CREATE TRIGGER sync_routine_runs_update AFTER UPDATE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_routine_runs_update AFTER UPDATE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_routine_runs_update',
   );
   late final Trigger syncRoutineRunsDelete = Trigger(
-    'CREATE TRIGGER sync_routine_runs_delete AFTER DELETE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_runs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_runs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_routine_runs_delete AFTER DELETE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_runs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_runs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_routine_runs_delete',
   );
   late final $WaterLogsTable waterLogs = $WaterLogsTable(this);
   late final Trigger syncWaterLogsInsert = Trigger(
-    'CREATE TRIGGER sync_water_logs_insert AFTER INSERT ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_water_logs_insert AFTER INSERT ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_water_logs_insert',
   );
   late final Trigger syncWaterLogsUpdate = Trigger(
-    'CREATE TRIGGER sync_water_logs_update AFTER UPDATE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_water_logs_update AFTER UPDATE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_water_logs_update',
   );
   late final Trigger syncWaterLogsDelete = Trigger(
-    'CREATE TRIGGER sync_water_logs_delete AFTER DELETE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'water_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'water_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_water_logs_delete AFTER DELETE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'water_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'water_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_water_logs_delete',
   );
   late final $SleepLogsTable sleepLogs = $SleepLogsTable(this);
   late final Trigger syncSleepLogsInsert = Trigger(
-    'CREATE TRIGGER sync_sleep_logs_insert AFTER INSERT ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_sleep_logs_insert AFTER INSERT ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_sleep_logs_insert',
   );
   late final Trigger syncSleepLogsUpdate = Trigger(
-    'CREATE TRIGGER sync_sleep_logs_update AFTER UPDATE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_sleep_logs_update AFTER UPDATE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_sleep_logs_update',
   );
   late final Trigger syncSleepLogsDelete = Trigger(
-    'CREATE TRIGGER sync_sleep_logs_delete AFTER DELETE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'sleep_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'sleep_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_sleep_logs_delete AFTER DELETE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'sleep_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'sleep_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_sleep_logs_delete',
   );
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
   late final Trigger syncWorkoutsInsert = Trigger(
-    'CREATE TRIGGER sync_workouts_insert AFTER INSERT ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_workouts_insert AFTER INSERT ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_workouts_insert',
   );
   late final Trigger syncWorkoutsUpdate = Trigger(
-    'CREATE TRIGGER sync_workouts_update AFTER UPDATE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_workouts_update AFTER UPDATE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_workouts_update',
   );
   late final Trigger syncWorkoutsDelete = Trigger(
-    'CREATE TRIGGER sync_workouts_delete AFTER DELETE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workouts\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workouts\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_workouts_delete AFTER DELETE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workouts\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workouts\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_workouts_delete',
   );
   late final $WorkoutSetsTable workoutSets = $WorkoutSetsTable(this);
   late final Trigger syncWorkoutSetsInsert = Trigger(
-    'CREATE TRIGGER sync_workout_sets_insert AFTER INSERT ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_workout_sets_insert AFTER INSERT ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_workout_sets_insert',
   );
   late final Trigger syncWorkoutSetsUpdate = Trigger(
-    'CREATE TRIGGER sync_workout_sets_update AFTER UPDATE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_workout_sets_update AFTER UPDATE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_workout_sets_update',
   );
   late final Trigger syncWorkoutSetsDelete = Trigger(
-    'CREATE TRIGGER sync_workout_sets_delete AFTER DELETE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_sets\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_sets\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_workout_sets_delete AFTER DELETE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_sets\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_sets\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_workout_sets_delete',
   );
   late final $WorkoutTemplatesTable workoutTemplates = $WorkoutTemplatesTable(this);
   late final Trigger syncWorkoutTemplatesInsert = Trigger(
-    'CREATE TRIGGER sync_workout_templates_insert AFTER INSERT ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_workout_templates_insert AFTER INSERT ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_workout_templates_insert',
   );
   late final Trigger syncWorkoutTemplatesUpdate = Trigger(
-    'CREATE TRIGGER sync_workout_templates_update AFTER UPDATE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_workout_templates_update AFTER UPDATE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_workout_templates_update',
   );
   late final Trigger syncWorkoutTemplatesDelete = Trigger(
-    'CREATE TRIGGER sync_workout_templates_delete AFTER DELETE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_templates\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_templates\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_workout_templates_delete AFTER DELETE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_templates\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_templates\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_workout_templates_delete',
   );
   late final $FoodsTable foods = $FoodsTable(this);
   late final Trigger syncFoodsInsert = Trigger(
-    'CREATE TRIGGER sync_foods_insert AFTER INSERT ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_foods_insert AFTER INSERT ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_foods_insert',
   );
   late final Trigger syncFoodsUpdate = Trigger(
-    'CREATE TRIGGER sync_foods_update AFTER UPDATE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_foods_update AFTER UPDATE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_foods_update',
   );
   late final Trigger syncFoodsDelete = Trigger(
-    'CREATE TRIGGER sync_foods_delete AFTER DELETE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'foods\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'foods\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_foods_delete AFTER DELETE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'foods\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'foods\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_foods_delete',
   );
   late final $MealEntriesTable mealEntries = $MealEntriesTable(this);
   late final Trigger syncMealEntriesInsert = Trigger(
-    'CREATE TRIGGER sync_meal_entries_insert AFTER INSERT ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_meal_entries_insert AFTER INSERT ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_meal_entries_insert',
   );
   late final Trigger syncMealEntriesUpdate = Trigger(
-    'CREATE TRIGGER sync_meal_entries_update AFTER UPDATE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_meal_entries_update AFTER UPDATE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_meal_entries_update',
   );
   late final Trigger syncMealEntriesDelete = Trigger(
-    'CREATE TRIGGER sync_meal_entries_delete AFTER DELETE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'meal_entries\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'meal_entries\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_meal_entries_delete AFTER DELETE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'meal_entries\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'meal_entries\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_meal_entries_delete',
   );
   late final $CareJobsTable careJobs = $CareJobsTable(this);
   late final Trigger syncCareJobsInsert = Trigger(
-    'CREATE TRIGGER sync_care_jobs_insert AFTER INSERT ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_care_jobs_insert AFTER INSERT ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_care_jobs_insert',
   );
   late final Trigger syncCareJobsUpdate = Trigger(
-    'CREATE TRIGGER sync_care_jobs_update AFTER UPDATE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_care_jobs_update AFTER UPDATE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_care_jobs_update',
   );
   late final Trigger syncCareJobsDelete = Trigger(
-    'CREATE TRIGGER sync_care_jobs_delete AFTER DELETE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_jobs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_jobs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_care_jobs_delete AFTER DELETE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_jobs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_jobs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_care_jobs_delete',
   );
   late final $CareLogsTable careLogs = $CareLogsTable(this);
   late final Trigger syncCareLogsInsert = Trigger(
-    'CREATE TRIGGER sync_care_logs_insert AFTER INSERT ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_care_logs_insert AFTER INSERT ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_care_logs_insert',
   );
   late final Trigger syncCareLogsUpdate = Trigger(
-    'CREATE TRIGGER sync_care_logs_update AFTER UPDATE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_care_logs_update AFTER UPDATE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_care_logs_update',
   );
   late final Trigger syncCareLogsDelete = Trigger(
-    'CREATE TRIGGER sync_care_logs_delete AFTER DELETE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_care_logs_delete AFTER DELETE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_care_logs_delete',
   );
   late final $HabitCheckInsTable habitCheckIns = $HabitCheckInsTable(this);
   late final Trigger syncHabitCheckInsInsert = Trigger(
-    'CREATE TRIGGER sync_habit_check_ins_insert AFTER INSERT ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_habit_check_ins_insert AFTER INSERT ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_habit_check_ins_insert',
   );
   late final Trigger syncHabitCheckInsUpdate = Trigger(
-    'CREATE TRIGGER sync_habit_check_ins_update AFTER UPDATE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_habit_check_ins_update AFTER UPDATE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_habit_check_ins_update',
   );
   late final Trigger syncHabitCheckInsDelete = Trigger(
-    'CREATE TRIGGER sync_habit_check_ins_delete AFTER DELETE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habit_check_ins\' AND row_key = OLD.habit_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habit_check_ins\', (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_habit_check_ins_delete AFTER DELETE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habit_check_ins\' AND row_key = OLD.habit_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habit_check_ins\', (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_habit_check_ins_delete',
   );
   late final $EventExceptionsTable eventExceptions = $EventExceptionsTable(this);
   late final Trigger syncEventExceptionsInsert = Trigger(
-    'CREATE TRIGGER sync_event_exceptions_insert AFTER INSERT ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_event_exceptions_insert AFTER INSERT ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_event_exceptions_insert',
   );
   late final Trigger syncEventExceptionsUpdate = Trigger(
-    'CREATE TRIGGER sync_event_exceptions_update AFTER UPDATE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_event_exceptions_update AFTER UPDATE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_event_exceptions_update',
   );
   late final Trigger syncEventExceptionsDelete = Trigger(
-    'CREATE TRIGGER sync_event_exceptions_delete AFTER DELETE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'event_exceptions\' AND row_key = OLD.event_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'event_exceptions\', (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_event_exceptions_delete AFTER DELETE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'event_exceptions\' AND row_key = OLD.event_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'event_exceptions\', (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_event_exceptions_delete',
   );
   late final $AppSettingsTable appSettings = $AppSettingsTable(this);
   late final Trigger syncAppSettingsInsert = Trigger(
-    'CREATE TRIGGER sync_app_settings_insert AFTER INSERT ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_app_settings_insert AFTER INSERT ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_app_settings_insert',
   );
   late final Trigger syncAppSettingsUpdate = Trigger(
-    'CREATE TRIGGER sync_app_settings_update AFTER UPDATE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'CREATE TRIGGER sync_app_settings_update AFTER UPDATE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
     'sync_app_settings_update',
   );
   late final Trigger syncAppSettingsDelete = Trigger(
-    'CREATE TRIGGER sync_app_settings_delete AFTER DELETE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD."key" IS NOT NULL AND OLD."key" NOT LIKE \'backup.%\' AND OLD."key" NOT LIKE \'places.%\' AND OLD."key" NOT LIKE \'sync.%\' AND OLD."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN DELETE FROM sync_outbox WHERE entity = \'app_settings\' AND row_key = OLD."key";INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'app_settings\', OLD."key", strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'CREATE TRIGGER sync_app_settings_delete AFTER DELETE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD."key" IS NOT NULL AND OLD."key" NOT LIKE \'backup.%\' AND OLD."key" NOT LIKE \'places.%\' AND OLD."key" NOT LIKE \'sync.%\' AND OLD."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN DELETE FROM sync_outbox WHERE entity = \'app_settings\' AND row_key = OLD."key";INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'app_settings\', OLD."key", strftime(\'%Y-%m-%dT%H:%M:%fZ\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
     'sync_app_settings_delete',
   );
   late final Index careLogsJob = Index('care_logs_job', 'CREATE INDEX care_logs_job ON care_logs (job_id)');

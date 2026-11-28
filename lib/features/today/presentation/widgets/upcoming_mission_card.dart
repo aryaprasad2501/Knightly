@@ -27,7 +27,7 @@ class UpcomingMissionHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final next = ref.watch(missionSummaryProvider).valueOrNull?.next;
+    final next = ref.watch(missionSummaryProvider).value?.next;
     final later = next?.dueDate != null && next!.dueDate!.isAfter(ref.watch(todayProvider));
     return KSectionHeader(
       later
@@ -43,7 +43,7 @@ class UpcomingMissionCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final next = ref.watch(missionSummaryProvider).valueOrNull?.next;
+    final next = ref.watch(missionSummaryProvider).value?.next;
     final today = ref.watch(todayProvider);
 
     if (next == null) {

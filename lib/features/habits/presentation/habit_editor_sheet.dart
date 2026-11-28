@@ -133,7 +133,7 @@ class _HabitEditorState extends ConsumerState<_HabitEditor> {
 
   HabitStats? get _liveStats {
     final id = widget.habit?.id;
-    for (final s in ref.watch(habitStatsProvider).valueOrNull ?? const <HabitStats>[]) {
+    for (final s in ref.watch(habitStatsProvider).value ?? const <HabitStats>[]) {
       if (s.habit.id == id) return s;
     }
     return null;

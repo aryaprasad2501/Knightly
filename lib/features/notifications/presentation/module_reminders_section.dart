@@ -23,7 +23,7 @@ class ModuleRemindersSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final on = ref.watch(enabledModulesProvider);
-    final r = ref.watch(moduleRemindersProvider).valueOrNull ?? const ModuleReminders();
+    final r = ref.watch(moduleRemindersProvider).value ?? const ModuleReminders();
     final chevron = KIcon(KGlyphs.chevronRight, size: 20, color: context.palette.textMuted);
     String t(ClockTime c) => formatReminderTime(c);
 

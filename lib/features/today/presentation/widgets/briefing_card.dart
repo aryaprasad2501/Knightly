@@ -118,13 +118,13 @@ class _BriefingCardState extends ConsumerState<BriefingCard> with TickerProvider
     final today = ref.watch(todayProvider);
     final now = ref.watch(clockProvider)();
 
-    final missions = on.contains(AppModule.missions) ? ref.watch(missionSummaryProvider).valueOrNull : null;
-    final habits = on.contains(AppModule.habits) ? ref.watch(habitSummaryProvider).valueOrNull : null;
-    final routines = on.contains(AppModule.routines) ? ref.watch(routineSummaryProvider).valueOrNull : null;
-    final water = on.contains(AppModule.water) ? ref.watch(waterTodayProvider).valueOrNull : null;
-    final sleep = on.contains(AppModule.sleep) ? ref.watch(sleepWeekProvider).valueOrNull?.lastNight : null;
-    final food = on.contains(AppModule.nutrition) ? ref.watch(nutritionDayProvider(today)).valueOrNull : null;
-    final care = on.contains(AppModule.homeCare) ? ref.watch(careSummaryProvider).valueOrNull : null;
+    final missions = on.contains(AppModule.missions) ? ref.watch(missionSummaryProvider).value : null;
+    final habits = on.contains(AppModule.habits) ? ref.watch(habitSummaryProvider).value : null;
+    final routines = on.contains(AppModule.routines) ? ref.watch(routineSummaryProvider).value : null;
+    final water = on.contains(AppModule.water) ? ref.watch(waterTodayProvider).value : null;
+    final sleep = on.contains(AppModule.sleep) ? ref.watch(sleepWeekProvider).value?.lastNight : null;
+    final food = on.contains(AppModule.nutrition) ? ref.watch(nutritionDayProvider(today)).value : null;
+    final care = on.contains(AppModule.homeCare) ? ref.watch(careSummaryProvider).value : null;
     final events = on.contains(AppModule.calendar)
         ? ref.watch(todayEventsProvider)
         : const <EventOccurrence>[];

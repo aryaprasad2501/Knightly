@@ -26,7 +26,7 @@ class PlacesScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
     final text = context.textStyles;
-    final places = ref.watch(placesProvider).valueOrNull ?? const <Place>[];
+    final places = ref.watch(placesProvider).value ?? const <Place>[];
     return KSubpage(
       title: 'Places',
       children: [

@@ -36,7 +36,7 @@ final trashedWorkoutsProvider = StreamProvider<List<Workout>>(
 
 /// The workout in progress, if any.
 final activeWorkoutProvider = Provider<Workout?>((ref) {
-  for (final w in ref.watch(workoutsProvider).valueOrNull ?? const <Workout>[]) {
+  for (final w in ref.watch(workoutsProvider).value ?? const <Workout>[]) {
     if (w.isActive) return w;
   }
   return null;
@@ -45,14 +45,14 @@ final activeWorkoutProvider = Provider<Workout?>((ref) {
 /// Finished workouts, newest first.
 final finishedWorkoutsProvider = Provider<List<Workout>>(
   (ref) => [
-    for (final w in ref.watch(workoutsProvider).valueOrNull ?? const <Workout>[])
+    for (final w in ref.watch(workoutsProvider).value ?? const <Workout>[])
       if (!w.isActive) w,
   ],
 );
 
 /// One workout by id (active or finished), live.
 final workoutProvider = Provider.family<Workout?, int>((ref, id) {
-  for (final w in ref.watch(workoutsProvider).valueOrNull ?? const <Workout>[]) {
+  for (final w in ref.watch(workoutsProvider).value ?? const <Workout>[]) {
     if (w.id == id) return w;
   }
   return null;

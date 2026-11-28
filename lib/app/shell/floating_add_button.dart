@@ -68,7 +68,7 @@ class _FloatingAddButtonState extends ConsumerState<FloatingAddButton> {
           area.height <= 0 ? 1 : ((px.dy - area.top) / area.height).clamp(0, 1),
         );
 
-        final saved = ref.watch(fabPositionProvider).valueOrNull ?? const Offset(1, 1);
+        final saved = ref.watch(fabPositionProvider).value ?? const Offset(1, 1);
         final at = _dragging ?? toPixels(saved);
         return Stack(
           children: [

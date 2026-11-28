@@ -30,7 +30,7 @@ class SleepSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final week = ref.watch(sleepWeekProvider);
-    final goal = week.valueOrNull?.goal;
+    final goal = week.value?.goal;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

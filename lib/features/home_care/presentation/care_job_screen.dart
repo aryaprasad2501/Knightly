@@ -34,7 +34,7 @@ class CareJobScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(careJobStateProvider(jobId));
-    final s = state.valueOrNull;
+    final s = state.value;
     return KSubpage(
       title: s?.job.name ?? 'Job',
       actions: [

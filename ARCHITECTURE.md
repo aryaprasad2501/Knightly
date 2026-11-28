@@ -341,7 +341,7 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 
 | Package | Version | Kind | Why |
 |---|---|---|---|
-| `flutter_riverpod` | ^2.6.1 | runtime | Mandated state management. Compile-safe DI, easy test overrides. |
+| `flutter_riverpod` | ^3.0.0 | runtime | Mandated state management. Compile-safe DI, easy test overrides. |
 | `go_router` | ^17.2.3 | runtime | Mandated navigation. Declarative routes, deep links, shell routes for tabs. |
 | `drift` | ^2.31.0 | runtime | Mandated typed SQLite ORM with migrations and reactive queries. |
 | `drift_flutter` | ^0.2.8 | runtime | Opens the DB in the right directory on a background isolate; bundles SQLite via `sqlite3_flutter_libs`, so behaviour doesn't depend on the device's SQLite version. |
@@ -477,3 +477,4 @@ codegen not needed yet).
 | D98 | 2026-11-28 | Home's "+" is a draggable `KFab` stored as fractions in `home.fab_position` | Position survives screen-size and rotation changes. |
 | D99 | 2026-11-28 | Places stored as JSON in setting `places.list` (so in backups), mirrored to `places.json` for the geofence callback; `PlaceWatcher` interface for tests; shared `locateHere()` in core/location | Small user config, no schema change. |
 | D100 | 2026-11-28 | Flutter 3.50.1: `package:flutter/material.dart` replaced by `package:material_ui/material_ui.dart` everywhere; Gradle 9.5 / AGP 9.3.1 / Kotlin 2.4.20, Java 17; root build forces plugin compileSdk ≥ 36 (native_geofence pins 34); drift `TableMigration` experimental notice silenced in `app_database.dart` only (shipped steps unchanged) | Required by the approved SDK upgrade. |
+| D101 | 2026-11-28 | Riverpod 3.5: `valueOrNull` → `value`; tests import `Override` from `flutter_riverpod/misc.dart`; a provider may be overridden only once per scope (pump helper takes `showWelcome`) | Approved upgrade; Riverpod 3 pauses listeners in hidden (TickerMode off) branches, which suits the tab stack. |

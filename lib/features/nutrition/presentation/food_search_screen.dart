@@ -81,15 +81,15 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
     final text = context.textStyles;
     final query = _search.text.trim();
     final library = ref.watch(foodLibraryProvider);
-    final foods = ref.watch(foodsProvider).valueOrNull ?? const <Food>[];
-    final recent = ref.watch(recentMealEntriesProvider).valueOrNull ?? const <MealEntry>[];
+    final foods = ref.watch(foodsProvider).value ?? const <Food>[];
+    final recent = ref.watch(recentMealEntriesProvider).value ?? const <MealEntry>[];
     final insets = MediaQuery.paddingOf(context);
 
     final myMatches = [
       for (final f in foods)
         if (query.isEmpty || foodMatches(f, query)) f,
     ];
-    final listMatches = library.valueOrNull?.search(query, category: _category) ?? const <LibraryFood>[];
+    final listMatches = library.value?.search(query, category: _category) ?? const <LibraryFood>[];
 
     final rows = <Widget>[
       if (query.isEmpty && _category == null && recent.isNotEmpty) ...[
@@ -188,7 +188,7 @@ class _FoodSearchScreenState extends ConsumerState<FoodSearchScreen> {
               ],
             ),
           ),
-          if (library.valueOrNull case final lib?)
+          if (library.value case final lib?)
             SizedBox(
               height: 52,
               child: ListView(

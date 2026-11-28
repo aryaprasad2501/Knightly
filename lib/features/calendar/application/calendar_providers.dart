@@ -96,8 +96,8 @@ final calendarDaysProvider =
       }
 
       if (on.contains(AppModule.missions)) {
-        final open = ref.watch(openTasksProvider).valueOrNull ?? const <Task>[];
-        final done = ref.watch(completedTasksProvider).valueOrNull ?? const <Task>[];
+        final open = ref.watch(openTasksProvider).value ?? const <Task>[];
+        final done = ref.watch(completedTasksProvider).value ?? const <Task>[];
         for (final t in [...open, ...done]) {
           final due = t.dueDate;
           if (due == null) continue;
@@ -112,9 +112,9 @@ final calendarDaysProvider =
       }
 
       if (on.contains(AppModule.habits)) {
-        final habits = ref.watch(activeHabitsProvider).valueOrNull ?? const <Habit>[];
+        final habits = ref.watch(activeHabitsProvider).value ?? const <Habit>[];
         final counts = <(int, CalendarDate), int>{
-          for (final c in ref.watch(habitCheckInsProvider).valueOrNull ?? const <HabitCheckIn>[])
+          for (final c in ref.watch(habitCheckInsProvider).value ?? const <HabitCheckIn>[])
             (c.habitId, c.date): c.count,
         };
         for (var d = from; !d.isAfter(to); d = d.addDays(1)) {
@@ -129,9 +129,9 @@ final calendarDaysProvider =
       }
 
       if (on.contains(AppModule.routines)) {
-        final routines = ref.watch(routinesProvider).valueOrNull ?? const <Routine>[];
+        final routines = ref.watch(routinesProvider).value ?? const <Routine>[];
         final doneOn = <(int, CalendarDate)>{
-          for (final r in ref.watch(routineRunsSinceProvider(from)).valueOrNull ?? const <RoutineRun>[])
+          for (final r in ref.watch(routineRunsSinceProvider(from)).value ?? const <RoutineRun>[])
             if (r.isComplete) (r.routineId, r.date),
         };
         for (var d = from; !d.isAfter(to); d = d.addDays(1)) {
@@ -173,8 +173,8 @@ int _byStartTime(RoutineEntry a, RoutineEntry b) {
 /// Flexible occurrences from the last 30 days that were not done. They stay
 /// here until the user reschedules them, marks them done or skips them.
 final missedOccurrencesProvider = Provider<List<EventOccurrence>>((ref) {
-  final events = ref.watch(eventsProvider).valueOrNull;
-  final states = ref.watch(occurrenceStatesProvider).valueOrNull;
+  final events = ref.watch(eventsProvider).value;
+  final states = ref.watch(occurrenceStatesProvider).value;
   if (events == null || states == null) return const [];
   return missedOccurrences(events, states, ref.watch(todayProvider));
 });
@@ -182,7 +182,7 @@ final missedOccurrencesProvider = Provider<List<EventOccurrence>>((ref) {
 /// Today's event occurrences, for Home.
 final todayEventsProvider = Provider<List<EventOccurrence>>((ref) {
   final today = ref.watch(todayProvider);
-  return ref.watch(calendarDaysProvider((today, today))).valueOrNull?[today]?.events ?? const [];
+  return ref.watch(calendarDaysProvider((today, today))).value?[today]?.events ?? const [];
 });
 
 // ---- Screen state -------------------------------------------------------------

@@ -31,5 +31,5 @@ final themeControllerProvider = AsyncNotifierProvider<ThemeController, KnightlyT
 /// The theme to render right now. Falls back while loading or on error so the
 /// UI never waits on storage.
 final activeThemeProvider = Provider<KnightlyThemeId>(
-  (ref) => ref.watch(themeControllerProvider).valueOrNull ?? KnightlyThemeId.fallback,
+  (ref) => ref.watch(themeControllerProvider).value ?? KnightlyThemeId.fallback,
 );

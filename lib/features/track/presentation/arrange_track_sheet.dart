@@ -29,7 +29,7 @@ class _Arrange extends ConsumerStatefulWidget {
 }
 
 class _ArrangeState extends ConsumerState<_Arrange> {
-  late List<TrackPanel> _all = List.of(ref.read(trackOrderProvider).valueOrNull ?? TrackPanel.values);
+  late List<TrackPanel> _all = List.of(ref.read(trackOrderProvider).value ?? TrackPanel.values);
 
   List<TrackPanel> get _visible => [
     for (final p in _all)

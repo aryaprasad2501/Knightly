@@ -34,7 +34,7 @@ class NutritionSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final week = ref.watch(nutritionWeekProvider);
-    final targets = week.valueOrNull?.last.targets;
+    final targets = week.value?.last.targets;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -35,7 +35,7 @@ class TasksScreen extends ConsumerWidget {
 
     void compose() => composeMission(context, ref);
 
-    final summary = ref.watch(missionSummaryProvider).valueOrNull;
+    final summary = ref.watch(missionSummaryProvider).value;
     final eyebrow = summary == null || summary.openToday == 0 ? 'Missions' : '${summary.openToday} due today';
 
     return KPage(

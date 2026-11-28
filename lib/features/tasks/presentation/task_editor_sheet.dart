@@ -73,7 +73,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
   late final List<_Line> _lines = [
     if (widget.task != null)
       for (final c
-          in ref.read(taskBoardProvider).valueOrNull?.checksOf(widget.task!.id) ?? const <TaskCheck>[])
+          in ref.read(taskBoardProvider).value?.checksOf(widget.task!.id) ?? const <TaskCheck>[])
         _Line(id: c.id, title: c.title, done: c.done),
   ];
   final _newLine = TextEditingController();
@@ -225,7 +225,7 @@ class _TaskEditorState extends ConsumerState<_TaskEditor> {
   @override
   Widget build(BuildContext context) {
     final today = ref.watch(todayProvider);
-    final projects = ref.watch(projectsProvider).valueOrNull ?? const <Project>[];
+    final projects = ref.watch(projectsProvider).value ?? const <Project>[];
     final text = context.textStyles;
     final due = _due;
     final isPreset = due == null || due == today || due == today.addDays(1);

@@ -50,7 +50,7 @@ class SoundsController extends _Switch {
 }
 
 final soundsControllerProvider = AsyncNotifierProvider<SoundsController, bool>(SoundsController.new);
-final soundsProvider = Provider<bool>((ref) => ref.watch(soundsControllerProvider).valueOrNull ?? true);
+final soundsProvider = Provider<bool>((ref) => ref.watch(soundsControllerProvider).value ?? true);
 
 /// Whether sounds may play at all (tests switch it off: no audio there).
 final soundsAllowedProvider = Provider<bool>((ref) => true);
@@ -61,9 +61,9 @@ final reduceMotionControllerProvider = AsyncNotifierProvider<ReduceMotionControl
 );
 
 /// The settings as plain values; off while loading.
-final lowModeProvider = Provider<bool>((ref) => ref.watch(lowModeControllerProvider).valueOrNull ?? false);
+final lowModeProvider = Provider<bool>((ref) => ref.watch(lowModeControllerProvider).value ?? false);
 final reduceMotionProvider = Provider<bool>(
-  (ref) => ref.watch(reduceMotionControllerProvider).valueOrNull ?? false,
+  (ref) => ref.watch(reduceMotionControllerProvider).value ?? false,
 );
 
 /// Whether the first-run welcome has been seen (stored once dismissed).
@@ -144,14 +144,14 @@ final _halfHourProvider = StreamProvider<int>((ref) async* {
 /// The dock style to show now.
 final dockStyleProvider = Provider<KDockStyle>((ref) {
   const rotation = [KDockStyle.reactor, KDockStyle.crest, KDockStyle.capsule];
-  final mode = ref.watch(dockModeProvider).valueOrNull ?? DockMode.reactor;
+  final mode = ref.watch(dockModeProvider).value ?? DockMode.reactor;
   return switch (mode) {
     DockMode.capsule => KDockStyle.capsule,
     DockMode.reactor => KDockStyle.reactor,
     DockMode.crest => KDockStyle.crest,
     DockMode.everyTwoLaunches =>
       rotation[((ref.read(dockModeProvider.notifier).launches - 1) ~/ 2) % rotation.length],
-    DockMode.everyHalfHour => rotation[(ref.watch(_halfHourProvider).valueOrNull ?? 0) % rotation.length],
+    DockMode.everyHalfHour => rotation[(ref.watch(_halfHourProvider).value ?? 0) % rotation.length],
   };
 });
 

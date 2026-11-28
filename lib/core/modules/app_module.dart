@@ -79,7 +79,7 @@ class ModuleSettings extends AsyncNotifier<Set<AppModule>> {
   /// Switches [module] on or off at once, then saves. Reverts if saving fails.
   Future<void> setEnabled(AppModule module, bool on) async {
     final previous = state;
-    final current = {...(state.valueOrNull ?? AppModule.values.toSet())};
+    final current = {...(state.value ?? AppModule.values.toSet())};
     on ? current.add(module) : current.remove(module);
     state = AsyncData(current);
     final disabled = {
@@ -111,5 +111,5 @@ final moduleSettingsProvider = AsyncNotifierProvider<ModuleSettings, Set<AppModu
 /// Every place that shows a module checks this — and any future reminder
 /// scheduler must not schedule notifications for a module that is off.
 final enabledModulesProvider = Provider<Set<AppModule>>(
-  (ref) => ref.watch(moduleSettingsProvider).valueOrNull ?? AppModule.values.toSet(),
+  (ref) => ref.watch(moduleSettingsProvider).value ?? AppModule.values.toSet(),
 );

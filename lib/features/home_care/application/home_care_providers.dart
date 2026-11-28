@@ -133,6 +133,6 @@ final careArrivalProvider = AsyncNotifierProvider<CareArrival, bool>(CareArrival
 
 /// Names of the jobs due now (for the arrival note).
 final careDueNamesProvider = Provider<List<String>>((ref) {
-  final all = ref.watch(careJobStatesProvider).valueOrNull ?? const <CareJobState>[];
+  final all = ref.watch(careJobStatesProvider).value ?? const <CareJobState>[];
   return [for (final s in dueOn(all, ref.watch(todayProvider))) s.job.title];
 });

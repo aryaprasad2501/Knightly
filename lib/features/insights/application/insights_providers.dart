@@ -115,7 +115,7 @@ final insightsIntroPlayedProvider = NotifierProvider<InsightsIntroPlayed, bool>(
 final weeklyReviewProvider = Provider<AsyncValue<List<ReviewLine>>>((ref) {
   final input = ref.watch(insightsInputProvider);
   return ref.watch(insightsProvider(InsightPeriod.week)).whenData((week) {
-    final link = input.valueOrNull == null ? null : sleepVsHabitsLine(input.requireValue);
+    final link = input.value == null ? null : sleepVsHabitsLine(input.requireValue);
     return [...weeklyReview(week), ?link];
   });
 });

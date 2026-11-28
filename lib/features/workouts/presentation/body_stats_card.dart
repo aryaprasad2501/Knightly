@@ -19,7 +19,7 @@ class BodyStatsCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
     final text = context.textStyles;
-    final stats = ref.watch(bodyStatsProvider).valueOrNull;
+    final stats = ref.watch(bodyStatsProvider).value;
     if (stats == null) return const SizedBox.shrink();
     final bmi = stats.bmi;
     final band = stats.band;

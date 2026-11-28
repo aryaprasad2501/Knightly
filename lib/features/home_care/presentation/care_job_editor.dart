@@ -175,7 +175,7 @@ class _CareJobEditorState extends ConsumerState<_CareJobEditor> {
 
   /// Category names already in use, for one-tap reuse.
   List<String> get _categories {
-    final all = ref.watch(careJobStatesProvider).valueOrNull ?? const <CareJobState>[];
+    final all = ref.watch(careJobStatesProvider).value ?? const <CareJobState>[];
     final names = <String>{
       for (final s in all)
         if (s.job.area == CareArea.custom && s.job.category != null) s.job.category!,

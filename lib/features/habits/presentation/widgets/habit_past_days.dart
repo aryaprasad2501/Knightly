@@ -74,7 +74,7 @@ class HabitPastDays extends ConsumerWidget {
     final text = context.textStyles;
     final today = ref.watch(todayProvider);
     final counts = <CalendarDate, int>{
-      for (final c in ref.watch(habitCheckInsProvider).valueOrNull ?? const <HabitCheckIn>[])
+      for (final c in ref.watch(habitCheckInsProvider).value ?? const <HabitCheckIn>[])
         if (c.habitId == habit.id) c.date: c.count,
     };
     final days = [for (var i = visibleDays - 1; i >= 0; i--) today.addDays(-i)];

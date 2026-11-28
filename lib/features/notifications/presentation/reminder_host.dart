@@ -36,7 +36,7 @@ class _ReminderHostState extends ConsumerState<ReminderHost> {
       }),
     );
     ref.listenManual(plannedRemindersProvider, (_, next) {
-      final plan = next.valueOrNull;
+      final plan = next.value;
       if (plan != null) unawaited(ref.read(reminderSyncProvider).apply(plan));
     }, fireImmediately: true);
     _lifecycle = AppLifecycleListener(

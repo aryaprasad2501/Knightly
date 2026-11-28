@@ -36,7 +36,7 @@ class _ArchivedList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final habits = ref.watch(archivedHabitsProvider).valueOrNull ?? const <Habit>[];
+    final habits = ref.watch(archivedHabitsProvider).value ?? const <Habit>[];
     if (habits.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: KSpacing.xl),

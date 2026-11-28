@@ -34,9 +34,9 @@ class SettingsScreen extends ConsumerWidget {
     final live = ref.watch(liveBackdropProvider);
     final low = ref.watch(lowModeProvider);
     final still = ref.watch(reduceMotionProvider);
-    final binCount = ref.watch(binItemsProvider).valueOrNull?.length ?? 0;
+    final binCount = ref.watch(binItemsProvider).value?.length ?? 0;
     final modulesOn = ref.watch(enabledModulesProvider);
-    final remindersOn = ref.watch(remindersEnabledProvider).valueOrNull ?? true;
+    final remindersOn = ref.watch(remindersEnabledProvider).value ?? true;
     final chevron = KIcon(KGlyphs.chevronRight, size: 20, color: context.palette.textMuted);
 
     return KPage(
@@ -69,7 +69,7 @@ class SettingsScreen extends ConsumerWidget {
         KCard(
           glyph: KGlyphs.home,
           title: 'Dock style',
-          subtitle: ref.watch(dockModeProvider).valueOrNull?.label ?? DockMode.reactor.label,
+          subtitle: ref.watch(dockModeProvider).value?.label ?? DockMode.reactor.label,
           trailing: chevron,
           onTap: () => showKBottomSheet<void>(
             context: context,
@@ -77,7 +77,7 @@ class SettingsScreen extends ConsumerWidget {
             subtitle: 'The tab bar at the bottom. Home stays in the middle.',
             child: Consumer(
               builder: (context, ref, _) {
-                final mode = ref.watch(dockModeProvider).valueOrNull ?? DockMode.reactor;
+                final mode = ref.watch(dockModeProvider).value ?? DockMode.reactor;
                 return Wrap(
                   spacing: KSpacing.sm,
                   runSpacing: KSpacing.sm,
@@ -201,7 +201,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: KSpacing.xxs),
               Text(
-                'Version ${ref.watch(appVersionProvider).valueOrNull ?? '—'}',
+                'Version ${ref.watch(appVersionProvider).value ?? '—'}',
                 style: context.textStyles.bodySmall?.copyWith(color: context.palette.textMuted),
               ),
             ],
@@ -212,7 +212,7 @@ class SettingsScreen extends ConsumerWidget {
             onPressed: () => showLicensePage(
               context: context,
               applicationName: 'Knightly',
-              applicationVersion: ref.read(appVersionProvider).valueOrNull,
+              applicationVersion: ref.read(appVersionProvider).value,
               useRootNavigator: true,
             ),
             child: Text(

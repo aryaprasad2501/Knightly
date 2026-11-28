@@ -118,8 +118,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final text = context.textStyles;
-    final last = ref.watch(lastBackupProvider).valueOrNull;
-    final copies = ref.watch(safetyCopiesProvider).valueOrNull ?? const [];
+    final last = ref.watch(lastBackupProvider).value;
+    final copies = ref.watch(safetyCopiesProvider).value ?? const [];
     final idle = _busy == _Busy.none;
 
     return KSubpage(

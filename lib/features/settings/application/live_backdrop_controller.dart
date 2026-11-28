@@ -32,5 +32,5 @@ final liveBackdropControllerProvider = AsyncNotifierProvider<LiveBackdropControl
 
 /// The setting as a plain value; on while loading.
 final liveBackdropProvider = Provider<bool>(
-  (ref) => ref.watch(liveBackdropControllerProvider).valueOrNull ?? true,
+  (ref) => ref.watch(liveBackdropControllerProvider).value ?? true,
 );

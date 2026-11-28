@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/design/components/k_art_header.dart';
 import 'package:knightly/core/design/components/k_bar_chart.dart';

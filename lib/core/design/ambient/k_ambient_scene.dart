@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../brand/k_emblems.dart';
@@ -122,7 +122,7 @@ class _KLiveSceneState extends ConsumerState<KLiveScene> with WidgetsBindingObse
   bool get _shouldRun =>
       _foreground &&
       ref.read(liveSceneEnabledProvider) &&
-      TickerMode.of(context) &&
+      TickerMode.valuesOf(context).enabled &&
       !MediaQuery.disableAnimationsOf(context);
 
   void _sync() {

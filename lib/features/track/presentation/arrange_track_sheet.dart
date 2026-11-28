@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/design/components/k_bottom_sheet.dart';
@@ -40,7 +40,8 @@ class _ArrangeState extends ConsumerState<_Arrange> {
   void _move(int from, int to) {
     final visible = _visible;
     final item = visible.removeAt(from);
-    visible.insert(to > from ? to - 1 : to, item);
+    // onReorderItem already adjusts [to] for the removed item.
+    visible.insert(to, item);
     var k = 0;
     setState(() {
       _all = [for (final p in _all) widget.shown.contains(p) ? visible[k++] : p];
@@ -66,7 +67,7 @@ class _ArrangeState extends ConsumerState<_Arrange> {
           child: ReorderableListView(
             shrinkWrap: true,
             buildDefaultDragHandles: false,
-            onReorder: _move,
+            onReorderItem: _move,
             children: [
               for (final (i, panel) in visible.indexed)
                 Padding(

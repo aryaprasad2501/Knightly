@@ -9,7 +9,7 @@ Read this file first. It applies to every contributor, human or AI. Then read
 |---|---|
 | Product | Knightly — *Own Your Night. Master Your Day.* |
 | Platform | Android first (phones). No iOS/web/desktop targets yet. |
-| Stack | Flutter 3.35 · Dart 3.9 · Riverpod · GoRouter · Drift (SQLite) |
+| Stack | Flutter 3.50 · Dart 3.14 · Riverpod · GoRouter · Drift (SQLite) |
 | Package ID | `com.knightly.app` (provisional, see ARCHITECTURE.md › Decisions) |
 | Data | 100% local and offline. No accounts, no cloud, no paid APIs. |
 

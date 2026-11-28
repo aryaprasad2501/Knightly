@@ -52,7 +52,7 @@ class _KDeviceTiltState extends ConsumerState<KDeviceTilt> with WidgetsBindingOb
   bool get _allowed =>
       widget.active &&
       _foreground &&
-      TickerMode.of(context) &&
+      TickerMode.valuesOf(context).enabled &&
       ref.read(deviceTiltEnabledProvider) &&
       !ref.read(lowEffectsProvider) &&
       !MediaQuery.disableAnimationsOf(context);

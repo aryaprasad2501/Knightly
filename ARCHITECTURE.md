@@ -355,6 +355,7 @@ Widget-test rules learned the hard way (see `test/helpers/pump_app.dart`):
 | `package_info_plus` | ^9.0.1 | runtime | App version shown in Settings and on the licences page (user-approved 2026-11-28). No network, no permission. |
 | `just_audio` | ^0.10.6 | runtime | Short interface sounds from bundled assets (`core/sound/k_sounds.dart`), user-approved 2026-11-28. Players are created lazily per sound; failures are ignored. |
 | `home_widget` | ^0.9.2 | runtime | Android home-screen widget (`KnightlyWidgetProvider.kt`, `res/layout/knightly_widget.xml`); Dart writes figures via `app/home_widget_sync.dart` when they change. User-approved 2026-11-28. |
+| `material_ui` | ^1.11.1 | runtime | Material widgets, moved out of the Flutter SDK in 3.47+ (official replacement). Came with the approved upgrade. |
 | `geolocator` | ^14.0.2 | runtime | One location fix to mark "home" (device GPS, no Play-services prompt) and the location permission flow. User-approved 2026-11-28. |
 | `native_geofence` | ^1.2.1 | runtime | Android GeofencingClient for Home care arrival reminders; callback `homeArrived` reads a due-jobs note written by the app. Needs minSdk 26 and background location. User-approved 2026-11-28. |
 
@@ -475,3 +476,4 @@ codegen not needed yet).
 | D97 | 2026-11-28 | `YearlyRecurrence` (`yearly:MM-DD`, 29 Feb → 28 Feb in common years) added to the shared recurrence; no schema change | Birthdays without a new table. |
 | D98 | 2026-11-28 | Home's "+" is a draggable `KFab` stored as fractions in `home.fab_position` | Position survives screen-size and rotation changes. |
 | D99 | 2026-11-28 | Places stored as JSON in setting `places.list` (so in backups), mirrored to `places.json` for the geofence callback; `PlaceWatcher` interface for tests; shared `locateHere()` in core/location | Small user config, no schema change. |
+| D100 | 2026-11-28 | Flutter 3.50.1: `package:flutter/material.dart` replaced by `package:material_ui/material_ui.dart` everywhere; Gradle 9.5 / AGP 9.3.1 / Kotlin 2.4.20, Java 17; root build forces plugin compileSdk ≥ 36 (native_geofence pins 34); drift `TableMigration` experimental notice silenced in `app_database.dart` only (shipped steps unchanged) | Required by the approved SDK upgrade. |

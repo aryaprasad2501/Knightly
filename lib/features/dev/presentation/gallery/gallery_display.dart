@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/design/components/k_activity_rings.dart';
 import '../../../../core/design/components/k_toggle.dart';

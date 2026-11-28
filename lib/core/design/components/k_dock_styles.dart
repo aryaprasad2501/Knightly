@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../brand/k_emblems.dart';
 import '../theme/knightly_palette.dart';
@@ -42,94 +42,164 @@ class DockBodyPainter extends CustomPainter {
   /// The hub's centre x (reactor).
   final double? hubCenter;
 
-  Path _body(Size s) {
-    final w = s.width, h = s.height;
+  /// The bar's outline, [inset] pixels in from the edge (0 = the outer rim).
+  Path _body(Size s, [double inset = 0]) {
+    final l = inset, t = inset, r = s.width - inset, b = s.height - inset, h = b - t;
     if (style == KDockStyle.crest) {
       // Long hexagon: pointed ends.
-      final tip = tactical ? 20.0 : 16.0;
+      final tip = (tactical ? 20.0 : 16.0) - inset * 0.4;
       return Path()
-        ..moveTo(0, h / 2)
-        ..lineTo(tip, 0)
-        ..lineTo(w - tip, 0)
-        ..lineTo(w, h / 2)
-        ..lineTo(w - tip, h)
-        ..lineTo(tip, h)
+        ..moveTo(l, t + h / 2)
+        ..lineTo(l + tip, t)
+        ..lineTo(r - tip, t)
+        ..lineTo(r, t + h / 2)
+        ..lineTo(r - tip, b)
+        ..lineTo(l + tip, b)
         ..close();
     }
     if (!tactical) {
-      return Path()..addRRect(RRect.fromRectAndRadius(Offset.zero & s, const Radius.circular(24)));
+      return Path()..addRRect(RRect.fromLTRBR(l, t, r, b, Radius.circular(24 - inset)));
     }
-    const cut = 18.0;
+    final cut = 18.0 - inset * 0.4;
     return Path()
-      ..moveTo(cut, 0)
-      ..lineTo(w - cut, 0)
-      ..lineTo(w, cut)
-      ..lineTo(w, h - cut)
-      ..lineTo(w - cut, h)
-      ..lineTo(cut, h)
-      ..lineTo(0, h - cut)
-      ..lineTo(0, cut)
+      ..moveTo(l + cut, t)
+      ..lineTo(r - cut, t)
+      ..lineTo(r, t + cut)
+      ..lineTo(r, b - cut)
+      ..lineTo(r - cut, b)
+      ..lineTo(l + cut, b)
+      ..lineTo(l, b - cut)
+      ..lineTo(l, t + cut)
       ..close();
   }
 
   @override
   void paint(Canvas c, Size s) {
-    final body = _body(s);
     final rect = Offset.zero & s;
-    final top = Color.lerp(p.surfaceRaised, p.textPrimary, 0.1)!;
-    final bottom = Color.lerp(p.surfaceRaised, p.canvas, 0.75)!;
+    final outer = _body(s);
+    const frame = 5.0;
+    final inner = _body(s, frame);
+
+    // 1. The metal frame: lit from above, falling into shadow underneath.
     c.drawPath(
-      body,
+      outer,
       Paint()
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [top, p.surfaceRaised, bottom],
-          stops: const [0, 0.4, 1],
+          colors: [
+            Color.lerp(p.surfaceRaised, p.textPrimary, 0.26)!,
+            Color.lerp(p.surfaceRaised, p.textPrimary, 0.06)!,
+            Color.lerp(p.surfaceRaised, p.canvas, 0.8)!,
+          ],
+          stops: const [0, 0.45, 1],
         ).createShader(rect),
     );
     // Painted glow around the rim, then the rim itself.
     c.drawPath(
-      body,
+      outer,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 6
         ..color = p.accent.withValues(alpha: 0.12),
     );
     c.drawPath(
-      body,
+      outer,
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.2
-        ..color = p.accent.withValues(alpha: 0.6),
+        ..color = p.accent.withValues(alpha: 0.55),
+    );
+
+    // 2. The recessed inner panel the tabs sit in: dark glass.
+    c.drawPath(
+      inner,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.lerp(p.canvas, p.surfaceRaised, 0.55)!, p.canvas],
+        ).createShader(rect),
+    );
+    // Its edge: a dark groove with a hairline of light on the lower lip.
+    c.drawPath(
+      inner,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.4
+        ..color = p.canvas.withValues(alpha: 0.9),
+    );
+    c.drawLine(
+      Offset(frame + 22, s.height - frame + 0.6),
+      Offset(s.width - frame - 22, s.height - frame + 0.6),
+      Paint()
+        ..strokeWidth = 1
+        ..color = p.accent.withValues(alpha: 0.25),
     );
 
     if (style == KDockStyle.crest) {
-      // Tab cells.
+      // 3. One bevelled cell per tab.
       final cell = (s.width - endPad * 2) / cells;
-      final divider = Paint()
-        ..strokeWidth = 1
-        ..color = p.outline.withValues(alpha: 0.8);
-      for (var i = 1; i < cells; i++) {
-        final x = endPad + cell * i;
-        c.drawLine(Offset(x, 10), Offset(x, s.height - 10), divider);
+      for (var i = 0; i < cells; i++) {
+        final r = Rect.fromLTWH(endPad + cell * i + 2.5, frame + 4, cell - 5, s.height - (frame + 4) * 2);
+        final shape = tactical
+            ? (Path()
+                ..moveTo(r.left + 6, r.top)
+                ..lineTo(r.right, r.top)
+                ..lineTo(r.right, r.bottom - 6)
+                ..lineTo(r.right - 6, r.bottom)
+                ..lineTo(r.left, r.bottom)
+                ..lineTo(r.left, r.top + 6)
+                ..close())
+            : (Path()..addRRect(RRect.fromRectAndRadius(r, const Radius.circular(10))));
+        c.drawPath(
+          shape,
+          Paint()
+            ..shader = LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [Color.lerp(p.surfaceRaised, p.textPrimary, 0.05)!, p.canvas],
+            ).createShader(r),
+        );
+        c.drawPath(
+          shape,
+          Paint()
+            ..style = PaintingStyle.stroke
+            ..strokeWidth = 1
+            ..color = p.outline.withValues(alpha: 0.9),
+        );
       }
     }
 
-    // Lit rails along the top edge, brightest toward the centre / hub.
+    // 4. Lit rails along the top edge, brightest toward the centre / hub.
     final hub = hubCenter ?? s.width / 2;
     for (final (from, to) in [(0.0, hub), (s.width, hub)]) {
       final band = Rect.fromPoints(Offset(from, 0), Offset(to, 3));
+      final a = Offset(from == 0 ? 24 : s.width - 24, 1.2);
+      final b = Offset(to + (from == 0 ? -30 : 30), 1.2);
+      Shader rail(double alpha) => LinearGradient(
+        begin: from == 0 ? Alignment.centerLeft : Alignment.centerRight,
+        end: from == 0 ? Alignment.centerRight : Alignment.centerLeft,
+        colors: [
+          p.accent.withValues(alpha: 0),
+          p.accentStrong.withValues(alpha: alpha),
+        ],
+      ).createShader(band);
+      // A wide faint stroke under a fine bright one reads as glow (no blur).
       c.drawLine(
-        Offset(from == 0 ? 24 : s.width - 24, 1.2),
-        Offset(to + (from == 0 ? -30 : 30), 1.2),
+        a,
+        b,
         Paint()
-          ..strokeWidth = 1.6
-          ..shader = LinearGradient(
-            begin: from == 0 ? Alignment.centerLeft : Alignment.centerRight,
-            end: from == 0 ? Alignment.centerRight : Alignment.centerLeft,
-            colors: [p.accent.withValues(alpha: 0), p.accentStrong.withValues(alpha: 0.9)],
-          ).createShader(band),
+          ..strokeWidth = 5
+          ..strokeCap = StrokeCap.round
+          ..shader = rail(0.22),
+      );
+      c.drawLine(
+        a,
+        b,
+        Paint()
+          ..strokeWidth = 1.8
+          ..shader = rail(1),
       );
     }
   }
@@ -152,40 +222,69 @@ class DockHubPainter extends CustomPainter {
   final bool tactical;
   final KnightlyPalette p;
 
+  Path _hub(Rect r) {
+    final x = r.left, y = r.top, w = r.width, h = r.height;
+    if (tactical) {
+      return Path()
+        ..moveTo(x + w * 0.22, y)
+        ..lineTo(x + w * 0.78, y)
+        ..lineTo(x + w, y + h * 0.32)
+        ..lineTo(x + w * 0.86, y + h * 0.82)
+        ..lineTo(x + w / 2, y + h)
+        ..lineTo(x + w * 0.14, y + h * 0.82)
+        ..lineTo(x, y + h * 0.32)
+        ..close();
+    }
+    return Path()
+      ..moveTo(x + w * 0.18, y + h * 0.12)
+      ..quadraticBezierTo(x + w / 2, y - h * 0.04, x + w * 0.82, y + h * 0.12)
+      ..quadraticBezierTo(x + w, y + h * 0.2, x + w * 0.94, y + h * 0.55)
+      ..quadraticBezierTo(x + w * 0.8, y + h * 0.9, x + w / 2, y + h)
+      ..quadraticBezierTo(x + w * 0.2, y + h * 0.9, x + w * 0.06, y + h * 0.55)
+      ..quadraticBezierTo(x, y + h * 0.2, x + w * 0.18, y + h * 0.12)
+      ..close();
+  }
+
   @override
   void paint(Canvas c, Size s) {
     final w = s.width, h = s.height;
-    final Path hub;
-    if (tactical) {
-      hub = Path()
-        ..moveTo(w * 0.22, 0)
-        ..lineTo(w * 0.78, 0)
-        ..lineTo(w, h * 0.32)
-        ..lineTo(w * 0.86, h * 0.82)
-        ..lineTo(w / 2, h)
-        ..lineTo(w * 0.14, h * 0.82)
-        ..lineTo(0, h * 0.32)
-        ..close();
-    } else {
-      hub = Path()
-        ..moveTo(w * 0.18, h * 0.12)
-        ..quadraticBezierTo(w / 2, -h * 0.04, w * 0.82, h * 0.12)
-        ..quadraticBezierTo(w, h * 0.2, w * 0.94, h * 0.55)
-        ..quadraticBezierTo(w * 0.8, h * 0.9, w / 2, h)
-        ..quadraticBezierTo(w * 0.2, h * 0.9, w * 0.06, h * 0.55)
-        ..quadraticBezierTo(0, h * 0.2, w * 0.18, h * 0.12)
-        ..close();
-    }
     final rect = Offset.zero & s;
+    final hub = _hub(rect);
+    final core = _hub(rect.deflate(6));
+    // The metal shell.
     c.drawPath(
       hub,
       Paint()
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color.alphaBlend(p.accent.withValues(alpha: 0.22), p.surfaceRaised), p.canvas],
+          colors: [
+            Color.lerp(p.surfaceRaised, p.textPrimary, 0.3)!,
+            Color.lerp(p.surfaceRaised, p.canvas, 0.6)!,
+          ],
         ).createShader(rect),
     );
+    // The lit core: accent glass, brightest low down where the light pools.
+    c.drawPath(
+      core,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(0, 0.45),
+          radius: 0.9,
+          colors: [
+            Color.alphaBlend(p.accent.withValues(alpha: 0.45), p.surfaceRaised),
+            Color.alphaBlend(p.accent.withValues(alpha: 0.12), p.canvas),
+          ],
+        ).createShader(rect),
+    );
+    c.drawPath(
+      core,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = p.accentStrong.withValues(alpha: 0.45),
+    );
+    // Painted glow around the shell, then its bright edge.
     c.drawPath(
       hub,
       Paint()
@@ -200,20 +299,20 @@ class DockHubPainter extends CustomPainter {
         ..strokeWidth = 1.6
         ..color = p.accentStrong.withValues(alpha: 0.95),
     );
-    // A glowing point at the base.
+    // A glowing point at the base, with a short beam down onto the floor.
     c.drawCircle(
       Offset(w / 2, h),
-      7,
+      9,
       Paint()
         ..shader = RadialGradient(
           colors: [p.accentStrong, p.accentStrong.withValues(alpha: 0)],
-        ).createShader(Rect.fromCircle(center: Offset(w / 2, h), radius: 7)),
+        ).createShader(Rect.fromCircle(center: Offset(w / 2, h), radius: 9)),
     );
     // The emblem on top.
     final e = Rect.fromCenter(
-      center: Offset(w / 2, tactical ? 9 : 6),
-      width: tactical ? 30 : 24,
-      height: tactical ? 10 : 9,
+      center: Offset(w / 2, tactical ? 10 : 7),
+      width: tactical ? 34 : 26,
+      height: tactical ? 11 : 10,
     );
     c.drawPath(tactical ? KEmblems.wingBlade(e) : KEmblems.catEars(e), Paint()..color = p.accentStrong);
   }

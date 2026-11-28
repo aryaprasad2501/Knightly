@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../../core/design/components/k_brand_mark.dart';
 import '../../../../core/design/components/k_metal_text.dart';

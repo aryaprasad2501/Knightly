@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../core/design/motion/k_effects.dart';
 import '../../../core/design/theme/k_hud_colors.dart';

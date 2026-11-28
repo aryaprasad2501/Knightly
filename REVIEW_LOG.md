@@ -34,6 +34,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 19 | Dock: redesigned look restored (stage 16 version) | 27dad5b | Dock shows the frame + tall hub again |
 | 20 | Workout templates | f064789 | Open a finished workout > Save as template; then Track > Start workout > pick it |
 | 21 | More Insights links | b648929 | Insights > Weekly review: lines about workouts/sleep and water/habits (need some weeks of data) |
+| 22 | Choose the Today widget's lines | 8e205fc | Settings > Home-screen widget; the widget updates |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

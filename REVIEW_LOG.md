@@ -27,6 +27,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 12 | Yearly events / birthdays | 1d3e0b6 | Calendar > New event > Birthday · yearly |
 | 13 | Module widgets | 03755c0 | Long-press home screen > Widgets > Knightly: 5 widgets; tap one opens its module |
 | 14 | Places (home + office etc.) | 3f6aa0d | Settings > Places > Add a place here (check arrival on a real phone) |
+| 15 | Insights weekly review + sleep/habits link | 8b112d3 | Insights: Weekly review panel under the score |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

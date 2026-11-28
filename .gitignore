@@ -69,3 +69,7 @@ insight/
 /Dual-Themed Futuristic Command Center-2.png
 /Cinematic Dark Knight UI Showcase.png
 /Moonlit Vigilantes_ Neon City Duo.png
+
+# Firebase config (project keys): kept out of Git. See docs/CLOUD_SYNC_PLAN.md.
+/google-services.json
+android/app/google-services.json

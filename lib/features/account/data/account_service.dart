@@ -45,6 +45,10 @@ abstract interface class AccountService {
 
   /// Signs out of Firebase and Google on this phone (cloud data stays).
   Future<void> signOut();
+
+  /// Deletes the Firebase account (callers remove its cloud data first).
+  /// Google may ask the person to confirm their account again.
+  Future<void> deleteAccount();
 }
 
 /// Firebase Authentication with Google sign-in (Android Credential Manager).
@@ -110,5 +114,30 @@ class FirebaseAccountService implements AccountService {
     if (!await _init()) return;
     await FirebaseAuth.instance.signOut();
     await GoogleSignIn.instance.signOut();
+  }
+
+  @override
+  Future<void> deleteAccount() async {
+    if (!await _init()) return;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    try {
+      await user.delete();
+    } on FirebaseAuthException catch (e) {
+      if (e.code != 'requires-recent-login') {
+        throw const AccountException('The account could not be deleted. Try again.');
+      }
+      // Firebase wants a fresh sign-in before deleting: confirm with Google.
+      try {
+        final google = await GoogleSignIn.instance.authenticate();
+        final idToken = google.authentication.idToken;
+        if (idToken == null) throw const AccountException('Google did not confirm the account.');
+        await user.reauthenticateWithCredential(GoogleAuthProvider.credential(idToken: idToken));
+        await user.delete();
+      } on GoogleSignInException {
+        throw const AccountException('Confirm your Google account to delete it.');
+      }
+    }
+    await GoogleSignIn.instance.disconnect();
   }
 }

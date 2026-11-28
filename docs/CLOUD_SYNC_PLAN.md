@@ -1,6 +1,6 @@
 # Cloud sync plan: optional Google sign-in + Firebase
 
-Status: **stage 1 built** (change tracking + engine, tested with a fake cloud). Stages 2–5 wait on package approval. Replaces Option B of
+Status: **built** (stages 1–4; 2026-11-28). Needs a real-device check: sign in, add data, reinstall, sign in again.
 `docs/GOOGLE_BACKUP_PLAN.md`. Option A of that plan (Android's own backup) is
 no longer needed once sync exists.
 

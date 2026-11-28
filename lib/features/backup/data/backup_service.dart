@@ -614,6 +614,10 @@ class BackupService {
     return copies;
   }
 
+  /// Saves a safety copy of all current data (kept with the restore ones).
+  /// Public: cloud sync saves one before its first merge.
+  Future<void> saveSafetyCopy() => _writeSafetyCopy();
+
   Future<void> _writeSafetyCopy() async {
     final dir = await _safetyDir();
     await dir.create(recursive: true);

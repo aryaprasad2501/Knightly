@@ -26,6 +26,12 @@ class AccountController extends AsyncNotifier<AccountUser?> {
     await ref.read(accountServiceProvider).signOut();
     state = const AsyncData(null);
   }
+
+  /// Deletes the account itself (its cloud data is removed first by sync).
+  Future<void> deleteAccount() async {
+    await ref.read(accountServiceProvider).deleteAccount();
+    state = const AsyncData(null);
+  }
 }
 
 final accountProvider = AsyncNotifierProvider<AccountController, AccountUser?>(AccountController.new);

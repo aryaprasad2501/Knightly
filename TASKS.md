@@ -145,5 +145,5 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 
 ## Later (owner's plan, 2026-11-28 — not started)
 
-- [ ] Optional Google-account backup so data survives uninstalling (changes the offline-only rule: needs a decision record and the owner's sign-off on scope)
+- [x] Optional Google account + Firebase cloud sync (2026-11-28; check on a real phone: reinstall + sign in restores data)
 - [ ] "Report a bug" that sends to the owner's Gmail (after the cloud backup)

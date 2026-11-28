@@ -6,9 +6,16 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
-- **Continue with Google** (Settings, top): optional sign-in with your Google account (Firebase
-  Authentication) and an Account & sync screen with sign-out. Syncing itself arrives in the next stage
-  and is labelled as not built yet. Without an account Knightly works fully offline as before.
+- **Cloud sync with your Google account (optional)**: Settings › Continue with Google. Everything is
+  copied to your own account (Firebase) and kept in step automatically: on start, on return to the
+  app, a few seconds after changes, and again when the connection comes back. Reinstall Knightly or
+  use another phone, sign in, and it all comes back. The phone stays the working copy; without an
+  account Knightly works fully offline as before.
+  - Account & sync shows the status, last synced time, waiting changes, and Sync now / Retry.
+  - First sign-in with data on both sides asks: merge (recommended), use the account's copy, or use
+    this phone's copy; a safety backup is saved first.
+  - Sign out keeps or removes this phone's data; Delete account removes the cloud copy and the
+    account.
 - **Settings › Home-screen widget**: choose the two lines under the progress on "Knightly · Today"
   (water, next mission, next event, habits or nothing).
 - **Workout templates**: "Save as template" on a finished workout keeps its exercises and sets; "Start

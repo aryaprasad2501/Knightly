@@ -26,4 +26,12 @@ class FakeAccountService implements AccountService {
 
   @override
   Future<void> signOut() async => user = null;
+
+  bool deleted = false;
+
+  @override
+  Future<void> deleteAccount() async {
+    deleted = true;
+    user = null;
+  }
 }

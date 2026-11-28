@@ -17,12 +17,17 @@ void main() {
     await tester.tap(find.text('Continue with Google').hitTestable());
     await settleWithDatabase(tester);
     expect(find.text(FakeAccountService.sample.email), findsOneWidget);
-    expect(find.textContaining('Not built yet'), findsOneWidget, reason: 'sync is labelled as not built');
+    await scrollTo(tester, find.text('Sync now'));
+    await tester.tap(find.text('Sync now').hitTestable());
+    await settleWithDatabase(tester);
+    await settleWithDatabase(tester);
+    expect(find.text('Up to date'), findsOneWidget);
+    expect(find.text('Last synced just now'), findsOneWidget);
 
     await scrollTo(tester, find.text('Sign out'));
     await tester.tap(find.text('Sign out').hitTestable());
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Sign out').hitTestable().last); // the dialog's button
+    await tester.tap(find.text('Sign out, keep data on this phone').hitTestable());
     await settleWithDatabase(tester);
     expect(account.user, isNull);
     expect(find.text('Keep your data safe'), findsOneWidget);

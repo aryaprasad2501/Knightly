@@ -71,6 +71,12 @@ class BackupActions {
     _ref.invalidate(safetyCopiesProvider);
     return summary;
   }
+
+  /// Saves a safety copy of everything now (before cloud sync first merges).
+  Future<void> saveSafetyCopy() async {
+    await _service.saveSafetyCopy();
+    _ref.invalidate(safetyCopiesProvider);
+  }
 }
 
 final backupActionsProvider = Provider<BackupActions>(BackupActions.new);

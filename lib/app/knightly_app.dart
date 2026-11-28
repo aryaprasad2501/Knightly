@@ -12,6 +12,7 @@ import '../core/design/theme/knightly_themes.dart';
 import '../features/notifications/presentation/reminder_host.dart';
 import '../features/settings/application/display_controllers.dart';
 import '../features/settings/application/theme_controller.dart';
+import '../features/account/application/sync_controller.dart';
 import 'home_widget_sync.dart';
 import 'router/app_router.dart';
 import 'router/app_routes.dart';
@@ -92,6 +93,8 @@ class _KnightlyAppState extends ConsumerState<KnightlyApp> with SingleTickerProv
   @override
   Widget build(BuildContext context) {
     ref.listen(activeThemeProvider, (_, next) => _switchTo(next));
+    // Optional cloud sync runs for the whole app while signed in.
+    ref.listen(syncControllerProvider, (_, _) {});
     final theme = buildKnightlyTheme(_shown);
     final incoming = _incoming;
     final reduceMotion = ref.watch(reduceMotionProvider);

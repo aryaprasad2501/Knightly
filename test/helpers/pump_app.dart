@@ -6,6 +6,9 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/app/home_widget_sync.dart';
 import 'package:knightly/features/account/application/account_providers.dart';
+import 'package:knightly/features/account/application/sync_controller.dart';
+
+import '../core/sync/fake_cloud.dart';
 
 import 'fake_account.dart';
 import 'package:knightly/features/settings/application/display_controllers.dart';
@@ -67,6 +70,7 @@ Future<AppDatabase> pumpKnightlyApp(
   List<Override> overrides = const [],
   bool showWelcome = false,
   FakeAccountService? account,
+  FakeCloud? cloud,
 }) async {
   final database = db ?? testDatabase();
   await tester.pumpWidget(
@@ -86,6 +90,9 @@ Future<AppDatabase> pumpKnightlyApp(
         homeWidgetEnabledProvider.overrideWithValue(false),
         // No Firebase in tests.
         accountServiceProvider.overrideWithValue(account ?? FakeAccountService()),
+        // Sync runs only when a test drives it, against an in-memory cloud.
+        autoSyncEnabledProvider.overrideWithValue(false),
+        cloudStoreFactoryProvider.overrideWithValue((_) => cloud ?? FakeCloud()),
         if (now != null) clockProvider.overrideWithValue(() => now),
         ...overrides,
       ],

@@ -1,4 +1,5 @@
 import 'package:drift/native.dart';
+import 'package:drift/drift.dart' show driftRuntimeOptions;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/core/database/app_database.dart';
 import 'package:knightly/core/sync/cloud_store.dart';
@@ -32,6 +33,9 @@ class Phone {
 }
 
 void main() {
+  // Several phones (databases) at once is the point of these tests.
+  driftRuntimeOptions.dontWarnAboutMultipleDatabases = true;
+
   late FakeCloud cloud;
   late Phone a, b;
   final today = CalendarDate(2026, 11, 28);

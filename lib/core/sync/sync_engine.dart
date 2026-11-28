@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 
 import '../database/app_database.dart';
+import '../database/ids.dart';
 import 'cloud_store.dart';
 import 'sync_tables.dart';
 
@@ -98,6 +99,62 @@ class SyncEngine {
         await _advanceCursorsToNow();
         return SyncReport(pushed: pushed, pulled: 0);
     }
+  }
+
+  /// Removes everything this account keeps in the cloud.
+  Future<void> deleteCloudData() => _cloud.deleteAll();
+
+  /// Whether the account already has synced data.
+  Future<bool> cloudHasData() => _cloud.hasData();
+
+  /// Whether this phone has any of the person's own records (settings
+  /// don't count): decides whether a first sign-in needs a choice.
+  Future<bool> hasLocalData() async {
+    for (final spec in syncTables) {
+      if (spec.isSettings) continue;
+      final row = await _one('SELECT 1 AS x FROM ${spec.table} LIMIT 1', const []);
+      if (row != null) return true;
+    }
+    return false;
+  }
+
+  /// A value from sync's own state (not synced, not backed up).
+  Future<String?> meta(String key) async =>
+      (await _one('SELECT value FROM sync_meta WHERE "key" = ?', [key]))?['value'] as String?;
+
+  Future<void> setMeta(String key, String? value) => value == null
+      ? _db.customStatement('DELETE FROM sync_meta WHERE "key" = ?', [key])
+      : _db.customStatement(
+          'INSERT INTO sync_meta ("key", value) VALUES (?, ?) ON CONFLICT ("key") DO UPDATE SET value = excluded.value',
+          [key, value],
+        );
+
+  /// This phone's sync id, made once.
+  static Future<String> deviceIdOf(AppDatabase db) async {
+    final row = await db
+        .customSelect("SELECT value FROM sync_meta WHERE \"key\" = 'device_id'")
+        .getSingleOrNull();
+    if (row != null) return row.read<String>('value');
+    final id = (await db.customSelect('SELECT $sqlNewUuid AS id').getSingle()).read<String>('id');
+    await db.customStatement("INSERT INTO sync_meta (\"key\", value) VALUES ('device_id', ?)", [id]);
+    return id;
+  }
+
+  /// Removes the person's data from this phone (sign-out or account
+  /// deletion with "remove from this phone"). Device-only settings stay.
+  /// Nothing is queued: this is not a change to send to the cloud.
+  Future<void> wipeLocal() async {
+    await _applyingDo(() async {
+      for (final spec in syncTables.reversed) {
+        await _db.customStatement(
+          spec.isSettings
+              ? 'DELETE FROM app_settings WHERE ${_deviceOnlySql('key')} = 0'
+              : 'DELETE FROM ${spec.table}',
+        );
+      }
+    });
+    await _clearQueue();
+    _notifyChanged();
   }
 
   /// Forgets sync state (sign-out). Local data stays.

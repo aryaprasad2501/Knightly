@@ -309,9 +309,9 @@ class KNavigationBar extends StatelessWidget {
                 if (dockStyle == KDockStyle.reactor && hubX != null)
                   Positioned(
                     left: hubX - hubW / 2,
-                    top: -22,
+                    top: -24,
                     width: hubW,
-                    height: barHeight + 30,
+                    height: barHeight + 38,
                     child: IgnorePointer(
                       child: CustomPaint(
                         painter: DockHubPainter(tactical: tactical, p: p),
@@ -320,10 +320,11 @@ class KNavigationBar extends StatelessWidget {
                   ),
                 if (dockStyle == KDockStyle.crest)
                   Positioned(
-                    left: constraints.maxWidth / 2 - 100,
+                    // Wings sweep out along most of the bar.
+                    left: constraints.maxWidth * 0.12,
                     top: -24,
-                    width: 200,
-                    height: 26,
+                    width: constraints.maxWidth * 0.76,
+                    height: 27,
                     child: IgnorePointer(
                       child: CustomPaint(
                         painter: DockCrestPainter(tactical: tactical, p: p),

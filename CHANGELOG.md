@@ -47,6 +47,8 @@ versions follow `pubspec.yaml`.
 ### Changed
 - Riverpod 3.5 (state management); no visible change.
 - Built with Flutter 3.50.1 / Dart 3.14 (Gradle 9.5, Android Gradle Plugin 9.3.1, Kotlin 2.4.20).
+- Dock styles redrawn closer to the reference: a metal frame with a recessed panel, glowing rails, a
+  taller lit hub (Arc reactor) and a bevelled cell per tab under a wider crest (Crest).
 - Home briefing gauges: clipped to the card (no half-visible fifth gauge), snap in pages of four, with
   page dots and a chevron showing there is more.
 - Home's "+" is now a floating button (hexagon in Dark Knight, round in Shadow Cat): drag it anywhere

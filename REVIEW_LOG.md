@@ -38,6 +38,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 23 | Sync 1a: change tracking (no visible change) | bcf017e | Nothing to try yet; tests cover it |
 | 24 | Sync 1b: sync engine (no visible change) | 2820c36 | Nothing to try yet; test/core/sync covers two phones + one cloud |
 | 25 | Sync 2: Continue with Google + Account screen | 4eb5776 | Settings > Continue with Google > sign in with a test-user Gmail; Sign out |
+| 26 | Sync 3-4: cloud sync, status, first-sign-in choice, sign-out/delete | f8e6fca | On your phone: sign in, add data, check Firestore console, reinstall, sign in: data returns; Delete account |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

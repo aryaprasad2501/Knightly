@@ -25,14 +25,28 @@ class HabitRepository {
   final AppDatabase _db;
   final Clock _clock;
 
-  /// Active habits (or archived ones), oldest first. Habits in the Recycle Bin
-  /// are never included.
+  /// Active habits (or archived ones) in the person's order, then oldest
+  /// first. Habits in the Recycle Bin are never included.
   Stream<List<Habit>> watchHabits({bool archived = false}) {
     final query = _db.select(_db.habits)
       ..where((h) => (archived ? h.archivedAt.isNotNull() : h.archivedAt.isNull()) & h.deletedAt.isNull())
-      ..orderBy([(h) => OrderingTerm.asc(h.createdAt), (h) => OrderingTerm.asc(h.id)]);
+      ..orderBy([
+        (h) => OrderingTerm.asc(h.position, nulls: NullsOrder.last),
+        (h) => OrderingTerm.asc(h.createdAt),
+        (h) => OrderingTerm.asc(h.id),
+      ]);
     return query.watch().map((rows) => rows.map(_toHabit).nonNulls.toList());
   }
+
+  /// Saves the order of [habitIds] (first = top).
+  Future<void> reorder(List<int> habitIds) => _db.transaction(() async {
+    final now = _clock();
+    for (final (i, id) in habitIds.indexed) {
+      await (_db.update(
+        _db.habits,
+      )..where((h) => h.id.equals(id))).write(HabitsCompanion(position: Value(i), updatedAt: Value(now)));
+    }
+  });
 
   /// Habits in the Recycle Bin, most recently deleted first.
   Stream<List<Habit>> watchTrashed() {

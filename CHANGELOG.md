@@ -6,6 +6,7 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Reorder habits** (Track › Habits › Reorder): drag habits into your own order; new ones go last.
 - **Cloud sync with your Google account (optional)**: Settings › Continue with Google. Everything is
   copied to your own account (Firebase) and kept in step automatically: on start, on return to the
   app, a few seconds after changes, and again when the connection comes back. Reinstall Knightly or

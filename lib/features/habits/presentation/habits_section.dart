@@ -13,6 +13,7 @@ import '../application/habits_providers.dart';
 import '../domain/habit_stats.dart';
 import 'habit_editor_sheet.dart';
 import 'widgets/archived_habits_sheet.dart';
+import 'widgets/reorder_habits_sheet.dart';
 import 'widgets/habit_tile.dart';
 
 /// The habits part of the Track tab: today's habits, those resting today, and
@@ -59,16 +60,29 @@ class HabitsSection extends ConsumerWidget {
             if (today.isNotEmpty)
               ..._group('Today · ${today.where((s) => s.isDoneToday).length}/${today.length}', today),
             if (resting.isNotEmpty) ..._group('Resting today · ${resting.length}', resting),
-            if (archivedCount > 0)
-              Center(
-                child: KButton(
-                  label: 'Archived habits ($archivedCount)',
-                  glyph: KGlyphs.archive,
-                  variant: KButtonVariant.secondary,
-                  size: KButtonSize.compact,
-                  onPressed: () => showArchivedHabits(context),
-                ),
-              ),
+            Wrap(
+              alignment: WrapAlignment.center,
+              spacing: KSpacing.sm,
+              runSpacing: KSpacing.sm,
+              children: [
+                if (all.length > 1)
+                  KButton(
+                    label: 'Reorder',
+                    glyph: KGlyphs.reorder,
+                    variant: KButtonVariant.secondary,
+                    size: KButtonSize.compact,
+                    onPressed: () => showReorderHabitsSheet(context, [for (final s in all) s.habit]),
+                  ),
+                if (archivedCount > 0)
+                  KButton(
+                    label: 'Archived habits ($archivedCount)',
+                    glyph: KGlyphs.archive,
+                    variant: KButtonVariant.secondary,
+                    size: KButtonSize.compact,
+                    onPressed: () => showArchivedHabits(context),
+                  ),
+              ],
+            ),
           ],
         );
       },

@@ -226,4 +226,33 @@ void main() {
     expect(node.parent!.label, isNot(contains('TODAY')));
     semantics.dispose();
   });
+
+  testWidgets('Reorder: drag a habit to the top and the list follows', (tester) async {
+    usePhoneViewport(tester);
+    final db = await pumpSeededKnightlyApp(
+      tester,
+      now: now,
+      seed: (db) async {
+        await repoAt(db).create(const HabitDraft(name: 'First habit', schedule: EveryDay()));
+        await repoAt(db).create(const HabitDraft(name: 'Second habit', schedule: EveryDay()));
+      },
+    );
+    await goToTab(tester, 'Track');
+    await tapVisible(tester, find.widgetWithText(KButton, 'Reorder').hitTestable().first);
+    await tester.pumpAndSettle();
+    expect(find.text('Reorder habits'), findsOneWidget);
+
+    // Drag the second habit's handle above the first.
+    final handle = find.byType(ReorderableDragStartListener).last;
+    await tester.drag(handle, const Offset(0, -120));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save order'));
+    await settleWithDatabase(tester);
+
+    final names = [
+      for (final h in await tester.runAsync(() => HabitRepository(db).watchHabits().first) ?? <Habit>[])
+        h.name,
+    ];
+    expect(names, ['Second habit', 'First habit']);
+  });
 }

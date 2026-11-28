@@ -56,6 +56,7 @@ class HabitActions {
   final CalendarDate _today;
 
   Future<int> create(HabitDraft draft) => _repo.create(draft);
+  Future<void> reorder(List<int> habitIds) => _repo.reorder(habitIds);
   Future<void> update(int id, HabitDraft draft) => _repo.update(id, draft);
   Future<void> archive(int id) => _repo.archive(id);
   Future<void> restore(int id) => _repo.restore(id);

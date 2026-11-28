@@ -124,6 +124,7 @@ class BackupService {
               'updatedAt': _time(h.updatedAt),
               'archivedAt': _time(h.archivedAt),
               'deletedAt': _time(h.deletedAt),
+              'position': h.position,
             },
         ],
         'habitCheckIns': [
@@ -677,6 +678,7 @@ class BackupService {
     updatedAt: Value(_requiredTime(r, 'updatedAt')),
     archivedAt: Value(_optionalTime(r, 'archivedAt')),
     deletedAt: Value(_optionalTime(r, 'deletedAt')),
+    position: Value(_optionalInt(r, 'position')),
   );
 
   HabitCheckInsCompanion _checkInRow(Map<String, Object?> r) => HabitCheckInsCompanion.insert(

@@ -76,7 +76,7 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 
 - [x] Habits reminder: one evening check when habits are due (2026-11-28); per-habit times not built
 - [x] Check in for a past day this week (week strip, 2026-11-28)
-- [ ] Reorder habits (currently oldest first)
+- [x] Reorder habits (2026-11-28)
 - [ ] Longer history view / calendar heatmap (natural fit for Insights)
 - [ ] Notes per check-in
 

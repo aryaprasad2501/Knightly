@@ -167,4 +167,18 @@ void main() {
       expect(await countsOf(id), {today: 1, today.addDays(-1): 1, today.addDays(-2): 1});
     });
   });
+
+  test('habits follow the saved order; new ones go to the end', () async {
+    final a = await repo.create(const HabitDraft(name: 'A', schedule: EveryDay()));
+    final b = await repo.create(const HabitDraft(name: 'B', schedule: EveryDay()));
+    final c = await repo.create(const HabitDraft(name: 'C', schedule: EveryDay()));
+    Future<List<String>> names() async => [for (final h in await repo.watchHabits().first) h.name];
+    expect(await names(), ['A', 'B', 'C']);
+
+    await repo.reorder([c, a, b]);
+    expect(await names(), ['C', 'A', 'B']);
+
+    await repo.create(const HabitDraft(name: 'D', schedule: EveryDay()));
+    expect(await names(), ['C', 'A', 'B', 'D']);
+  });
 }

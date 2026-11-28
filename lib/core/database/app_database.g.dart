@@ -2183,6 +2183,15 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, HabitRow> {
     type: DriftSqlType.dateTime,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _positionMeta = const VerificationMeta('position');
+  @override
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+    'position',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
   @override
   late final GeneratedColumn<DateTime> deletedAt = GeneratedColumn<DateTime>(
@@ -2204,6 +2213,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, HabitRow> {
     createdAt,
     updatedAt,
     archivedAt,
+    position,
     deletedAt,
   ];
   @override
@@ -2254,6 +2264,9 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, HabitRow> {
         archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
       );
     }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta, position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    }
     if (data.containsKey('deleted_at')) {
       context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
     }
@@ -2288,6 +2301,7 @@ class $HabitsTable extends Habits with TableInfo<$HabitsTable, HabitRow> {
         DriftSqlType.dateTime,
         data['${effectivePrefix}archived_at'],
       ),
+      position: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}position']),
       deletedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}deleted_at'],
@@ -2323,6 +2337,10 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
   final DateTime updatedAt;
   final DateTime? archivedAt;
 
+  /// The person's own order (0 first); null until they reorder, then such
+  /// habits follow, oldest first. Added in schema v17.
+  final int? position;
+
   /// Set when the habit is in the Recycle Bin. Its check-ins are kept, so
   /// restoring brings the full history back.
   final DateTime? deletedAt;
@@ -2337,6 +2355,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     required this.createdAt,
     required this.updatedAt,
     this.archivedAt,
+    this.position,
     this.deletedAt,
   });
   @override
@@ -2353,6 +2372,9 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     map['updated_at'] = Variable<DateTime>(updatedAt);
     if (!nullToAbsent || archivedAt != null) {
       map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
+    if (!nullToAbsent || position != null) {
+      map['position'] = Variable<int>(position);
     }
     if (!nullToAbsent || deletedAt != null) {
       map['deleted_at'] = Variable<DateTime>(deletedAt);
@@ -2372,6 +2394,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       archivedAt: archivedAt == null && nullToAbsent ? const Value.absent() : Value(archivedAt),
+      position: position == null && nullToAbsent ? const Value.absent() : Value(position),
       deletedAt: deletedAt == null && nullToAbsent ? const Value.absent() : Value(deletedAt),
     );
   }
@@ -2389,6 +2412,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
+      position: serializer.fromJson<int?>(json['position']),
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
     );
   }
@@ -2406,6 +2430,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'archivedAt': serializer.toJson<DateTime?>(archivedAt),
+      'position': serializer.toJson<int?>(position),
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
     };
   }
@@ -2421,6 +2446,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     DateTime? createdAt,
     DateTime? updatedAt,
     Value<DateTime?> archivedAt = const Value.absent(),
+    Value<int?> position = const Value.absent(),
     Value<DateTime?> deletedAt = const Value.absent(),
   }) => HabitRow(
     id: id ?? this.id,
@@ -2433,6 +2459,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
+    position: position.present ? position.value : this.position,
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
   );
   HabitRow copyWithCompanion(HabitsCompanion data) {
@@ -2447,6 +2474,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
       archivedAt: data.archivedAt.present ? data.archivedAt.value : this.archivedAt,
+      position: data.position.present ? data.position.value : this.position,
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
     );
   }
@@ -2464,6 +2492,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('archivedAt: $archivedAt, ')
+          ..write('position: $position, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
@@ -2481,6 +2510,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
     createdAt,
     updatedAt,
     archivedAt,
+    position,
     deletedAt,
   );
   @override
@@ -2497,6 +2527,7 @@ class HabitRow extends DataClass implements Insertable<HabitRow> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.archivedAt == this.archivedAt &&
+          other.position == this.position &&
           other.deletedAt == this.deletedAt);
 }
 
@@ -2511,6 +2542,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<DateTime?> archivedAt;
+  final Value<int?> position;
   final Value<DateTime?> deletedAt;
   const HabitsCompanion({
     this.id = const Value.absent(),
@@ -2523,6 +2555,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.archivedAt = const Value.absent(),
+    this.position = const Value.absent(),
     this.deletedAt = const Value.absent(),
   });
   HabitsCompanion.insert({
@@ -2536,6 +2569,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.archivedAt = const Value.absent(),
+    this.position = const Value.absent(),
     this.deletedAt = const Value.absent(),
   }) : name = Value(name),
        schedule = Value(schedule),
@@ -2551,6 +2585,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<DateTime>? archivedAt,
+    Expression<int>? position,
     Expression<DateTime>? deletedAt,
   }) {
     return RawValuesInsertable({
@@ -2564,6 +2599,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (archivedAt != null) 'archived_at': archivedAt,
+      if (position != null) 'position': position,
       if (deletedAt != null) 'deleted_at': deletedAt,
     });
   }
@@ -2579,6 +2615,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<DateTime?>? archivedAt,
+    Value<int?>? position,
     Value<DateTime?>? deletedAt,
   }) {
     return HabitsCompanion(
@@ -2592,6 +2629,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       archivedAt: archivedAt ?? this.archivedAt,
+      position: position ?? this.position,
       deletedAt: deletedAt ?? this.deletedAt,
     );
   }
@@ -2629,6 +2667,9 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
     if (archivedAt.present) {
       map['archived_at'] = Variable<DateTime>(archivedAt.value);
     }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (deletedAt.present) {
       map['deleted_at'] = Variable<DateTime>(deletedAt.value);
     }
@@ -2648,6 +2689,7 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('archivedAt: $archivedAt, ')
+          ..write('position: $position, ')
           ..write('deletedAt: $deletedAt')
           ..write(')'))
         .toString();
@@ -12229,6 +12271,7 @@ typedef $$HabitsTableCreateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> archivedAt,
+      Value<int?> position,
       Value<DateTime?> deletedAt,
     });
 typedef $$HabitsTableUpdateCompanionBuilder =
@@ -12243,6 +12286,7 @@ typedef $$HabitsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<DateTime?> archivedAt,
+      Value<int?> position,
       Value<DateTime?> deletedAt,
     });
 
@@ -12305,6 +12349,9 @@ class $$HabitsTableFilterComposer extends Composer<_$AppDatabase, $HabitsTable> 
   ColumnFilters<DateTime> get archivedAt =>
       $composableBuilder(column: $table.archivedAt, builder: (column) => ColumnFilters(column));
 
+  ColumnFilters<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
 
@@ -12365,6 +12412,9 @@ class $$HabitsTableOrderingComposer extends Composer<_$AppDatabase, $HabitsTable
   ColumnOrderings<DateTime> get archivedAt =>
       $composableBuilder(column: $table.archivedAt, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
 }
@@ -12401,6 +12451,9 @@ class $$HabitsTableAnnotationComposer extends Composer<_$AppDatabase, $HabitsTab
 
   GeneratedColumn<DateTime> get archivedAt =>
       $composableBuilder(column: $table.archivedAt, builder: (column) => column);
+
+  GeneratedColumn<int> get position =>
+      $composableBuilder(column: $table.position, builder: (column) => column);
 
   GeneratedColumn<DateTime> get deletedAt =>
       $composableBuilder(column: $table.deletedAt, builder: (column) => column);
@@ -12461,6 +12514,7 @@ class $$HabitsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int?> position = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
               }) => HabitsCompanion(
                 id: id,
@@ -12473,6 +12527,7 @@ class $$HabitsTableTableManager
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 archivedAt: archivedAt,
+                position: position,
                 deletedAt: deletedAt,
               ),
           createCompanionCallback:
@@ -12487,6 +12542,7 @@ class $$HabitsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int?> position = const Value.absent(),
                 Value<DateTime?> deletedAt = const Value.absent(),
               }) => HabitsCompanion.insert(
                 id: id,
@@ -12499,6 +12555,7 @@ class $$HabitsTableTableManager
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 archivedAt: archivedAt,
+                position: position,
                 deletedAt: deletedAt,
               ),
           withReferenceMapper: (p0) =>

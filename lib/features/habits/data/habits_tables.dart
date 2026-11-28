@@ -27,6 +27,10 @@ class Habits extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get archivedAt => dateTime().nullable()();
 
+  /// The person's own order (0 first); null until they reorder, then such
+  /// habits follow, oldest first. Added in schema v17.
+  IntColumn get position => integer().nullable()();
+
   /// Set when the habit is in the Recycle Bin. Its check-ins are kept, so
   /// restoring brings the full history back.
   DateTimeColumn get deletedAt => dateTime().nullable()();

@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Weekly review** on Insights: a few plain sentences about the last 7 days (score change, strongest
+  and weakest area, missions, longest streak, best day) and, once there is enough data, how sleep
+  relates to finishing your habits.
 - **Places** (Settings › Places): set home there too, and add your own places (office, gym…) by
   standing there; arriving brings that place's reminder. Location stays on the phone.
 - **Module widgets**: four small home-screen widgets, Missions, Habits, Water and Next event, next to

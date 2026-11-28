@@ -121,8 +121,8 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 - [x] Home care "When I get home" reminders (2026-11-28) — arrival trigger still to be checked on a real phone
 - [x] Workouts details page (charts and stats like Water / Sleep / Nutrition) (2026-11-28)
 - [x] Insights command centre (2026-11-27)
-- [ ] Weekly review (a written summary on top of Insights)
-- [ ] Insights correlations (e.g. sleep vs habit completion) — in the spec, not built
+- [x] Weekly review (a written summary on top of Insights) (2026-11-28)
+- [x] Insights correlation: sleep vs habit completion (2026-11-28); more pairs later
 - [x] Water reminders and a sleep wind-down reminder (2026-11-28)
 - [ ] Workout templates — in the spec, not built
 - [ ] Global quick-add and search — cross-cutting spec items, not built

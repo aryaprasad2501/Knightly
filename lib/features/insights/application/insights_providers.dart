@@ -13,6 +13,7 @@ import '../../workouts/application/workouts_providers.dart';
 import '../../tasks/domain/task.dart';
 import '../../workouts/domain/workout.dart';
 import '../domain/insights.dart';
+import '../domain/weekly_review.dart';
 
 /// Insight areas whose module is on.
 final insightAreasProvider = Provider<Set<InsightArea>>((ref) {
@@ -108,3 +109,13 @@ class InsightsIntroPlayed extends Notifier<bool> {
 }
 
 final insightsIntroPlayedProvider = NotifierProvider<InsightsIntroPlayed, bool>(InsightsIntroPlayed.new);
+
+/// The weekly review sentences (always about the last 7 days), with the
+/// sleep and habits link added when there is one.
+final weeklyReviewProvider = Provider<AsyncValue<List<ReviewLine>>>((ref) {
+  final input = ref.watch(insightsInputProvider);
+  return ref.watch(insightsProvider(InsightPeriod.week)).whenData((week) {
+    final link = input.valueOrNull == null ? null : sleepVsHabitsLine(input.requireValue);
+    return [...weeklyReview(week), ?link];
+  });
+});

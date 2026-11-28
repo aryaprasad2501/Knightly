@@ -18,6 +18,7 @@ import '../../../core/design/tokens/k_spacing.dart';
 import '../../tasks/domain/task.dart';
 import '../application/insights_providers.dart';
 import '../domain/insights.dart';
+import '../domain/weekly_review.dart';
 import 'holo_panel.dart';
 import 'insights_activation.dart';
 import 'insights_charts.dart';
@@ -285,6 +286,47 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
         ),
       ),
       gap,
+      if (ref.watch(weeklyReviewProvider).valueOrNull case final review? when review.isNotEmpty) ...[
+        HoloPanel(
+          fromLeft: _nextSide(),
+          title: 'Weekly review',
+          glyph: KGlyphs.edit,
+          effects: effects,
+          hold: hold,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (final line in review)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: KSpacing.sm),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 7, right: KSpacing.sm),
+                        child: SizedBox.square(
+                          dimension: 6,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              shape: tactical ? BoxShape.rectangle : BoxShape.circle,
+                              color: switch (line.tone) {
+                                ReviewTone.good => context.palette.success,
+                                ReviewTone.watch => context.palette.warning,
+                                ReviewTone.neutral => hud.bright.withValues(alpha: 0.6),
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(child: Text(line.text, style: text.bodyMedium)),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        ),
+        gap,
+      ],
       HoloPanel(
         fromLeft: _nextSide(),
         title: 'Score breakdown',

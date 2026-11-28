@@ -35,6 +35,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 20 | Workout templates | f064789 | Open a finished workout > Save as template; then Track > Start workout > pick it |
 | 21 | More Insights links | b648929 | Insights > Weekly review: lines about workouts/sleep and water/habits (need some weeks of data) |
 | 22 | Choose the Today widget's lines | 8e205fc | Settings > Home-screen widget; the widget updates |
+| 23 | Sync 1a: change tracking (no visible change) | bcf017e | Nothing to try yet; tests cover it |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

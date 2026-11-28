@@ -13,6 +13,7 @@ import '../features/calendar/domain/calendar_event.dart';
 import '../features/habits/application/habits_providers.dart';
 import '../features/home_care/application/home_care_providers.dart';
 import '../features/home_care/data/home_arrival.dart';
+import '../features/settings/application/display_controllers.dart';
 import '../features/routines/application/routines_providers.dart';
 import '../features/tasks/application/tasks_providers.dart';
 import '../features/water/application/water_providers.dart';
@@ -82,11 +83,26 @@ final todayWidgetDataProvider = Provider<TodayWidgetData>((ref) {
 
   final total = (missions?.totalToday ?? 0) + (habits?.dueToday ?? 0) + (routines?.dueToday ?? 0);
   final done = (missions?.completedToday ?? 0) + (habits?.doneToday ?? 0) + (routines?.doneToday ?? 0);
+  // The two lower lines are the person's choice (Settings › Home-screen widget).
+  final (lineA, lineB) = ref.watch(widgetLinesProvider).value ?? (WidgetLine.water, WidgetLine.nextMission);
+  String line(WidgetLine l) => switch (l) {
+    WidgetLine.water => water == null ? '' : 'Water ${formatMl(water.totalMl)} of ${formatMl(water.goalMl)}',
+    WidgetLine.nextMission => upcoming == null ? '' : 'Next: ${upcoming.title}',
+    WidgetLine.nextEvent =>
+      nextEvent == null
+          ? ''
+          : nextEvent.time == null
+          ? 'Today: ${nextEvent.event.title}'
+          : '${hhmm(nextEvent.time!)} ${nextEvent.event.title}',
+    WidgetLine.habits =>
+      habits == null || habits.dueToday == 0 ? '' : 'Habits ${habits.doneToday} of ${habits.dueToday}',
+    WidgetLine.none => '',
+  };
   return TodayWidgetData(
     progress: total == 0 ? '—' : '${(done / total * 100).round()}% done',
     detail: total == 0 ? 'Nothing due today' : '$done of $total commitments',
-    water: water == null ? '' : 'Water ${formatMl(water.totalMl)} of ${formatMl(water.goalMl)}',
-    next: upcoming == null ? '' : 'Next: ${upcoming.title}',
+    water: line(lineA),
+    next: line(lineB),
     modules: {
       'mission': missions == null
           ? (title: 'MISSIONS', value: _off.value, detail: _off.detail)

@@ -155,6 +155,48 @@ final dockStyleProvider = Provider<KDockStyle>((ref) {
   };
 });
 
+/// What one of the two lower lines of the "Knightly · Today" widget shows.
+enum WidgetLine {
+  water('Water'),
+  nextMission('Next mission'),
+  nextEvent('Next event'),
+  habits('Habits'),
+  none('Nothing');
+
+  const WidgetLine(this.label);
+
+  final String label;
+
+  static WidgetLine parse(String? stored, WidgetLine fallback) =>
+      values.where((l) => l.name == stored).firstOrNull ?? fallback;
+}
+
+/// The Today widget's two lower lines (`widget.today_lines` = "first,second";
+/// water and next mission by default).
+class WidgetLinesController extends AsyncNotifier<(WidgetLine, WidgetLine)> {
+  static const storageKey = 'widget.today_lines';
+
+  @override
+  Future<(WidgetLine, WidgetLine)> build() async {
+    final parts = (await ref.watch(settingsRepositoryProvider).read(storageKey))?.split(',') ?? const [];
+    return (
+      WidgetLine.parse(parts.firstOrNull, WidgetLine.water),
+      WidgetLine.parse(parts.length > 1 ? parts[1] : null, WidgetLine.nextMission),
+    );
+  }
+
+  Future<void> set({WidgetLine? first, WidgetLine? second}) async {
+    final (a, b) = await future;
+    final next = (first ?? a, second ?? b);
+    state = AsyncData(next);
+    await ref.read(settingsRepositoryProvider).write(storageKey, '${next.$1.name},${next.$2.name}');
+  }
+}
+
+final widgetLinesProvider = AsyncNotifierProvider<WidgetLinesController, (WidgetLine, WidgetLine)>(
+  WidgetLinesController.new,
+);
+
 /// "1.0.0 (12)" from the installed app; null where it can't be read (tests).
 final appVersionProvider = FutureProvider<String?>((ref) async {
   try {

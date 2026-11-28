@@ -8,6 +8,7 @@ import 'package:knightly/features/calendar/data/event_repository.dart';
 import 'package:knightly/features/calendar/domain/calendar_event.dart';
 import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/task.dart';
+import 'package:knightly/features/settings/application/display_controllers.dart';
 import 'package:knightly/features/water/data/water_repository.dart';
 
 import '../helpers/pump_app.dart';
@@ -44,5 +45,18 @@ void main() {
     expect(m['water']!.value, contains('500'));
     expect(m['event'], (title: 'NEXT EVENT', value: '15:30', detail: 'Dentist'));
     expect(m['habits']!.title, 'HABITS');
+
+    // The Today widget's lower lines: water and next mission by default …
+    expect(data().water, contains('500'));
+    expect(data().next, 'Next: Pay rent');
+    // … or what the person picks.
+    await container
+        .read(widgetLinesProvider.notifier)
+        .set(first: WidgetLine.nextEvent, second: WidgetLine.none);
+    expect(data().water, '15:30 Dentist');
+    expect(data().next, '');
+    container.invalidate(widgetLinesProvider);
+    await container.read(widgetLinesProvider.future);
+    expect(container.read(widgetLinesProvider).value, (WidgetLine.nextEvent, WidgetLine.none));
   });
 }

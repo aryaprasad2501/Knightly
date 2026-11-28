@@ -96,6 +96,54 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: KSpacing.md),
         KCard(
+          glyph: KGlyphs.progress,
+          title: 'Home-screen widget',
+          subtitle: () {
+            final (a, b) = ref.watch(widgetLinesProvider).value ?? (WidgetLine.water, WidgetLine.nextMission);
+            return 'Knightly · Today shows ${a.label.toLowerCase()} and ${b.label.toLowerCase()}';
+          }(),
+          trailing: chevron,
+          onTap: () => showKBottomSheet<void>(
+            context: context,
+            title: 'Home-screen widget',
+            subtitle:
+                'Choose the two lines under the progress on "Knightly · Today". The small widgets '
+                '(Missions, Habits, Water, Next event) can be added on their own.',
+            child: Consumer(
+              builder: (context, ref, _) {
+                final (a, b) =
+                    ref.watch(widgetLinesProvider).value ?? (WidgetLine.water, WidgetLine.nextMission);
+                Widget row(String title, WidgetLine value, void Function(WidgetLine) pick) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: context.textStyles.labelMedium),
+                    const SizedBox(height: KSpacing.xs),
+                    Wrap(
+                      spacing: KSpacing.sm,
+                      runSpacing: KSpacing.sm,
+                      children: [
+                        for (final l in WidgetLine.values)
+                          KChip(label: l.label, selected: l == value, onSelected: (_) => pick(l)),
+                      ],
+                    ),
+                  ],
+                );
+                final widgetLines = ref.read(widgetLinesProvider.notifier);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    row('First line', a, (l) => widgetLines.set(first: l)),
+                    const SizedBox(height: KSpacing.lg),
+                    row('Second line', b, (l) => widgetLines.set(second: l)),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: KSpacing.md),
+        KCard(
           glyph: KGlyphs.bell,
           title: 'Sounds',
           subtitle: ref.watch(soundsProvider)

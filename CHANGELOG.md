@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Settings › Home-screen widget**: choose the two lines under the progress on "Knightly · Today"
+  (water, next mission, next event, habits or nothing).
 - **Workout templates**: "Save as template" on a finished workout keeps its exercises and sets; "Start
   workout" then offers an empty workout or any template (sets come pre-filled, unticked). Templates
   can be deleted there; included in backups.

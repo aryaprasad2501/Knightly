@@ -33,6 +33,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 18 | Dock back to the previous look | 62d8f17 | Dock looks as before stage 16 |
 | 19 | Dock: redesigned look restored (stage 16 version) | 27dad5b | Dock shows the frame + tall hub again |
 | 20 | Workout templates | f064789 | Open a finished workout > Save as template; then Track > Start workout > pick it |
+| 21 | More Insights links | b648929 | Insights > Weekly review: lines about workouts/sleep and water/habits (need some weeks of data) |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

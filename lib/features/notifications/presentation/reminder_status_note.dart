@@ -13,8 +13,8 @@ class ReminderStatusNote extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(remindersEnabledProvider).valueOrNull ?? true;
-    final blocked = ref.watch(notificationAccessProvider).valueOrNull?.allowed == false;
+    final enabled = ref.watch(remindersEnabledProvider).value ?? true;
+    final blocked = ref.watch(notificationAccessProvider).value?.allowed == false;
     final message = !enabled
         ? 'Saved, but reminders are off. Turn them on in Settings › Notifications.'
         : blocked

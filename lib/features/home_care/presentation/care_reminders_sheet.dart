@@ -46,7 +46,7 @@ class _CareReminders extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
     final text = context.textStyles;
-    final times = ref.watch(careRemindersProvider).valueOrNull ?? CareReminderTimes.defaults;
+    final times = ref.watch(careRemindersProvider).value ?? CareReminderTimes.defaults;
     final notifier = ref.read(careRemindersProvider.notifier);
 
     return Column(
@@ -149,7 +149,7 @@ class _HomeArrivalRowState extends ConsumerState<HomeArrivalRow> {
   Widget build(BuildContext context) {
     final p = context.palette;
     final text = context.textStyles;
-    final on = ref.watch(careArrivalProvider).valueOrNull ?? false;
+    final on = ref.watch(careArrivalProvider).value ?? false;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show DatabaseConnection;
 import 'package:drift/native.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/app/home_widget_sync.dart';
 import 'package:knightly/features/settings/application/display_controllers.dart';
@@ -61,6 +62,7 @@ Future<AppDatabase> pumpKnightlyApp(
   AppDatabase? db,
   DateTime? now,
   List<Override> overrides = const [],
+  bool showWelcome = false,
 }) async {
   final database = db ?? testDatabase();
   await tester.pumpWidget(
@@ -72,7 +74,7 @@ Future<AppDatabase> pumpKnightlyApp(
         // Live header scenes repaint on a timer; tests need frames to settle.
         liveSceneEnabledProvider.overrideWithValue(false),
         // The first-run welcome is tested on its own.
-        welcomeEnabledProvider.overrideWithValue(false),
+        welcomeEnabledProvider.overrideWithValue(showWelcome),
         // No motion sensor in tests.
         deviceTiltEnabledProvider.overrideWithValue(false),
         // No audio in tests.

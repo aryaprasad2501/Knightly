@@ -28,9 +28,9 @@ class NotificationsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
     final text = context.textStyles;
-    final enabled = ref.watch(remindersEnabledProvider).valueOrNull ?? true;
-    final access = ref.watch(notificationAccessProvider).valueOrNull;
-    final plan = ref.watch(plannedRemindersProvider).valueOrNull ?? const <PlannedReminder>[];
+    final enabled = ref.watch(remindersEnabledProvider).value ?? true;
+    final access = ref.watch(notificationAccessProvider).value;
+    final plan = ref.watch(plannedRemindersProvider).value ?? const <PlannedReminder>[];
     final gateway = ref.read(notificationGatewayProvider);
     final blocked = access?.allowed == false;
 

@@ -69,7 +69,8 @@ report a stage as done unless all three pass. Record results in `HANDOFF.md`.
   Domain is plain Dart (no Flutter, no Drift imports).
 - **State:** Riverpod `Notifier` / `AsyncNotifier` / `Provider`. Do not use
   `StateNotifier`, `StateProvider` or `ChangeNotifierProvider` (legacy in
-  Riverpod 3, which we will migrate to).
+  Riverpod 3, which Knightly uses). Read loaded values with `.value` (null while
+  loading or on error).
 - **Navigation:** add paths to `lib/app/router/app_routes.dart`, register them
   in `app_router.dart`. Never hard-code a path string in a widget.
 - **Database:** one `AppDatabase`. Each schema change bumps `schemaVersion`,

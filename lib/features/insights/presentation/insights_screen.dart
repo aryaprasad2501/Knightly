@@ -120,7 +120,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
                       ),
                       sliver: SliverToBoxAdapter(child: _Header(period: _period)),
                     ),
-                    if (snapshot.valueOrNull case final snap?)
+                    if (snapshot.value case final snap?)
                       SliverPadding(
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, KSpacing.md),
                         sliver: SliverToBoxAdapter(
@@ -286,7 +286,7 @@ class _InsightsScreenState extends ConsumerState<InsightsScreen> with SingleTick
         ),
       ),
       gap,
-      if (ref.watch(weeklyReviewProvider).valueOrNull case final review? when review.isNotEmpty) ...[
+      if (ref.watch(weeklyReviewProvider).value case final review? when review.isNotEmpty) ...[
         HoloPanel(
           fromLeft: _nextSide(),
           title: 'Weekly review',

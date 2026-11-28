@@ -60,7 +60,7 @@ final waterTodayProvider = Provider<AsyncValue<WaterDay>>(
 /// Today's entries, newest first.
 final waterTodayLogsProvider = Provider<List<WaterLog>>((ref) {
   final today = ref.watch(todayProvider);
-  final logs = ref.watch(waterLogsProvider).valueOrNull ?? const <WaterLog>[];
+  final logs = ref.watch(waterLogsProvider).value ?? const <WaterLog>[];
   return [
     for (final l in logs.reversed)
       if (l.date == today) l,

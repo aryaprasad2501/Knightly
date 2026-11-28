@@ -38,7 +38,7 @@ class _WaterDay extends ConsumerWidget {
     final p = context.palette;
     final text = context.textStyles;
     final logs = [
-      for (final l in ref.watch(waterLogsSinceProvider(date)).valueOrNull ?? const <WaterLog>[])
+      for (final l in ref.watch(waterLogsSinceProvider(date)).value ?? const <WaterLog>[])
         if (l.date == date) l,
     ]..sort((a, b) => a.loggedAt.compareTo(b.loggedAt));
     final total = logs.fold(0, (s, l) => s + l.amountMl);

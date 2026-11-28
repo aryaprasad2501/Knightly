@@ -23,7 +23,7 @@ class HabitsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(habitStatsProvider);
-    final archivedCount = ref.watch(archivedHabitsProvider).valueOrNull?.length ?? 0;
+    final archivedCount = ref.watch(archivedHabitsProvider).value?.length ?? 0;
 
     return stats.when(
       loading: () => const Padding(

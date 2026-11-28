@@ -179,7 +179,7 @@ class _MonthView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final days = ref.watch(calendarDaysProvider(monthGridRange(focused)));
-    final map = days.valueOrNull ?? const <CalendarDate, CalendarDay>{};
+    final map = days.value ?? const <CalendarDate, CalendarDay>{};
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -213,7 +213,7 @@ class _WeekView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final start = weekStart(focused);
-    final map = ref.watch(calendarDaysProvider((start, start.addDays(6)))).valueOrNull ?? const {};
+    final map = ref.watch(calendarDaysProvider((start, start.addDays(6)))).value ?? const {};
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -238,7 +238,7 @@ class _DayView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final day = ref.watch(calendarDaysProvider((date, date))).valueOrNull?[date] ?? const CalendarDay();
+    final day = ref.watch(calendarDaysProvider((date, date))).value?[date] ?? const CalendarDay();
     final untimed = CalendarDay(
       events: [
         for (final o in day.events)

@@ -65,10 +65,10 @@ const _off = (value: '—', detail: 'Off in Knightly');
 
 final todayWidgetDataProvider = Provider<TodayWidgetData>((ref) {
   final on = ref.watch(enabledModulesProvider);
-  final missions = on.contains(AppModule.missions) ? ref.watch(missionSummaryProvider).valueOrNull : null;
-  final habits = on.contains(AppModule.habits) ? ref.watch(habitSummaryProvider).valueOrNull : null;
-  final routines = on.contains(AppModule.routines) ? ref.watch(routineSummaryProvider).valueOrNull : null;
-  final water = on.contains(AppModule.water) ? ref.watch(waterTodayProvider).valueOrNull : null;
+  final missions = on.contains(AppModule.missions) ? ref.watch(missionSummaryProvider).value : null;
+  final habits = on.contains(AppModule.habits) ? ref.watch(habitSummaryProvider).value : null;
+  final routines = on.contains(AppModule.routines) ? ref.watch(routineSummaryProvider).value : null;
+  final water = on.contains(AppModule.water) ? ref.watch(waterTodayProvider).value : null;
   final upcoming = missions?.next;
   final now = ref.watch(clockProvider)();
   final events = on.contains(AppModule.calendar) ? ref.watch(todayEventsProvider) : const <EventOccurrence>[];
@@ -154,7 +154,7 @@ class _HomeWidgetSyncState extends ConsumerState<HomeWidgetSync> {
     }, fireImmediately: true);
     // Keep the "welcome home" note current while that reminder is on.
     ref.listenManual(careDueNamesProvider, (prev, next) {
-      if (ref.read(careArrivalProvider).valueOrNull == true && !listEquals(prev, next)) {
+      if (ref.read(careArrivalProvider).value == true && !listEquals(prev, next)) {
         HomeArrival.writeDueNote(next);
       }
     }, fireImmediately: true);

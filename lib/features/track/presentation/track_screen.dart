@@ -36,7 +36,7 @@ class TrackScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final on = ref.watch(enabledModulesProvider);
     final habitsOn = on.contains(AppModule.habits);
-    final summary = habitsOn ? ref.watch(habitSummaryProvider).valueOrNull : null;
+    final summary = habitsOn ? ref.watch(habitSummaryProvider).value : null;
     final eyebrow = !habitsOn
         ? 'Performance'
         : summary == null || summary.dueToday == 0
@@ -44,7 +44,7 @@ class TrackScreen extends ConsumerWidget {
         : '${summary.doneToday} of ${summary.dueToday} habits done';
 
     // Each part appears only while its module is on, in the person's order.
-    final order = ref.watch(trackOrderProvider).valueOrNull ?? TrackPanel.values;
+    final order = ref.watch(trackOrderProvider).value ?? TrackPanel.values;
     bool shows(TrackPanel panel) => switch (panel) {
       TrackPanel.performance =>
         on.contains(AppModule.analytics) && (habitsOn || on.contains(AppModule.missions)),
@@ -150,10 +150,10 @@ class _PerformancePanel extends ConsumerWidget {
     final habitsOn = on.contains(AppModule.habits);
     final missionsOn = on.contains(AppModule.missions);
     final stats = habitsOn
-        ? ref.watch(habitStatsProvider).valueOrNull ?? const <HabitStats>[]
+        ? ref.watch(habitStatsProvider).value ?? const <HabitStats>[]
         : const <HabitStats>[];
     final habits = HabitSummary.of(stats);
-    final missions = ref.watch(missionSummaryProvider).valueOrNull;
+    final missions = ref.watch(missionSummaryProvider).value;
     final weekDone = stats.fold(0, (sum, s) => sum + s.weekDone);
     final weekTarget = stats.fold(0, (sum, s) => sum + s.weekTarget);
     final alive = stats.where((s) => s.currentStreak > 0).length;

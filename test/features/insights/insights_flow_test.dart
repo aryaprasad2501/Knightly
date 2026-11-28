@@ -7,7 +7,6 @@ import 'package:knightly/core/design/components/k_toggle.dart';
 import 'package:knightly/core/time/calendar_date.dart';
 import 'package:knightly/features/insights/presentation/insights_activation.dart';
 import 'package:knightly/features/insights/presentation/insights_screen.dart';
-import 'package:knightly/features/settings/presentation/welcome_sheet.dart';
 import 'package:knightly/features/tasks/data/task_repository.dart';
 import 'package:knightly/features/tasks/domain/task.dart';
 
@@ -130,11 +129,7 @@ void main() {
 
   testWidgets('first run: a welcome suggests both themes, once', (tester) async {
     usePhoneViewport(tester);
-    final db = await pumpKnightlyApp(
-      tester,
-      now: now,
-      overrides: [welcomeEnabledProvider.overrideWithValue(true)],
-    );
+    final db = await pumpKnightlyApp(tester, now: now, showWelcome: true);
     await settleWithDatabase(tester);
     expect(find.text('Welcome to Knightly'), findsOneWidget);
     expect(find.text('Two nights. Choose yours.'), findsOneWidget);

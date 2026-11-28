@@ -90,7 +90,7 @@ class _HomeCareScreenState extends ConsumerState<HomeCareScreen> {
       for (final s in all)
         if (_matches(s)) s,
     ];
-    final reminders = ref.watch(careRemindersProvider).valueOrNull;
+    final reminders = ref.watch(careRemindersProvider).value;
 
     final figures = [
       if (summary.overdue > 0) '${summary.overdue} overdue',

@@ -122,7 +122,7 @@ final projectFilterProvider = NotifierProvider<ProjectFilter, int?>(ProjectFilte
 /// The filter actually applied: null when the selected project no longer exists.
 final effectiveProjectFilterProvider = Provider<int?>((ref) {
   final selected = ref.watch(projectFilterProvider);
-  final projects = ref.watch(projectsProvider).valueOrNull ?? const [];
+  final projects = ref.watch(projectsProvider).value ?? const [];
   return projects.any((p) => p.id == selected) ? selected : null;
 });
 

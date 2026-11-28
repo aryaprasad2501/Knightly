@@ -300,7 +300,7 @@ class _ExerciseCard extends ConsumerWidget {
     final p = context.palette;
     final text = context.textStyles;
     final actions = ref.read(workoutActionsProvider);
-    final library = ref.watch(exerciseLibraryProvider).valueOrNull;
+    final library = ref.watch(exerciseLibraryProvider).value;
     final info = library?.byId(exercise.exerciseId);
     final timed = info?.isTimed ?? exercise.sets.any((s) => s.durationSeconds != null);
     final weighted = !(info?.isBodyweight ?? false) && !timed;

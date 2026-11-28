@@ -126,8 +126,8 @@ final plannedRemindersProvider = Provider<AsyncValue<List<PlannedReminder>>>((re
         );
       }(),
       missions: missionsOn ? ref.watch(openTasksProvider).requireValue : const <Task>[],
-      waterTodayMl: waterOn ? ref.watch(waterTodayProvider).valueOrNull?.totalMl : null,
-      waterGoalMl: waterOn ? ref.watch(waterGoalProvider).valueOrNull ?? 2000 : 2000,
+      waterTodayMl: waterOn ? ref.watch(waterTodayProvider).value?.totalMl : null,
+      waterGoalMl: waterOn ? ref.watch(waterGoalProvider).value ?? 2000 : 2000,
       habitsLeftToday: habitsOn
           ? () {
               final s = ref.watch(habitSummaryProvider).requireValue;

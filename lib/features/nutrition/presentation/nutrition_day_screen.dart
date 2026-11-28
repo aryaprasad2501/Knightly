@@ -57,7 +57,7 @@ class _NutritionDayScreenState extends ConsumerState<NutritionDayScreen> {
   Widget build(BuildContext context) {
     final today = ref.watch(todayProvider);
     final day = ref.watch(nutritionDayProvider(_date));
-    final targets = ref.watch(nutritionTargetsProvider).valueOrNull;
+    final targets = ref.watch(nutritionTargetsProvider).value;
     final label = diaryDayLabel(context, _date, today);
 
     return KSubpage(

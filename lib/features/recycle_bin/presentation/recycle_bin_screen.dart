@@ -42,7 +42,7 @@ class RecycleBinScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final items = ref.watch(binItemsProvider);
-    final count = items.valueOrNull?.length ?? 0;
+    final count = items.value?.length ?? 0;
 
     return KSubpage(
       title: 'Recycle Bin',

@@ -49,7 +49,7 @@ class WaterSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final week = ref.watch(waterWeekProvider);
-    final goal = week.valueOrNull?.last.goalMl;
+    final goal = week.value?.last.goalMl;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

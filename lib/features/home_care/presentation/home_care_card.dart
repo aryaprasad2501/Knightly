@@ -25,7 +25,7 @@ class HomeCareCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
     final text = context.textStyles;
-    final all = ref.watch(careJobStatesProvider).valueOrNull;
+    final all = ref.watch(careJobStatesProvider).value;
     final due = all == null ? const <CareJobState>[] : dueOn(all, ref.watch(todayProvider));
     final next = all?.where((s) => !s.isDue).firstOrNull;
     void open() => context.push(AppRoutes.homeCare);

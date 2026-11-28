@@ -29,7 +29,7 @@ class HomeCareSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.palette;
     final text = context.textStyles;
-    final all = ref.watch(careJobStatesProvider).valueOrNull;
+    final all = ref.watch(careJobStatesProvider).value;
     final today = ref.watch(todayProvider);
     final due = all == null ? const <CareJobState>[] : dueOn(all, today);
     final summary = all == null ? null : CareSummary.of(all);

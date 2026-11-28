@@ -28,6 +28,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 13 | Module widgets | 03755c0 | Long-press home screen > Widgets > Knightly: 5 widgets; tap one opens its module |
 | 14 | Places (home + office etc.) | 3f6aa0d | Settings > Places > Add a place here (check arrival on a real phone) |
 | 15 | Insights weekly review + sleep/habits link | 8b112d3 | Insights: Weekly review panel under the score |
+| 16 | Flutter 3.50 + Gradle 9 upgrade; dock closer to the reference image | 68a14dd | Settings > Dock style: Arc reactor and Crest in both themes |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

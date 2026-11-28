@@ -32,6 +32,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 17 | Riverpod 3.5 | 495b1c6 | No visible change; use the app normally |
 | 18 | Dock back to the previous look | 62d8f17 | Dock looks as before stage 16 |
 | 19 | Dock: redesigned look restored (stage 16 version) | 27dad5b | Dock shows the frame + tall hub again |
+| 20 | Workout templates | f064789 | Open a finished workout > Save as template; then Track > Start workout > pick it |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

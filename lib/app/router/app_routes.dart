@@ -15,6 +15,7 @@ abstract final class AppRoutes {
   static const modules = '/modules';
   static const notifications = '/notifications';
   static const places = '/places';
+  static const account = '/account';
 
   /// A routine's run-through mode. Build with [routineRunFor].
   static const routineRun = '/routines/:id/run';

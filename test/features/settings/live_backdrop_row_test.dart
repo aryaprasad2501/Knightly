@@ -13,12 +13,9 @@ void main() {
     KToggle toggle() => tester.widget<KToggle>(
       find.byWidgetPredicate((w) => w is KToggle && w.semanticLabel == 'Live backdrop'),
     );
+    await scrollTo(tester, find.text('Live backdrop'));
     expect(toggle().value, isTrue);
-
-    final title = find.text('Live backdrop').hitTestable();
-    await tester.ensureVisible(title);
-    await tester.pumpAndSettle();
-    await tester.tap(title);
+    await tester.tap(find.text('Live backdrop').hitTestable());
     await settleWithDatabase(tester);
     expect(toggle().value, isFalse);
     expect(find.text('Backgrounds and the Home greeting stay still.'), findsOneWidget);

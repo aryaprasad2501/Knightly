@@ -5,6 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:knightly/app/home_widget_sync.dart';
+import 'package:knightly/features/account/application/account_providers.dart';
+
+import 'fake_account.dart';
 import 'package:knightly/features/settings/application/display_controllers.dart';
 import 'package:knightly/core/design/motion/k_device_tilt.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
@@ -63,6 +66,7 @@ Future<AppDatabase> pumpKnightlyApp(
   DateTime? now,
   List<Override> overrides = const [],
   bool showWelcome = false,
+  FakeAccountService? account,
 }) async {
   final database = db ?? testDatabase();
   await tester.pumpWidget(
@@ -80,6 +84,8 @@ Future<AppDatabase> pumpKnightlyApp(
         // No audio in tests.
         soundsAllowedProvider.overrideWithValue(false),
         homeWidgetEnabledProvider.overrideWithValue(false),
+        // No Firebase in tests.
+        accountServiceProvider.overrideWithValue(account ?? FakeAccountService()),
         if (now != null) clockProvider.overrideWithValue(() => now),
         ...overrides,
       ],

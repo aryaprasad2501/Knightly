@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router/app_routes.dart';
+import '../../account/application/account_providers.dart';
 import '../../../core/design/ambient/k_backdrop.dart';
 import '../../../core/design/components/k_bottom_sheet.dart';
 import '../../../core/design/components/k_card.dart';
@@ -44,6 +45,20 @@ class SettingsScreen extends ConsumerWidget {
       title: context.byStyle('Gear room', 'Wardrobe'),
       backdrop: KBackdrop.settings,
       children: [
+        // Optional Google account (cloud copy of everything).
+        KCard(
+          glyph: KGlyphs.shield,
+          title: switch (ref.watch(accountProvider).value) {
+            null => 'Continue with Google',
+            final user => user.email,
+          },
+          subtitle: ref.watch(accountProvider).value == null
+              ? 'Optional: keep your data safe in your Google account, on every phone'
+              : 'Account & sync',
+          trailing: chevron,
+          onTap: () => context.push(AppRoutes.account),
+        ),
+        const SizedBox(height: KSpacing.xl),
         KSectionHeader(context.byStyle('Suit', 'Look')),
         for (final id in KnightlyThemeId.values) ...[
           ThemeOption(id: id, selected: id == active, onSelect: () => _select(context, ref, id)),

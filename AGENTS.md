@@ -11,7 +11,7 @@ Read this file first. It applies to every contributor, human or AI. Then read
 | Platform | Android first (phones). No iOS/web/desktop targets yet. |
 | Stack | Flutter 3.50 · Dart 3.14 · Riverpod · GoRouter · Drift (SQLite) |
 | Package ID | `com.knightly.app` (provisional, see ARCHITECTURE.md › Decisions) |
-| Data | 100% local and offline. No accounts, no cloud, no paid APIs. |
+| Data | Local and offline first. Optional Google account + Firebase sync; no paid APIs. |
 
 ## Commands
 
@@ -41,7 +41,9 @@ report a stage as done unless all three pass. Record results in `HANDOFF.md`.
    files (`*.g.dart`) may be regenerated freely.
 2. **Offline first.** Every feature must work in airplane mode. All user data
    lives in the Drift database. No mandatory network calls, no paid APIs, no
-   cloud services, no analytics SDKs.
+   analytics SDKs. The one cloud service is the **optional** Google account +
+   Firebase sync (docs/CLOUD_SYNC_PLAN.md): off until the person signs in, never
+   needed for any feature, and `google-services.json` is never committed.
 3. **No disguised placeholders.** An unfinished feature is either absent or
    clearly labelled as not yet built. Never ship a screen that looks finished
    but does nothing, and never mark a task done in `TASKS.md` unless it works

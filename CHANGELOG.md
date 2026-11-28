@@ -6,6 +6,9 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Continue with Google** (Settings, top): optional sign-in with your Google account (Firebase
+  Authentication) and an Account & sync screen with sign-out. Syncing itself arrives in the next stage
+  and is labelled as not built yet. Without an account Knightly works fully offline as before.
 - **Settings › Home-screen widget**: choose the two lines under the progress on "Knightly · Today"
   (water, next mission, next event, habits or nothing).
 - **Workout templates**: "Save as template" on a finished workout keeps its exercises and sets; "Start

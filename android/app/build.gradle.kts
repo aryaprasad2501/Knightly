@@ -21,6 +21,32 @@ fun signingValue(property: String, env: String): String? =
 val releaseStoreFile = signingValue("storeFile", "KNIGHTLY_KEYSTORE")
 val hasReleaseKey = releaseStoreFile != null
 
+// Firebase (optional cloud sync). android/app/google-services.json is the
+// project's config from the Firebase console; it stays out of Git. Its values
+// become the string resources Firebase and Google sign-in read, the same ones
+// the google-services Gradle plugin would generate. Without the file the app
+// builds and runs offline; sync then says it isn't set up.
+@Suppress("UNCHECKED_CAST")
+val firebaseValues: Map<String, String> = file("google-services.json").takeIf { it.exists() }?.let { f ->
+    val json = groovy.json.JsonSlurper().parse(f) as Map<String, Any?>
+    val project = json["project_info"] as Map<String, Any?>
+    val client = (json["client"] as List<Map<String, Any?>>).first { c ->
+        ((c["client_info"] as Map<String, Any?>)["android_client_info"] as Map<String, Any?>)["package_name"] ==
+            "com.knightly.app"
+    }
+    val apiKey = ((client["api_key"] as List<Map<String, Any?>>).first())["current_key"] as String
+    val webClient = (client["oauth_client"] as List<Map<String, Any?>>).firstOrNull { it["client_type"] == 3 }
+    buildMap {
+        put("google_app_id", (client["client_info"] as Map<String, Any?>)["mobilesdk_app_id"] as String)
+        put("gcm_defaultSenderId", project["project_number"] as String)
+        put("project_id", project["project_id"] as String)
+        put("google_api_key", apiKey)
+        put("google_crash_reporting_api_key", apiKey)
+        (project["storage_bucket"] as String?)?.let { put("google_storage_bucket", it) }
+        (webClient?.get("client_id") as String?)?.let { put("default_web_client_id", it) }
+    }
+} ?: emptyMap()
+
 android {
     namespace = "com.knightly.app"
     compileSdk = flutter.compileSdkVersion
@@ -43,6 +69,11 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        firebaseValues.forEach { (name, value) -> resValue("string", name, value) }
+    }
+
+    buildFeatures {
+        resValues = true
     }
 
     signingConfigs {

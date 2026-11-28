@@ -96,6 +96,7 @@ class TasksScreen extends ConsumerWidget {
                 ],
                 const SizedBox(height: KSpacing.lg),
               ],
+            if (view == TaskView.done) _ShowOlder(loaded: board.done.length),
             if (sections.isNotEmpty) const _SwipeHint(),
           ];
         },
@@ -114,10 +115,12 @@ class _SearchResults extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Search covers every completed mission, not only the loaded ones.
+    final done = ref.watch(allCompletedTasksProvider).value ?? board.done;
     final sections = searchTasks(
       query,
       open: board.open,
-      done: board.done,
+      done: done,
       checks: board.checks,
       projectName: board.projectName,
     );
@@ -182,6 +185,30 @@ class _SearchResults extends ConsumerWidget {
             const SizedBox(height: KSpacing.lg),
           ],
       ],
+    );
+  }
+}
+
+/// "Show older missions" under Done while more history exists.
+class _ShowOlder extends ConsumerWidget {
+  const _ShowOlder({required this.loaded});
+
+  final int loaded;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final total = ref.watch(completedCountProvider).value ?? loaded;
+    if (total <= loaded) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: KSpacing.lg),
+      child: Center(
+        child: KButton(
+          label: 'Show older missions (${total - loaded} more)',
+          variant: KButtonVariant.secondary,
+          size: KButtonSize.compact,
+          onPressed: () => ref.read(doneLimitProvider.notifier).more(),
+        ),
+      ),
     );
   }
 }

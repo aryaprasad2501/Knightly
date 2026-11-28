@@ -56,7 +56,7 @@ Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not 
 - [x] Search across missions (2026-11-28)
 - [x] Reminders for timed missions (2026-11-28, Settings › Notifications)
 - [ ] "Edit this occurrence vs. whole series" for repeating missions (today: edits apply to the open occurrence; future ones copy it)
-- [ ] Completed history beyond the latest 200 (pagination) — only matters for Insights later
+- [x] Completed history beyond the latest 200: "Show older missions" + full-history search (2026-11-28)
 
 ## Stage 3 — Habits module ✅
 

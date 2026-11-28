@@ -6,6 +6,8 @@ versions follow `pubspec.yaml`.
 ## [Unreleased]
 
 ### Added
+- **Full mission history**: Missions › Done shows the newest 200, then "Show older missions (N more)"
+  loads 200 more each time; search now covers every completed mission.
 - **Reorder habits** (Track › Habits › Reorder): drag habits into your own order; new ones go last.
 - **Cloud sync with your Google account (optional)**: Settings › Continue with Google. Everything is
   copied to your own account (Firebase) and kept in step automatically: on start, on return to the

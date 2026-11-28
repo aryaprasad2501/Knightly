@@ -1,8 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:knightly/features/tasks/application/tasks_providers.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:knightly/core/design/components/k_dropdown.dart';
 import 'package:knightly/core/design/components/k_button.dart';
 import 'package:knightly/core/design/components/k_check_circle.dart';
+import 'package:knightly/core/design/components/k_chip.dart';
 import 'package:knightly/core/design/components/k_navigation_bar.dart';
 import 'package:knightly/core/design/components/k_text_field.dart';
 import 'package:knightly/core/time/calendar_date.dart';
@@ -43,10 +46,14 @@ Future<void> tapVisible(WidgetTester tester, Finder finder) async {
 /// Seeds the database *before* the app starts listening. Writing from the test
 /// while app streams are live deadlocks: drift's lock is then held by queries
 /// running on the fake test clock.
-Future<void> pumpSeededApp(WidgetTester tester, Future<void> Function(TaskRepository repo) body) async {
+Future<void> pumpSeededApp(
+  WidgetTester tester,
+  Future<void> Function(TaskRepository repo) body, {
+  List<Override> overrides = const [],
+}) async {
   final db = testDatabase();
   await tester.runAsync(() => body(TaskRepository(db, clock: () => now)));
-  await pumpKnightlyApp(tester, db: db, now: now);
+  await pumpKnightlyApp(tester, db: db, now: now, overrides: overrides);
 }
 
 void main() {
@@ -400,5 +407,32 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Buy paint').hitTestable(), findsNothing); // back on Today
     expect(find.text('Call the bank').hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('Done shows the newest page; older ones load on request; search finds them all', (
+    tester,
+  ) async {
+    usePhoneViewport(tester);
+    // Pages of 3 instead of 200, so the test stays small.
+    await pumpSeededApp(tester, (repo) async {
+      for (var i = 0; i < 5; i++) {
+        await repo.complete(await repo.create(TaskDraft(title: 'Old mission $i')));
+      }
+    }, overrides: [doneLimitProvider.overrideWith(() => DoneLimit(3))]);
+    await goToTab(tester, 'Tasks');
+    await tapVisible(tester, find.widgetWithText(KChip, 'Done').first);
+    await settleWithDatabase(tester);
+    await scrollTo(tester, find.textContaining('Show older missions'));
+    expect(find.text('Show older missions (2 more)'), findsOneWidget);
+    await tester.tap(find.text('Show older missions (2 more)').hitTestable());
+    await settleWithDatabase(tester);
+    expect(find.textContaining('Show older missions'), findsNothing);
+
+    await scrollToTop(tester);
+    await tester.tap(find.byTooltip('Search missions').hitTestable());
+    await tester.pumpAndSettle();
+    await tester.enterText(fieldOf('Search missions'), 'mission 0');
+    await settleWithDatabase(tester);
+    expect(find.text('Old mission 0').hitTestable(), findsOneWidget);
   });
 }

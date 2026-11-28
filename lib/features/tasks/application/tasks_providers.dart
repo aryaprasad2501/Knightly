@@ -8,8 +8,33 @@ import '../domain/task_views.dart';
 
 final openTasksProvider = StreamProvider<List<Task>>((ref) => ref.watch(taskRepositoryProvider).watchOpen());
 
+/// How many completed missions the Done view loads: the newest 200, and 200
+/// more each time "Show older missions" is tapped.
+class DoneLimit extends Notifier<int> {
+  DoneLimit([this.step = 200]);
+
+  final int step;
+
+  @override
+  int build() => step;
+
+  void more() => state += step;
+}
+
+final doneLimitProvider = NotifierProvider<DoneLimit, int>(DoneLimit.new);
+
 final completedTasksProvider = StreamProvider<List<Task>>(
-  (ref) => ref.watch(taskRepositoryProvider).watchCompleted(),
+  (ref) => ref.watch(taskRepositoryProvider).watchCompleted(limit: ref.watch(doneLimitProvider)),
+);
+
+/// Every completed mission, for search (only watched while searching).
+final allCompletedTasksProvider = StreamProvider<List<Task>>(
+  (ref) => ref.watch(taskRepositoryProvider).watchCompleted(limit: null),
+);
+
+/// The number of completed missions (Recycle Bin excluded).
+final completedCountProvider = StreamProvider<int>(
+  (ref) => ref.watch(taskRepositoryProvider).watchCompletedCount(),
 );
 
 /// Missions completed from a day on. Public: Insights reads history.

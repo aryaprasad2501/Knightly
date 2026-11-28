@@ -35,13 +35,23 @@ class TaskRepository {
     return query.watch().map((rows) => rows.map(_toTask).toList());
   }
 
-  /// Completed missions, newest first, not counting the Recycle Bin.
-  Stream<List<Task>> watchCompleted({int limit = 200}) {
+  /// Completed missions, newest first, not counting the Recycle Bin. [limit]
+  /// null means all of them.
+  Stream<List<Task>> watchCompleted({int? limit = 200}) {
     final query = _db.select(_db.tasks)
       ..where((t) => t.completedAt.isNotNull() & t.deletedAt.isNull())
-      ..orderBy([(t) => OrderingTerm.desc(t.completedAt)])
-      ..limit(limit);
+      ..orderBy([(t) => OrderingTerm.desc(t.completedAt)]);
+    if (limit != null) query.limit(limit);
     return query.watch().map((rows) => rows.map(_toTask).toList());
+  }
+
+  /// How many completed missions there are (Recycle Bin excluded).
+  Stream<int> watchCompletedCount() {
+    final count = _db.tasks.id.count();
+    final query = _db.selectOnly(_db.tasks)
+      ..addColumns([count])
+      ..where(_db.tasks.completedAt.isNotNull() & _db.tasks.deletedAt.isNull());
+    return query.map((r) => r.read(count) ?? 0).watchSingle();
   }
 
   /// Missions completed from [since] on (not deleted), newest first.

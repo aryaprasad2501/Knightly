@@ -30,6 +30,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 15 | Insights weekly review + sleep/habits link | 8b112d3 | Insights: Weekly review panel under the score |
 | 16 | Flutter 3.50 + Gradle 9 upgrade; dock closer to the reference image | 68a14dd | Settings > Dock style: Arc reactor and Crest in both themes |
 | 17 | Riverpod 3.5 | 495b1c6 | No visible change; use the app normally |
+| 18 | Dock back to the previous look | 62d8f17 | Dock looks as before stage 16 |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

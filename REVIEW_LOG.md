@@ -40,6 +40,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 25 | Sync 2: Continue with Google + Account screen | 4eb5776 | Settings > Continue with Google > sign in with a test-user Gmail; Sign out |
 | 26 | Sync 3-4: cloud sync, status, first-sign-in choice, sign-out/delete | f8e6fca | On your phone: sign in, add data, check Firestore console, reinstall, sign in: data returns; Delete account |
 | 27 | Release build fix + audit checklist (docs/AUDIT_2026-11-28.md) | 5a9a00f | Work through the audit on your phone |
+| 28 | Reorder habits | 0c49ade | Track > Habits > Reorder, drag, Save order |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

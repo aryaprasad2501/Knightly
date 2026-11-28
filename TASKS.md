@@ -135,7 +135,7 @@ Original brief: **Routines domain + data layer** — `Routine` (name, time of da
 
 ## Tech debt / follow-ups
 
-- [ ] Upgrade Flutter SDK (3.35.6 → current stable) and move to Riverpod 3 (ARCHITECTURE D3)
+- [x] Upgrade Flutter SDK (3.50.1) and Riverpod 3.5 (2026-11-28)
 - [ ] Confirm final application ID before first Play Store upload (D1)
 - [ ] Release signing: config is ready (`key.properties`, docs/RELEASE_SIGNING.md) — the user creates the upload key
 - [x] Initialise git repository and first commit

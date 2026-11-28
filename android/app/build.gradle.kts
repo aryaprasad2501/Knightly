@@ -76,6 +76,12 @@ android {
         resValues = true
     }
 
+    // Release-time lint also analyses dependencies and crashes on
+    // firebase_core (a lint bug). Our Dart code is checked by `flutter analyze`.
+    lint {
+        checkReleaseBuilds = false
+    }
+
     signingConfigs {
         if (hasReleaseKey) {
             create("release") {

@@ -24,6 +24,10 @@ subprojects {
     afterEvaluate {
         extensions.findByType(com.android.build.api.dsl.LibraryExtension::class.java)?.let { android ->
             if ((android.compileSdk ?: 0) < 36) android.compileSdk = 36
+            // Android lint crashes analysing firebase_core on release builds
+            // ("unexpected failure during lint analysis"). Plugins are not
+            // ours to lint; our code is checked by `flutter analyze`.
+            android.lint.checkReleaseBuilds = false
         }
     }
 }

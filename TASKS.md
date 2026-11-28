@@ -1,5 +1,7 @@
 # Knightly — Tasks
 
+> What's left, in order: **docs/ROADMAP.md** (2026-11-28). This file keeps the detailed history.
+
 Status: `[x]` done (works end to end, tested) · `[~]` in progress · `[ ]` not started.
 
 ## Stage 0 — Foundation ✅

@@ -42,6 +42,7 @@ git diff review-start-2026-11-28..HEAD --stat
 | 27 | Release build fix + audit checklist (docs/AUDIT_2026-11-28.md) | 5a9a00f | Work through the audit on your phone |
 | 28 | Reorder habits | 0c49ade | Track > Habits > Reorder, drag, Save order |
 | 29 | Mission history beyond 200 | c95198a | Missions > Done > Show older missions (only with 200+ done) |
+| 30 | Habit check-in notes | 9fe1dc8 | Track > a habit > Add note; long-press a past day dot |
 ### CRUD audit (2026-11-28)
 
 | Item | Create | View | Edit | Delete |

@@ -6,7 +6,9 @@ import 'package:knightly/features/insights/domain/insights.dart';
 import 'package:knightly/features/insights/domain/weekly_review.dart';
 import 'package:knightly/features/sleep/domain/sleep.dart';
 
-import 'insights_test.dart' show ago, input, today;
+import 'package:knightly/features/workouts/domain/workout.dart';
+
+import 'insights_test.dart' show ago, drink, input, today;
 
 SleepLog night(int id, CalendarDate d, int hours) => SleepLog(
   id: id,
@@ -81,5 +83,47 @@ void main() {
       final off = InsightsInput(today: today, areas: {InsightArea.habits}, habits: [read]);
       expect(sleepVsHabitsLine(off), isNull);
     });
+  });
+
+  test('workouts vs sleep: hours after training days against rest days', () {
+    Workout trained(int id, CalendarDate d) => Workout(
+      id: id,
+      name: 'W',
+      startedAt: DateTime(d.year, d.month, d.day, 18),
+      finishedAt: DateTime(d.year, d.month, d.day, 19),
+    );
+    final i = InsightsInput(
+      today: today,
+      areas: {InsightArea.workouts, InsightArea.sleep},
+      // Trained on days 2, 4, 6 ago: the nights dated 1, 3, 5 ago follow them.
+      workouts: [trained(1, ago(2)), trained(2, ago(4)), trained(3, ago(6))],
+      sleep: [
+        for (final d in [1, 3, 5]) night(d, ago(d), 8),
+        for (final d in [2, 4, 6]) night(d, ago(d), 6),
+      ],
+    );
+    final r = workoutVsSleep(i)!;
+    expect((r.afterWorkout, r.afterRest), (8.0, 6.0));
+    expect(workoutVsSleepLine(i)!.text, 'After workout days you slept 8.0 h, against 6.0 h after rest days.');
+  });
+
+  test('water vs habits: only days with water logged count', () {
+    final i = InsightsInput(
+      today: today,
+      areas: {InsightArea.water, InsightArea.habits},
+      habits: [read],
+      waterGoalMl: 2000,
+      water: [
+        for (final d in [1, 2, 3]) drink(d, ago(d), 2500),
+        for (final d in [4, 5, 6]) drink(d, ago(d), 500),
+      ],
+      checkIns: [
+        for (final d in [1, 2, 3]) HabitCheckIn(habitId: 1, date: ago(d), count: 1),
+      ],
+    );
+    final r = waterVsHabits(i)!;
+    expect((r.hydrated, r.dry), (1.0, 0.0));
+    expect(waterVsHabitsLine(i)!.text, contains('100% of your habits, against 0% on other days'));
+    expect(waterVsHabits(InsightsInput(today: today, areas: {InsightArea.water})), isNull);
   });
 }

@@ -116,17 +116,7 @@ List<ReviewLine> weeklyReview(InsightsSnapshot week) {
 }) {
   if (!input.areas.contains(InsightArea.sleep) || !input.areas.contains(InsightArea.habits)) return null;
   final from = input.today.addDays(-days);
-  final counts = {for (final c in input.checkIns) (c.habitId, c.date): c.count};
-
-  double? completion(CalendarDate d) {
-    var expected = 0, done = 0;
-    for (final h in input.habits) {
-      if (d.isBefore(h.startDate) || h.schedule is TimesPerWeek || !h.schedule.isScheduledOn(d)) continue;
-      expected++;
-      if ((counts[(h.id, d)] ?? 0) >= h.target) done++;
-    }
-    return expected == 0 ? null : done / expected;
-  }
+  final completion = _habitCompletion(input);
 
   final rested = <double>[], short = <double>[];
   for (final night in input.sleep) {
@@ -138,8 +128,7 @@ List<ReviewLine> weeklyReview(InsightsSnapshot week) {
     (night.duration >= input.sleepGoal ? rested : short).add(c);
   }
   if (rested.length < 3 || short.length < 3) return null;
-  double avg(List<double> v) => v.reduce((a, b) => a + b) / v.length;
-  return (rested: avg(rested), short: avg(short), restedDays: rested.length, shortDays: short.length);
+  return (rested: _avg(rested), short: _avg(short), restedDays: rested.length, shortDays: short.length);
 }
 
 /// The sleep link as a sentence, or null when there is nothing to say.
@@ -153,5 +142,89 @@ ReviewLine? sleepVsHabitsLine(InsightsInput input) {
   return ReviewLine(
     'On days after a full night you finished $rested% of your habits, against $short% after short nights.',
     rested > short ? ReviewTone.good : ReviewTone.neutral,
+  );
+}
+
+/// Share of scheduled habits done on a day, or null when none were due.
+double? Function(CalendarDate) _habitCompletion(InsightsInput input) {
+  final counts = {for (final c in input.checkIns) (c.habitId, c.date): c.count};
+  return (d) {
+    var expected = 0, done = 0;
+    for (final h in input.habits) {
+      if (d.isBefore(h.startDate) || h.schedule is TimesPerWeek || !h.schedule.isScheduledOn(d)) continue;
+      expected++;
+      if ((counts[(h.id, d)] ?? 0) >= h.target) done++;
+    }
+    return expected == 0 ? null : done / expected;
+  };
+}
+
+double _avg(List<double> v) => v.reduce((a, b) => a + b) / v.length;
+
+/// Average sleep (hours) after days with a finished workout against after
+/// rest days, over the last [days] nights. Null with fewer than three
+/// nights on either side.
+({double afterWorkout, double afterRest})? workoutVsSleep(InsightsInput input, {int days = 60}) {
+  if (!input.areas.contains(InsightArea.workouts) || !input.areas.contains(InsightArea.sleep)) return null;
+  final trained = {
+    for (final w in input.workouts)
+      if (w.finishedAt != null) CalendarDate.of(w.startedAt),
+  };
+  final from = input.today.addDays(-days);
+  final after = <double>[], rest = <double>[];
+  for (final night in input.sleep) {
+    if (night.date.isBefore(from) || night.date.isAfter(input.today)) continue;
+    final hours = night.duration.inMinutes / 60;
+    if (hours <= 0) continue;
+    (trained.contains(night.date.addDays(-1)) ? after : rest).add(hours);
+  }
+  if (after.length < 3 || rest.length < 3) return null;
+  return (afterWorkout: _avg(after), afterRest: _avg(rest));
+}
+
+ReviewLine? workoutVsSleepLine(InsightsInput input) {
+  final r = workoutVsSleep(input);
+  if (r == null) return null;
+  String h(double v) => '${v.toStringAsFixed(1)} h';
+  if ((r.afterWorkout - r.afterRest).abs() < 0.25) {
+    return const ReviewLine('Workouts and sleep: you sleep about the same after training and rest days.');
+  }
+  return ReviewLine(
+    'After workout days you slept ${h(r.afterWorkout)}, against ${h(r.afterRest)} after rest days.',
+    r.afterWorkout > r.afterRest ? ReviewTone.good : ReviewTone.neutral,
+  );
+}
+
+/// Habit completion on days you reached your water goal against days you
+/// didn't, over the last [days] finished days. Null with fewer than three
+/// days on either side.
+({double hydrated, double dry})? waterVsHabits(InsightsInput input, {int days = 30}) {
+  if (!input.areas.contains(InsightArea.water) || !input.areas.contains(InsightArea.habits)) return null;
+  final totals = <CalendarDate, int>{};
+  for (final w in input.water) {
+    totals[w.date] = (totals[w.date] ?? 0) + w.amountMl;
+  }
+  final completion = _habitCompletion(input);
+  final hydrated = <double>[], dry = <double>[];
+  for (var i = 1; i <= days; i++) {
+    final d = input.today.addDays(-i);
+    final total = totals[d];
+    if (total == null) continue; // nothing logged: not a data point
+    final c = completion(d);
+    if (c == null) continue;
+    (total >= input.waterGoalMl ? hydrated : dry).add(c);
+  }
+  if (hydrated.length < 3 || dry.length < 3) return null;
+  return (hydrated: _avg(hydrated), dry: _avg(dry));
+}
+
+ReviewLine? waterVsHabitsLine(InsightsInput input) {
+  final r = waterVsHabits(input);
+  if (r == null) return null;
+  final a = (r.hydrated * 100).round(), b = (r.dry * 100).round();
+  if ((a - b).abs() < 10) return null;
+  return ReviewLine(
+    'On days you reached your water goal you finished $a% of your habits, against $b% on other days.',
+    a > b ? ReviewTone.good : ReviewTone.neutral,
   );
 }

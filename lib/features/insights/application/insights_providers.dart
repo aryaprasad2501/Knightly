@@ -111,11 +111,14 @@ class InsightsIntroPlayed extends Notifier<bool> {
 final insightsIntroPlayedProvider = NotifierProvider<InsightsIntroPlayed, bool>(InsightsIntroPlayed.new);
 
 /// The weekly review sentences (always about the last 7 days), with the
-/// sleep and habits link added when there is one.
+/// links Insights finds (sleep, workouts, water) added when there is enough data.
 final weeklyReviewProvider = Provider<AsyncValue<List<ReviewLine>>>((ref) {
   final input = ref.watch(insightsInputProvider);
   return ref.watch(insightsProvider(InsightPeriod.week)).whenData((week) {
-    final link = input.value == null ? null : sleepVsHabitsLine(input.requireValue);
-    return [...weeklyReview(week), ?link];
+    final i = input.value;
+    return [
+      ...weeklyReview(week),
+      if (i != null) ...[?sleepVsHabitsLine(i), ?workoutVsSleepLine(i), ?waterVsHabitsLine(i)],
+    ];
   });
 });

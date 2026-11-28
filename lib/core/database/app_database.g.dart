@@ -3,48 +3,506 @@
 part of 'app_database.dart';
 
 // ignore_for_file: type=lint
-class $AppSettingsTable extends AppSettings with TableInfo<$AppSettingsTable, AppSetting> {
+class SyncOutbox extends Table with TableInfo<SyncOutbox, SyncOutboxRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $AppSettingsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  SyncOutbox(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _entityMeta = const VerificationMeta('entity');
+  late final GeneratedColumn<String> entity = GeneratedColumn<String>(
+    'entity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _rowKeyMeta = const VerificationMeta('rowKey');
+  late final GeneratedColumn<String> rowKey = GeneratedColumn<String>(
+    'row_key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _changedAtMeta = const VerificationMeta('changedAt');
+  late final GeneratedColumn<String> changedAt = GeneratedColumn<String>(
+    'changed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
   @override
+  List<GeneratedColumn> get $columns => [entity, rowKey, changedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_outbox';
+  @override
+  VerificationContext validateIntegrity(Insertable<SyncOutboxRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('entity')) {
+      context.handle(_entityMeta, entity.isAcceptableOrUnknown(data['entity']!, _entityMeta));
+    } else if (isInserting) {
+      context.missing(_entityMeta);
+    }
+    if (data.containsKey('row_key')) {
+      context.handle(_rowKeyMeta, rowKey.isAcceptableOrUnknown(data['row_key']!, _rowKeyMeta));
+    } else if (isInserting) {
+      context.missing(_rowKeyMeta);
+    }
+    if (data.containsKey('changed_at')) {
+      context.handle(_changedAtMeta, changedAt.isAcceptableOrUnknown(data['changed_at']!, _changedAtMeta));
+    } else if (isInserting) {
+      context.missing(_changedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {entity, rowKey};
+  @override
+  SyncOutboxRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncOutboxRow(
+      entity: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}entity'])!,
+      rowKey: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}row_key'])!,
+      changedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}changed_at'],
+      )!,
+    );
+  }
+
+  @override
+  SyncOutbox createAlias(String alias) {
+    return SyncOutbox(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(entity, row_key)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SyncOutboxRow extends DataClass implements Insertable<SyncOutboxRow> {
+  final String entity;
+  final String rowKey;
+  final String changedAt;
+  const SyncOutboxRow({required this.entity, required this.rowKey, required this.changedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['entity'] = Variable<String>(entity);
+    map['row_key'] = Variable<String>(rowKey);
+    map['changed_at'] = Variable<String>(changedAt);
+    return map;
+  }
+
+  SyncOutboxCompanion toCompanion(bool nullToAbsent) {
+    return SyncOutboxCompanion(entity: Value(entity), rowKey: Value(rowKey), changedAt: Value(changedAt));
+  }
+
+  factory SyncOutboxRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncOutboxRow(
+      entity: serializer.fromJson<String>(json['entity']),
+      rowKey: serializer.fromJson<String>(json['row_key']),
+      changedAt: serializer.fromJson<String>(json['changed_at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'entity': serializer.toJson<String>(entity),
+      'row_key': serializer.toJson<String>(rowKey),
+      'changed_at': serializer.toJson<String>(changedAt),
+    };
+  }
+
+  SyncOutboxRow copyWith({String? entity, String? rowKey, String? changedAt}) => SyncOutboxRow(
+    entity: entity ?? this.entity,
+    rowKey: rowKey ?? this.rowKey,
+    changedAt: changedAt ?? this.changedAt,
+  );
+  SyncOutboxRow copyWithCompanion(SyncOutboxCompanion data) {
+    return SyncOutboxRow(
+      entity: data.entity.present ? data.entity.value : this.entity,
+      rowKey: data.rowKey.present ? data.rowKey.value : this.rowKey,
+      changedAt: data.changedAt.present ? data.changedAt.value : this.changedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncOutboxRow(')
+          ..write('entity: $entity, ')
+          ..write('rowKey: $rowKey, ')
+          ..write('changedAt: $changedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(entity, rowKey, changedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncOutboxRow &&
+          other.entity == this.entity &&
+          other.rowKey == this.rowKey &&
+          other.changedAt == this.changedAt);
+}
+
+class SyncOutboxCompanion extends UpdateCompanion<SyncOutboxRow> {
+  final Value<String> entity;
+  final Value<String> rowKey;
+  final Value<String> changedAt;
+  final Value<int> rowid;
+  const SyncOutboxCompanion({
+    this.entity = const Value.absent(),
+    this.rowKey = const Value.absent(),
+    this.changedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncOutboxCompanion.insert({
+    required String entity,
+    required String rowKey,
+    required String changedAt,
+    this.rowid = const Value.absent(),
+  }) : entity = Value(entity),
+       rowKey = Value(rowKey),
+       changedAt = Value(changedAt);
+  static Insertable<SyncOutboxRow> custom({
+    Expression<String>? entity,
+    Expression<String>? rowKey,
+    Expression<String>? changedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (entity != null) 'entity': entity,
+      if (rowKey != null) 'row_key': rowKey,
+      if (changedAt != null) 'changed_at': changedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncOutboxCompanion copyWith({
+    Value<String>? entity,
+    Value<String>? rowKey,
+    Value<String>? changedAt,
+    Value<int>? rowid,
+  }) {
+    return SyncOutboxCompanion(
+      entity: entity ?? this.entity,
+      rowKey: rowKey ?? this.rowKey,
+      changedAt: changedAt ?? this.changedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (entity.present) {
+      map['entity'] = Variable<String>(entity.value);
+    }
+    if (rowKey.present) {
+      map['row_key'] = Variable<String>(rowKey.value);
+    }
+    if (changedAt.present) {
+      map['changed_at'] = Variable<String>(changedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncOutboxCompanion(')
+          ..write('entity: $entity, ')
+          ..write('rowKey: $rowKey, ')
+          ..write('changedAt: $changedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SyncTombstones extends Table with TableInfo<SyncTombstones, SyncTombstoneRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SyncTombstones(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _entityMeta = const VerificationMeta('entity');
+  late final GeneratedColumn<String> entity = GeneratedColumn<String>(
+    'entity',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _docIdMeta = const VerificationMeta('docId');
+  late final GeneratedColumn<String> docId = GeneratedColumn<String>(
+    'doc_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  static const VerificationMeta _deletedAtMeta = const VerificationMeta('deletedAt');
+  late final GeneratedColumn<String> deletedAt = GeneratedColumn<String>(
+    'deleted_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL',
+  );
+  @override
+  List<GeneratedColumn> get $columns => [entity, docId, deletedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sync_tombstones';
+  @override
+  VerificationContext validateIntegrity(Insertable<SyncTombstoneRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('entity')) {
+      context.handle(_entityMeta, entity.isAcceptableOrUnknown(data['entity']!, _entityMeta));
+    } else if (isInserting) {
+      context.missing(_entityMeta);
+    }
+    if (data.containsKey('doc_id')) {
+      context.handle(_docIdMeta, docId.isAcceptableOrUnknown(data['doc_id']!, _docIdMeta));
+    } else if (isInserting) {
+      context.missing(_docIdMeta);
+    }
+    if (data.containsKey('deleted_at')) {
+      context.handle(_deletedAtMeta, deletedAt.isAcceptableOrUnknown(data['deleted_at']!, _deletedAtMeta));
+    } else if (isInserting) {
+      context.missing(_deletedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {entity, docId};
+  @override
+  SyncTombstoneRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SyncTombstoneRow(
+      entity: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}entity'])!,
+      docId: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}doc_id'])!,
+      deletedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}deleted_at'],
+      )!,
+    );
+  }
+
+  @override
+  SyncTombstones createAlias(String alias) {
+    return SyncTombstones(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(entity, doc_id)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class SyncTombstoneRow extends DataClass implements Insertable<SyncTombstoneRow> {
+  final String entity;
+  final String docId;
+  final String deletedAt;
+  const SyncTombstoneRow({required this.entity, required this.docId, required this.deletedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['entity'] = Variable<String>(entity);
+    map['doc_id'] = Variable<String>(docId);
+    map['deleted_at'] = Variable<String>(deletedAt);
+    return map;
+  }
+
+  SyncTombstonesCompanion toCompanion(bool nullToAbsent) {
+    return SyncTombstonesCompanion(entity: Value(entity), docId: Value(docId), deletedAt: Value(deletedAt));
+  }
+
+  factory SyncTombstoneRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SyncTombstoneRow(
+      entity: serializer.fromJson<String>(json['entity']),
+      docId: serializer.fromJson<String>(json['doc_id']),
+      deletedAt: serializer.fromJson<String>(json['deleted_at']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'entity': serializer.toJson<String>(entity),
+      'doc_id': serializer.toJson<String>(docId),
+      'deleted_at': serializer.toJson<String>(deletedAt),
+    };
+  }
+
+  SyncTombstoneRow copyWith({String? entity, String? docId, String? deletedAt}) => SyncTombstoneRow(
+    entity: entity ?? this.entity,
+    docId: docId ?? this.docId,
+    deletedAt: deletedAt ?? this.deletedAt,
+  );
+  SyncTombstoneRow copyWithCompanion(SyncTombstonesCompanion data) {
+    return SyncTombstoneRow(
+      entity: data.entity.present ? data.entity.value : this.entity,
+      docId: data.docId.present ? data.docId.value : this.docId,
+      deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncTombstoneRow(')
+          ..write('entity: $entity, ')
+          ..write('docId: $docId, ')
+          ..write('deletedAt: $deletedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(entity, docId, deletedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SyncTombstoneRow &&
+          other.entity == this.entity &&
+          other.docId == this.docId &&
+          other.deletedAt == this.deletedAt);
+}
+
+class SyncTombstonesCompanion extends UpdateCompanion<SyncTombstoneRow> {
+  final Value<String> entity;
+  final Value<String> docId;
+  final Value<String> deletedAt;
+  final Value<int> rowid;
+  const SyncTombstonesCompanion({
+    this.entity = const Value.absent(),
+    this.docId = const Value.absent(),
+    this.deletedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SyncTombstonesCompanion.insert({
+    required String entity,
+    required String docId,
+    required String deletedAt,
+    this.rowid = const Value.absent(),
+  }) : entity = Value(entity),
+       docId = Value(docId),
+       deletedAt = Value(deletedAt);
+  static Insertable<SyncTombstoneRow> custom({
+    Expression<String>? entity,
+    Expression<String>? docId,
+    Expression<String>? deletedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (entity != null) 'entity': entity,
+      if (docId != null) 'doc_id': docId,
+      if (deletedAt != null) 'deleted_at': deletedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SyncTombstonesCompanion copyWith({
+    Value<String>? entity,
+    Value<String>? docId,
+    Value<String>? deletedAt,
+    Value<int>? rowid,
+  }) {
+    return SyncTombstonesCompanion(
+      entity: entity ?? this.entity,
+      docId: docId ?? this.docId,
+      deletedAt: deletedAt ?? this.deletedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (entity.present) {
+      map['entity'] = Variable<String>(entity.value);
+    }
+    if (docId.present) {
+      map['doc_id'] = Variable<String>(docId.value);
+    }
+    if (deletedAt.present) {
+      map['deleted_at'] = Variable<String>(deletedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SyncTombstonesCompanion(')
+          ..write('entity: $entity, ')
+          ..write('docId: $docId, ')
+          ..write('deletedAt: $deletedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class SyncMeta extends Table with TableInfo<SyncMeta, SyncMetaRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  SyncMeta(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
   late final GeneratedColumn<String> key = GeneratedColumn<String>(
     'key',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
+    $customConstraints: 'NOT NULL PRIMARY KEY',
   );
   static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  @override
   late final GeneratedColumn<String> value = GeneratedColumn<String>(
     'value',
     aliasedName,
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
+    $customConstraints: 'NOT NULL',
   );
   @override
-  List<GeneratedColumn> get $columns => [key, value, updatedAt];
+  List<GeneratedColumn> get $columns => [key, value];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'app_settings';
+  static const String $name = 'sync_meta';
   @override
-  VerificationContext validateIntegrity(Insertable<AppSetting> instance, {bool isInserting = false}) {
+  VerificationContext validateIntegrity(Insertable<SyncMetaRow> instance, {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('key')) {
@@ -57,57 +515,50 @@ class $AppSettingsTable extends AppSettings with TableInfo<$AppSettingsTable, Ap
     } else if (isInserting) {
       context.missing(_valueMeta);
     }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
-    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {key};
   @override
-  AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SyncMetaRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return AppSetting(
+    return SyncMetaRow(
       key: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}key'])!,
       value: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}value'])!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
     );
   }
 
   @override
-  $AppSettingsTable createAlias(String alias) {
-    return $AppSettingsTable(attachedDatabase, alias);
+  SyncMeta createAlias(String alias) {
+    return SyncMeta(attachedDatabase, alias);
   }
+
+  @override
+  bool get dontWriteConstraints => true;
 }
 
-class AppSetting extends DataClass implements Insertable<AppSetting> {
+class SyncMetaRow extends DataClass implements Insertable<SyncMetaRow> {
   final String key;
   final String value;
-  final DateTime updatedAt;
-  const AppSetting({required this.key, required this.value, required this.updatedAt});
+  const SyncMetaRow({required this.key, required this.value});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['key'] = Variable<String>(key);
     map['value'] = Variable<String>(value);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
-  AppSettingsCompanion toCompanion(bool nullToAbsent) {
-    return AppSettingsCompanion(key: Value(key), value: Value(value), updatedAt: Value(updatedAt));
+  SyncMetaCompanion toCompanion(bool nullToAbsent) {
+    return SyncMetaCompanion(key: Value(key), value: Value(value));
   }
 
-  factory AppSetting.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+  factory SyncMetaRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return AppSetting(
+    return SyncMetaRow(
       key: serializer.fromJson<String>(json['key']),
       value: serializer.fromJson<String>(json['value']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -116,85 +567,60 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     return <String, dynamic>{
       'key': serializer.toJson<String>(key),
       'value': serializer.toJson<String>(value),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  AppSetting copyWith({String? key, String? value, DateTime? updatedAt}) =>
-      AppSetting(key: key ?? this.key, value: value ?? this.value, updatedAt: updatedAt ?? this.updatedAt);
-  AppSetting copyWithCompanion(AppSettingsCompanion data) {
-    return AppSetting(
+  SyncMetaRow copyWith({String? key, String? value}) =>
+      SyncMetaRow(key: key ?? this.key, value: value ?? this.value);
+  SyncMetaRow copyWithCompanion(SyncMetaCompanion data) {
+    return SyncMetaRow(
       key: data.key.present ? data.key.value : this.key,
       value: data.value.present ? data.value.value : this.value,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('AppSetting(')
+    return (StringBuffer('SyncMetaRow(')
           ..write('key: $key, ')
-          ..write('value: $value, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('value: $value')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(key, value, updatedAt);
+  int get hashCode => Object.hash(key, value);
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is AppSetting &&
-          other.key == this.key &&
-          other.value == this.value &&
-          other.updatedAt == this.updatedAt);
+      identical(this, other) || (other is SyncMetaRow && other.key == this.key && other.value == this.value);
 }
 
-class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
+class SyncMetaCompanion extends UpdateCompanion<SyncMetaRow> {
   final Value<String> key;
   final Value<String> value;
-  final Value<DateTime> updatedAt;
   final Value<int> rowid;
-  const AppSettingsCompanion({
+  const SyncMetaCompanion({
     this.key = const Value.absent(),
     this.value = const Value.absent(),
-    this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  AppSettingsCompanion.insert({
-    required String key,
-    required String value,
-    this.updatedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : key = Value(key),
-       value = Value(value);
-  static Insertable<AppSetting> custom({
+  SyncMetaCompanion.insert({required String key, required String value, this.rowid = const Value.absent()})
+    : key = Value(key),
+      value = Value(value);
+  static Insertable<SyncMetaRow> custom({
     Expression<String>? key,
     Expression<String>? value,
-    Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (key != null) 'key': key,
       if (value != null) 'value': value,
-      if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  AppSettingsCompanion copyWith({
-    Value<String>? key,
-    Value<String>? value,
-    Value<DateTime>? updatedAt,
-    Value<int>? rowid,
-  }) {
-    return AppSettingsCompanion(
-      key: key ?? this.key,
-      value: value ?? this.value,
-      updatedAt: updatedAt ?? this.updatedAt,
-      rowid: rowid ?? this.rowid,
-    );
+  SyncMetaCompanion copyWith({Value<String>? key, Value<String>? value, Value<int>? rowid}) {
+    return SyncMetaCompanion(key: key ?? this.key, value: value ?? this.value, rowid: rowid ?? this.rowid);
   }
 
   @override
@@ -206,9 +632,6 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (value.present) {
       map['value'] = Variable<String>(value.value);
     }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -217,10 +640,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
 
   @override
   String toString() {
-    return (StringBuffer('AppSettingsCompanion(')
+    return (StringBuffer('SyncMetaCompanion(')
           ..write('key: $key, ')
           ..write('value: $value, ')
-          ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2232,283 +2654,6 @@ class HabitsCompanion extends UpdateCompanion<HabitRow> {
   }
 }
 
-class $HabitCheckInsTable extends HabitCheckIns with TableInfo<$HabitCheckInsTable, HabitCheckInRow> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $HabitCheckInsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _habitIdMeta = const VerificationMeta('habitId');
-  @override
-  late final GeneratedColumn<int> habitId = GeneratedColumn<int>(
-    'habit_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES habits (id) ON DELETE CASCADE'),
-  );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
-  @override
-  late final GeneratedColumn<String> date = GeneratedColumn<String>(
-    'date',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _countMeta = const VerificationMeta('count');
-  @override
-  late final GeneratedColumn<int> count = GeneratedColumn<int>(
-    'count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [habitId, date, count, updatedAt];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'habit_check_ins';
-  @override
-  VerificationContext validateIntegrity(Insertable<HabitCheckInRow> instance, {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('habit_id')) {
-      context.handle(_habitIdMeta, habitId.isAcceptableOrUnknown(data['habit_id']!, _habitIdMeta));
-    } else if (isInserting) {
-      context.missing(_habitIdMeta);
-    }
-    if (data.containsKey('date')) {
-      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('count')) {
-      context.handle(_countMeta, count.isAcceptableOrUnknown(data['count']!, _countMeta));
-    } else if (isInserting) {
-      context.missing(_countMeta);
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {habitId, date};
-  @override
-  HabitCheckInRow map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return HabitCheckInRow(
-      habitId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}habit_id'])!,
-      date: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}date'])!,
-      count: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}count'])!,
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
-    );
-  }
-
-  @override
-  $HabitCheckInsTable createAlias(String alias) {
-    return $HabitCheckInsTable(attachedDatabase, alias);
-  }
-}
-
-class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
-  /// Permanently deleting a habit deletes its history; moving it to the
-  /// Recycle Bin does not.
-  final int habitId;
-
-  /// `yyyy-MM-dd`.
-  final String date;
-  final int count;
-  final DateTime updatedAt;
-  const HabitCheckInRow({
-    required this.habitId,
-    required this.date,
-    required this.count,
-    required this.updatedAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['habit_id'] = Variable<int>(habitId);
-    map['date'] = Variable<String>(date);
-    map['count'] = Variable<int>(count);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    return map;
-  }
-
-  HabitCheckInsCompanion toCompanion(bool nullToAbsent) {
-    return HabitCheckInsCompanion(
-      habitId: Value(habitId),
-      date: Value(date),
-      count: Value(count),
-      updatedAt: Value(updatedAt),
-    );
-  }
-
-  factory HabitCheckInRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return HabitCheckInRow(
-      habitId: serializer.fromJson<int>(json['habitId']),
-      date: serializer.fromJson<String>(json['date']),
-      count: serializer.fromJson<int>(json['count']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'habitId': serializer.toJson<int>(habitId),
-      'date': serializer.toJson<String>(date),
-      'count': serializer.toJson<int>(count),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-    };
-  }
-
-  HabitCheckInRow copyWith({int? habitId, String? date, int? count, DateTime? updatedAt}) => HabitCheckInRow(
-    habitId: habitId ?? this.habitId,
-    date: date ?? this.date,
-    count: count ?? this.count,
-    updatedAt: updatedAt ?? this.updatedAt,
-  );
-  HabitCheckInRow copyWithCompanion(HabitCheckInsCompanion data) {
-    return HabitCheckInRow(
-      habitId: data.habitId.present ? data.habitId.value : this.habitId,
-      date: data.date.present ? data.date.value : this.date,
-      count: data.count.present ? data.count.value : this.count,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('HabitCheckInRow(')
-          ..write('habitId: $habitId, ')
-          ..write('date: $date, ')
-          ..write('count: $count, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(habitId, date, count, updatedAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is HabitCheckInRow &&
-          other.habitId == this.habitId &&
-          other.date == this.date &&
-          other.count == this.count &&
-          other.updatedAt == this.updatedAt);
-}
-
-class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
-  final Value<int> habitId;
-  final Value<String> date;
-  final Value<int> count;
-  final Value<DateTime> updatedAt;
-  final Value<int> rowid;
-  const HabitCheckInsCompanion({
-    this.habitId = const Value.absent(),
-    this.date = const Value.absent(),
-    this.count = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  HabitCheckInsCompanion.insert({
-    required int habitId,
-    required String date,
-    required int count,
-    this.updatedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : habitId = Value(habitId),
-       date = Value(date),
-       count = Value(count);
-  static Insertable<HabitCheckInRow> custom({
-    Expression<int>? habitId,
-    Expression<String>? date,
-    Expression<int>? count,
-    Expression<DateTime>? updatedAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (habitId != null) 'habit_id': habitId,
-      if (date != null) 'date': date,
-      if (count != null) 'count': count,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  HabitCheckInsCompanion copyWith({
-    Value<int>? habitId,
-    Value<String>? date,
-    Value<int>? count,
-    Value<DateTime>? updatedAt,
-    Value<int>? rowid,
-  }) {
-    return HabitCheckInsCompanion(
-      habitId: habitId ?? this.habitId,
-      date: date ?? this.date,
-      count: count ?? this.count,
-      updatedAt: updatedAt ?? this.updatedAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (habitId.present) {
-      map['habit_id'] = Variable<int>(habitId.value);
-    }
-    if (date.present) {
-      map['date'] = Variable<String>(date.value);
-    }
-    if (count.present) {
-      map['count'] = Variable<int>(count.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('HabitCheckInsCompanion(')
-          ..write('habitId: $habitId, ')
-          ..write('date: $date, ')
-          ..write('count: $count, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('rowid: $rowid')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $EventsTable extends Events with TableInfo<$EventsTable, EventRow> {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -3177,405 +3322,6 @@ class EventsCompanion extends UpdateCompanion<EventRow> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('deletedAt: $deletedAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $EventExceptionsTable extends EventExceptions with TableInfo<$EventExceptionsTable, EventExceptionRow> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $EventExceptionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _eventIdMeta = const VerificationMeta('eventId');
-  @override
-  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
-    'event_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES events (id) ON DELETE CASCADE'),
-  );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
-  @override
-  late final GeneratedColumn<String> date = GeneratedColumn<String>(
-    'date',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _skippedMeta = const VerificationMeta('skipped');
-  @override
-  late final GeneratedColumn<bool> skipped = GeneratedColumn<bool>(
-    'skipped',
-    aliasedName,
-    false,
-    type: DriftSqlType.bool,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("skipped" IN (0, 1))'),
-    defaultValue: const Constant(false),
-  );
-  static const VerificationMeta _doneAtMeta = const VerificationMeta('doneAt');
-  @override
-  late final GeneratedColumn<DateTime> doneAt = GeneratedColumn<DateTime>(
-    'done_at',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _movedDateMeta = const VerificationMeta('movedDate');
-  @override
-  late final GeneratedColumn<String> movedDate = GeneratedColumn<String>(
-    'moved_date',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _movedMinuteMeta = const VerificationMeta('movedMinute');
-  @override
-  late final GeneratedColumn<int> movedMinute = GeneratedColumn<int>(
-    'moved_minute',
-    aliasedName,
-    true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-    'updated_at',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
-    defaultValue: currentDateAndTime,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [eventId, date, skipped, doneAt, movedDate, movedMinute, updatedAt];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'event_exceptions';
-  @override
-  VerificationContext validateIntegrity(Insertable<EventExceptionRow> instance, {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('event_id')) {
-      context.handle(_eventIdMeta, eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta));
-    } else if (isInserting) {
-      context.missing(_eventIdMeta);
-    }
-    if (data.containsKey('date')) {
-      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
-    } else if (isInserting) {
-      context.missing(_dateMeta);
-    }
-    if (data.containsKey('skipped')) {
-      context.handle(_skippedMeta, skipped.isAcceptableOrUnknown(data['skipped']!, _skippedMeta));
-    }
-    if (data.containsKey('done_at')) {
-      context.handle(_doneAtMeta, doneAt.isAcceptableOrUnknown(data['done_at']!, _doneAtMeta));
-    }
-    if (data.containsKey('moved_date')) {
-      context.handle(_movedDateMeta, movedDate.isAcceptableOrUnknown(data['moved_date']!, _movedDateMeta));
-    }
-    if (data.containsKey('moved_minute')) {
-      context.handle(
-        _movedMinuteMeta,
-        movedMinute.isAcceptableOrUnknown(data['moved_minute']!, _movedMinuteMeta),
-      );
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {eventId, date};
-  @override
-  EventExceptionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return EventExceptionRow(
-      eventId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}event_id'])!,
-      date: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}date'])!,
-      skipped: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}skipped'])!,
-      doneAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}done_at']),
-      movedDate: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}moved_date']),
-      movedMinute: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}moved_minute'],
-      ),
-      updatedAt: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}updated_at'],
-      )!,
-    );
-  }
-
-  @override
-  $EventExceptionsTable createAlias(String alias) {
-    return $EventExceptionsTable(attachedDatabase, alias);
-  }
-}
-
-class EventExceptionRow extends DataClass implements Insertable<EventExceptionRow> {
-  /// Permanently deleting an event deletes its occurrence history.
-  final int eventId;
-
-  /// The occurrence's original date, `yyyy-MM-dd`.
-  final String date;
-  final bool skipped;
-  final DateTime? doneAt;
-
-  /// Where the occurrence was moved to, if rescheduled.
-  final String? movedDate;
-  final int? movedMinute;
-  final DateTime updatedAt;
-  const EventExceptionRow({
-    required this.eventId,
-    required this.date,
-    required this.skipped,
-    this.doneAt,
-    this.movedDate,
-    this.movedMinute,
-    required this.updatedAt,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['event_id'] = Variable<int>(eventId);
-    map['date'] = Variable<String>(date);
-    map['skipped'] = Variable<bool>(skipped);
-    if (!nullToAbsent || doneAt != null) {
-      map['done_at'] = Variable<DateTime>(doneAt);
-    }
-    if (!nullToAbsent || movedDate != null) {
-      map['moved_date'] = Variable<String>(movedDate);
-    }
-    if (!nullToAbsent || movedMinute != null) {
-      map['moved_minute'] = Variable<int>(movedMinute);
-    }
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    return map;
-  }
-
-  EventExceptionsCompanion toCompanion(bool nullToAbsent) {
-    return EventExceptionsCompanion(
-      eventId: Value(eventId),
-      date: Value(date),
-      skipped: Value(skipped),
-      doneAt: doneAt == null && nullToAbsent ? const Value.absent() : Value(doneAt),
-      movedDate: movedDate == null && nullToAbsent ? const Value.absent() : Value(movedDate),
-      movedMinute: movedMinute == null && nullToAbsent ? const Value.absent() : Value(movedMinute),
-      updatedAt: Value(updatedAt),
-    );
-  }
-
-  factory EventExceptionRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return EventExceptionRow(
-      eventId: serializer.fromJson<int>(json['eventId']),
-      date: serializer.fromJson<String>(json['date']),
-      skipped: serializer.fromJson<bool>(json['skipped']),
-      doneAt: serializer.fromJson<DateTime?>(json['doneAt']),
-      movedDate: serializer.fromJson<String?>(json['movedDate']),
-      movedMinute: serializer.fromJson<int?>(json['movedMinute']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'eventId': serializer.toJson<int>(eventId),
-      'date': serializer.toJson<String>(date),
-      'skipped': serializer.toJson<bool>(skipped),
-      'doneAt': serializer.toJson<DateTime?>(doneAt),
-      'movedDate': serializer.toJson<String?>(movedDate),
-      'movedMinute': serializer.toJson<int?>(movedMinute),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-    };
-  }
-
-  EventExceptionRow copyWith({
-    int? eventId,
-    String? date,
-    bool? skipped,
-    Value<DateTime?> doneAt = const Value.absent(),
-    Value<String?> movedDate = const Value.absent(),
-    Value<int?> movedMinute = const Value.absent(),
-    DateTime? updatedAt,
-  }) => EventExceptionRow(
-    eventId: eventId ?? this.eventId,
-    date: date ?? this.date,
-    skipped: skipped ?? this.skipped,
-    doneAt: doneAt.present ? doneAt.value : this.doneAt,
-    movedDate: movedDate.present ? movedDate.value : this.movedDate,
-    movedMinute: movedMinute.present ? movedMinute.value : this.movedMinute,
-    updatedAt: updatedAt ?? this.updatedAt,
-  );
-  EventExceptionRow copyWithCompanion(EventExceptionsCompanion data) {
-    return EventExceptionRow(
-      eventId: data.eventId.present ? data.eventId.value : this.eventId,
-      date: data.date.present ? data.date.value : this.date,
-      skipped: data.skipped.present ? data.skipped.value : this.skipped,
-      doneAt: data.doneAt.present ? data.doneAt.value : this.doneAt,
-      movedDate: data.movedDate.present ? data.movedDate.value : this.movedDate,
-      movedMinute: data.movedMinute.present ? data.movedMinute.value : this.movedMinute,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EventExceptionRow(')
-          ..write('eventId: $eventId, ')
-          ..write('date: $date, ')
-          ..write('skipped: $skipped, ')
-          ..write('doneAt: $doneAt, ')
-          ..write('movedDate: $movedDate, ')
-          ..write('movedMinute: $movedMinute, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(eventId, date, skipped, doneAt, movedDate, movedMinute, updatedAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is EventExceptionRow &&
-          other.eventId == this.eventId &&
-          other.date == this.date &&
-          other.skipped == this.skipped &&
-          other.doneAt == this.doneAt &&
-          other.movedDate == this.movedDate &&
-          other.movedMinute == this.movedMinute &&
-          other.updatedAt == this.updatedAt);
-}
-
-class EventExceptionsCompanion extends UpdateCompanion<EventExceptionRow> {
-  final Value<int> eventId;
-  final Value<String> date;
-  final Value<bool> skipped;
-  final Value<DateTime?> doneAt;
-  final Value<String?> movedDate;
-  final Value<int?> movedMinute;
-  final Value<DateTime> updatedAt;
-  final Value<int> rowid;
-  const EventExceptionsCompanion({
-    this.eventId = const Value.absent(),
-    this.date = const Value.absent(),
-    this.skipped = const Value.absent(),
-    this.doneAt = const Value.absent(),
-    this.movedDate = const Value.absent(),
-    this.movedMinute = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  EventExceptionsCompanion.insert({
-    required int eventId,
-    required String date,
-    this.skipped = const Value.absent(),
-    this.doneAt = const Value.absent(),
-    this.movedDate = const Value.absent(),
-    this.movedMinute = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-    this.rowid = const Value.absent(),
-  }) : eventId = Value(eventId),
-       date = Value(date);
-  static Insertable<EventExceptionRow> custom({
-    Expression<int>? eventId,
-    Expression<String>? date,
-    Expression<bool>? skipped,
-    Expression<DateTime>? doneAt,
-    Expression<String>? movedDate,
-    Expression<int>? movedMinute,
-    Expression<DateTime>? updatedAt,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (eventId != null) 'event_id': eventId,
-      if (date != null) 'date': date,
-      if (skipped != null) 'skipped': skipped,
-      if (doneAt != null) 'done_at': doneAt,
-      if (movedDate != null) 'moved_date': movedDate,
-      if (movedMinute != null) 'moved_minute': movedMinute,
-      if (updatedAt != null) 'updated_at': updatedAt,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  EventExceptionsCompanion copyWith({
-    Value<int>? eventId,
-    Value<String>? date,
-    Value<bool>? skipped,
-    Value<DateTime?>? doneAt,
-    Value<String?>? movedDate,
-    Value<int?>? movedMinute,
-    Value<DateTime>? updatedAt,
-    Value<int>? rowid,
-  }) {
-    return EventExceptionsCompanion(
-      eventId: eventId ?? this.eventId,
-      date: date ?? this.date,
-      skipped: skipped ?? this.skipped,
-      doneAt: doneAt ?? this.doneAt,
-      movedDate: movedDate ?? this.movedDate,
-      movedMinute: movedMinute ?? this.movedMinute,
-      updatedAt: updatedAt ?? this.updatedAt,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (eventId.present) {
-      map['event_id'] = Variable<int>(eventId.value);
-    }
-    if (date.present) {
-      map['date'] = Variable<String>(date.value);
-    }
-    if (skipped.present) {
-      map['skipped'] = Variable<bool>(skipped.value);
-    }
-    if (doneAt.present) {
-      map['done_at'] = Variable<DateTime>(doneAt.value);
-    }
-    if (movedDate.present) {
-      map['moved_date'] = Variable<String>(movedDate.value);
-    }
-    if (movedMinute.present) {
-      map['moved_minute'] = Variable<int>(movedMinute.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EventExceptionsCompanion(')
-          ..write('eventId: $eventId, ')
-          ..write('date: $date, ')
-          ..write('skipped: $skipped, ')
-          ..write('doneAt: $doneAt, ')
-          ..write('movedDate: $movedDate, ')
-          ..write('movedMinute: $movedMinute, ')
-          ..write('updatedAt: $updatedAt, ')
-          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -9457,61 +9203,1176 @@ class CareLogsCompanion extends UpdateCompanion<CareLogRow> {
   }
 }
 
+class $HabitCheckInsTable extends HabitCheckIns with TableInfo<$HabitCheckInsTable, HabitCheckInRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $HabitCheckInsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _habitIdMeta = const VerificationMeta('habitId');
+  @override
+  late final GeneratedColumn<int> habitId = GeneratedColumn<int>(
+    'habit_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES habits (id) ON DELETE CASCADE'),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _countMeta = const VerificationMeta('count');
+  @override
+  late final GeneratedColumn<int> count = GeneratedColumn<int>(
+    'count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [habitId, date, count, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'habit_check_ins';
+  @override
+  VerificationContext validateIntegrity(Insertable<HabitCheckInRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('habit_id')) {
+      context.handle(_habitIdMeta, habitId.isAcceptableOrUnknown(data['habit_id']!, _habitIdMeta));
+    } else if (isInserting) {
+      context.missing(_habitIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('count')) {
+      context.handle(_countMeta, count.isAcceptableOrUnknown(data['count']!, _countMeta));
+    } else if (isInserting) {
+      context.missing(_countMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {habitId, date};
+  @override
+  HabitCheckInRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return HabitCheckInRow(
+      habitId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}habit_id'])!,
+      date: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}date'])!,
+      count: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}count'])!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $HabitCheckInsTable createAlias(String alias) {
+    return $HabitCheckInsTable(attachedDatabase, alias);
+  }
+}
+
+class HabitCheckInRow extends DataClass implements Insertable<HabitCheckInRow> {
+  /// Permanently deleting a habit deletes its history; moving it to the
+  /// Recycle Bin does not.
+  final int habitId;
+
+  /// `yyyy-MM-dd`.
+  final String date;
+  final int count;
+  final DateTime updatedAt;
+  const HabitCheckInRow({
+    required this.habitId,
+    required this.date,
+    required this.count,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['habit_id'] = Variable<int>(habitId);
+    map['date'] = Variable<String>(date);
+    map['count'] = Variable<int>(count);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  HabitCheckInsCompanion toCompanion(bool nullToAbsent) {
+    return HabitCheckInsCompanion(
+      habitId: Value(habitId),
+      date: Value(date),
+      count: Value(count),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory HabitCheckInRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return HabitCheckInRow(
+      habitId: serializer.fromJson<int>(json['habitId']),
+      date: serializer.fromJson<String>(json['date']),
+      count: serializer.fromJson<int>(json['count']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'habitId': serializer.toJson<int>(habitId),
+      'date': serializer.toJson<String>(date),
+      'count': serializer.toJson<int>(count),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  HabitCheckInRow copyWith({int? habitId, String? date, int? count, DateTime? updatedAt}) => HabitCheckInRow(
+    habitId: habitId ?? this.habitId,
+    date: date ?? this.date,
+    count: count ?? this.count,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  HabitCheckInRow copyWithCompanion(HabitCheckInsCompanion data) {
+    return HabitCheckInRow(
+      habitId: data.habitId.present ? data.habitId.value : this.habitId,
+      date: data.date.present ? data.date.value : this.date,
+      count: data.count.present ? data.count.value : this.count,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HabitCheckInRow(')
+          ..write('habitId: $habitId, ')
+          ..write('date: $date, ')
+          ..write('count: $count, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(habitId, date, count, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is HabitCheckInRow &&
+          other.habitId == this.habitId &&
+          other.date == this.date &&
+          other.count == this.count &&
+          other.updatedAt == this.updatedAt);
+}
+
+class HabitCheckInsCompanion extends UpdateCompanion<HabitCheckInRow> {
+  final Value<int> habitId;
+  final Value<String> date;
+  final Value<int> count;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const HabitCheckInsCompanion({
+    this.habitId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.count = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  HabitCheckInsCompanion.insert({
+    required int habitId,
+    required String date,
+    required int count,
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : habitId = Value(habitId),
+       date = Value(date),
+       count = Value(count);
+  static Insertable<HabitCheckInRow> custom({
+    Expression<int>? habitId,
+    Expression<String>? date,
+    Expression<int>? count,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (habitId != null) 'habit_id': habitId,
+      if (date != null) 'date': date,
+      if (count != null) 'count': count,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  HabitCheckInsCompanion copyWith({
+    Value<int>? habitId,
+    Value<String>? date,
+    Value<int>? count,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return HabitCheckInsCompanion(
+      habitId: habitId ?? this.habitId,
+      date: date ?? this.date,
+      count: count ?? this.count,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (habitId.present) {
+      map['habit_id'] = Variable<int>(habitId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (count.present) {
+      map['count'] = Variable<int>(count.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('HabitCheckInsCompanion(')
+          ..write('habitId: $habitId, ')
+          ..write('date: $date, ')
+          ..write('count: $count, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EventExceptionsTable extends EventExceptions with TableInfo<$EventExceptionsTable, EventExceptionRow> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EventExceptionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _eventIdMeta = const VerificationMeta('eventId');
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('REFERENCES events (id) ON DELETE CASCADE'),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<String> date = GeneratedColumn<String>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _skippedMeta = const VerificationMeta('skipped');
+  @override
+  late final GeneratedColumn<bool> skipped = GeneratedColumn<bool>(
+    'skipped',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('CHECK ("skipped" IN (0, 1))'),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _doneAtMeta = const VerificationMeta('doneAt');
+  @override
+  late final GeneratedColumn<DateTime> doneAt = GeneratedColumn<DateTime>(
+    'done_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _movedDateMeta = const VerificationMeta('movedDate');
+  @override
+  late final GeneratedColumn<String> movedDate = GeneratedColumn<String>(
+    'moved_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _movedMinuteMeta = const VerificationMeta('movedMinute');
+  @override
+  late final GeneratedColumn<int> movedMinute = GeneratedColumn<int>(
+    'moved_minute',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [eventId, date, skipped, doneAt, movedDate, movedMinute, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'event_exceptions';
+  @override
+  VerificationContext validateIntegrity(Insertable<EventExceptionRow> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('event_id')) {
+      context.handle(_eventIdMeta, eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta));
+    } else if (isInserting) {
+      context.missing(_eventIdMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(_dateMeta, date.isAcceptableOrUnknown(data['date']!, _dateMeta));
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('skipped')) {
+      context.handle(_skippedMeta, skipped.isAcceptableOrUnknown(data['skipped']!, _skippedMeta));
+    }
+    if (data.containsKey('done_at')) {
+      context.handle(_doneAtMeta, doneAt.isAcceptableOrUnknown(data['done_at']!, _doneAtMeta));
+    }
+    if (data.containsKey('moved_date')) {
+      context.handle(_movedDateMeta, movedDate.isAcceptableOrUnknown(data['moved_date']!, _movedDateMeta));
+    }
+    if (data.containsKey('moved_minute')) {
+      context.handle(
+        _movedMinuteMeta,
+        movedMinute.isAcceptableOrUnknown(data['moved_minute']!, _movedMinuteMeta),
+      );
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {eventId, date};
+  @override
+  EventExceptionRow map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EventExceptionRow(
+      eventId: attachedDatabase.typeMapping.read(DriftSqlType.int, data['${effectivePrefix}event_id'])!,
+      date: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}date'])!,
+      skipped: attachedDatabase.typeMapping.read(DriftSqlType.bool, data['${effectivePrefix}skipped'])!,
+      doneAt: attachedDatabase.typeMapping.read(DriftSqlType.dateTime, data['${effectivePrefix}done_at']),
+      movedDate: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}moved_date']),
+      movedMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}moved_minute'],
+      ),
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $EventExceptionsTable createAlias(String alias) {
+    return $EventExceptionsTable(attachedDatabase, alias);
+  }
+}
+
+class EventExceptionRow extends DataClass implements Insertable<EventExceptionRow> {
+  /// Permanently deleting an event deletes its occurrence history.
+  final int eventId;
+
+  /// The occurrence's original date, `yyyy-MM-dd`.
+  final String date;
+  final bool skipped;
+  final DateTime? doneAt;
+
+  /// Where the occurrence was moved to, if rescheduled.
+  final String? movedDate;
+  final int? movedMinute;
+  final DateTime updatedAt;
+  const EventExceptionRow({
+    required this.eventId,
+    required this.date,
+    required this.skipped,
+    this.doneAt,
+    this.movedDate,
+    this.movedMinute,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['event_id'] = Variable<int>(eventId);
+    map['date'] = Variable<String>(date);
+    map['skipped'] = Variable<bool>(skipped);
+    if (!nullToAbsent || doneAt != null) {
+      map['done_at'] = Variable<DateTime>(doneAt);
+    }
+    if (!nullToAbsent || movedDate != null) {
+      map['moved_date'] = Variable<String>(movedDate);
+    }
+    if (!nullToAbsent || movedMinute != null) {
+      map['moved_minute'] = Variable<int>(movedMinute);
+    }
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  EventExceptionsCompanion toCompanion(bool nullToAbsent) {
+    return EventExceptionsCompanion(
+      eventId: Value(eventId),
+      date: Value(date),
+      skipped: Value(skipped),
+      doneAt: doneAt == null && nullToAbsent ? const Value.absent() : Value(doneAt),
+      movedDate: movedDate == null && nullToAbsent ? const Value.absent() : Value(movedDate),
+      movedMinute: movedMinute == null && nullToAbsent ? const Value.absent() : Value(movedMinute),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory EventExceptionRow.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EventExceptionRow(
+      eventId: serializer.fromJson<int>(json['eventId']),
+      date: serializer.fromJson<String>(json['date']),
+      skipped: serializer.fromJson<bool>(json['skipped']),
+      doneAt: serializer.fromJson<DateTime?>(json['doneAt']),
+      movedDate: serializer.fromJson<String?>(json['movedDate']),
+      movedMinute: serializer.fromJson<int?>(json['movedMinute']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'eventId': serializer.toJson<int>(eventId),
+      'date': serializer.toJson<String>(date),
+      'skipped': serializer.toJson<bool>(skipped),
+      'doneAt': serializer.toJson<DateTime?>(doneAt),
+      'movedDate': serializer.toJson<String?>(movedDate),
+      'movedMinute': serializer.toJson<int?>(movedMinute),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  EventExceptionRow copyWith({
+    int? eventId,
+    String? date,
+    bool? skipped,
+    Value<DateTime?> doneAt = const Value.absent(),
+    Value<String?> movedDate = const Value.absent(),
+    Value<int?> movedMinute = const Value.absent(),
+    DateTime? updatedAt,
+  }) => EventExceptionRow(
+    eventId: eventId ?? this.eventId,
+    date: date ?? this.date,
+    skipped: skipped ?? this.skipped,
+    doneAt: doneAt.present ? doneAt.value : this.doneAt,
+    movedDate: movedDate.present ? movedDate.value : this.movedDate,
+    movedMinute: movedMinute.present ? movedMinute.value : this.movedMinute,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  EventExceptionRow copyWithCompanion(EventExceptionsCompanion data) {
+    return EventExceptionRow(
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      date: data.date.present ? data.date.value : this.date,
+      skipped: data.skipped.present ? data.skipped.value : this.skipped,
+      doneAt: data.doneAt.present ? data.doneAt.value : this.doneAt,
+      movedDate: data.movedDate.present ? data.movedDate.value : this.movedDate,
+      movedMinute: data.movedMinute.present ? data.movedMinute.value : this.movedMinute,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventExceptionRow(')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('skipped: $skipped, ')
+          ..write('doneAt: $doneAt, ')
+          ..write('movedDate: $movedDate, ')
+          ..write('movedMinute: $movedMinute, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(eventId, date, skipped, doneAt, movedDate, movedMinute, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EventExceptionRow &&
+          other.eventId == this.eventId &&
+          other.date == this.date &&
+          other.skipped == this.skipped &&
+          other.doneAt == this.doneAt &&
+          other.movedDate == this.movedDate &&
+          other.movedMinute == this.movedMinute &&
+          other.updatedAt == this.updatedAt);
+}
+
+class EventExceptionsCompanion extends UpdateCompanion<EventExceptionRow> {
+  final Value<int> eventId;
+  final Value<String> date;
+  final Value<bool> skipped;
+  final Value<DateTime?> doneAt;
+  final Value<String?> movedDate;
+  final Value<int?> movedMinute;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const EventExceptionsCompanion({
+    this.eventId = const Value.absent(),
+    this.date = const Value.absent(),
+    this.skipped = const Value.absent(),
+    this.doneAt = const Value.absent(),
+    this.movedDate = const Value.absent(),
+    this.movedMinute = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  EventExceptionsCompanion.insert({
+    required int eventId,
+    required String date,
+    this.skipped = const Value.absent(),
+    this.doneAt = const Value.absent(),
+    this.movedDate = const Value.absent(),
+    this.movedMinute = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : eventId = Value(eventId),
+       date = Value(date);
+  static Insertable<EventExceptionRow> custom({
+    Expression<int>? eventId,
+    Expression<String>? date,
+    Expression<bool>? skipped,
+    Expression<DateTime>? doneAt,
+    Expression<String>? movedDate,
+    Expression<int>? movedMinute,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (eventId != null) 'event_id': eventId,
+      if (date != null) 'date': date,
+      if (skipped != null) 'skipped': skipped,
+      if (doneAt != null) 'done_at': doneAt,
+      if (movedDate != null) 'moved_date': movedDate,
+      if (movedMinute != null) 'moved_minute': movedMinute,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  EventExceptionsCompanion copyWith({
+    Value<int>? eventId,
+    Value<String>? date,
+    Value<bool>? skipped,
+    Value<DateTime?>? doneAt,
+    Value<String?>? movedDate,
+    Value<int?>? movedMinute,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return EventExceptionsCompanion(
+      eventId: eventId ?? this.eventId,
+      date: date ?? this.date,
+      skipped: skipped ?? this.skipped,
+      doneAt: doneAt ?? this.doneAt,
+      movedDate: movedDate ?? this.movedDate,
+      movedMinute: movedMinute ?? this.movedMinute,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<String>(date.value);
+    }
+    if (skipped.present) {
+      map['skipped'] = Variable<bool>(skipped.value);
+    }
+    if (doneAt.present) {
+      map['done_at'] = Variable<DateTime>(doneAt.value);
+    }
+    if (movedDate.present) {
+      map['moved_date'] = Variable<String>(movedDate.value);
+    }
+    if (movedMinute.present) {
+      map['moved_minute'] = Variable<int>(movedMinute.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EventExceptionsCompanion(')
+          ..write('eventId: $eventId, ')
+          ..write('date: $date, ')
+          ..write('skipped: $skipped, ')
+          ..write('doneAt: $doneAt, ')
+          ..write('movedDate: $movedDate, ')
+          ..write('movedMinute: $movedMinute, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $AppSettingsTable extends AppSettings with TableInfo<$AppSettingsTable, AppSetting> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $AppSettingsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _keyMeta = const VerificationMeta('key');
+  @override
+  late final GeneratedColumn<String> key = GeneratedColumn<String>(
+    'key',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [key, value, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'app_settings';
+  @override
+  VerificationContext validateIntegrity(Insertable<AppSetting> instance, {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('key')) {
+      context.handle(_keyMeta, key.isAcceptableOrUnknown(data['key']!, _keyMeta));
+    } else if (isInserting) {
+      context.missing(_keyMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(_valueMeta, value.isAcceptableOrUnknown(data['value']!, _valueMeta));
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta, updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {key};
+  @override
+  AppSetting map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return AppSetting(
+      key: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}key'])!,
+      value: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}value'])!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $AppSettingsTable createAlias(String alias) {
+    return $AppSettingsTable(attachedDatabase, alias);
+  }
+}
+
+class AppSetting extends DataClass implements Insertable<AppSetting> {
+  final String key;
+  final String value;
+  final DateTime updatedAt;
+  const AppSetting({required this.key, required this.value, required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['key'] = Variable<String>(key);
+    map['value'] = Variable<String>(value);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  AppSettingsCompanion toCompanion(bool nullToAbsent) {
+    return AppSettingsCompanion(key: Value(key), value: Value(value), updatedAt: Value(updatedAt));
+  }
+
+  factory AppSetting.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return AppSetting(
+      key: serializer.fromJson<String>(json['key']),
+      value: serializer.fromJson<String>(json['value']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'key': serializer.toJson<String>(key),
+      'value': serializer.toJson<String>(value),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  AppSetting copyWith({String? key, String? value, DateTime? updatedAt}) =>
+      AppSetting(key: key ?? this.key, value: value ?? this.value, updatedAt: updatedAt ?? this.updatedAt);
+  AppSetting copyWithCompanion(AppSettingsCompanion data) {
+    return AppSetting(
+      key: data.key.present ? data.key.value : this.key,
+      value: data.value.present ? data.value.value : this.value,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSetting(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(key, value, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppSetting &&
+          other.key == this.key &&
+          other.value == this.value &&
+          other.updatedAt == this.updatedAt);
+}
+
+class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
+  final Value<String> key;
+  final Value<String> value;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const AppSettingsCompanion({
+    this.key = const Value.absent(),
+    this.value = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  AppSettingsCompanion.insert({
+    required String key,
+    required String value,
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : key = Value(key),
+       value = Value(value);
+  static Insertable<AppSetting> custom({
+    Expression<String>? key,
+    Expression<String>? value,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (key != null) 'key': key,
+      if (value != null) 'value': value,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  AppSettingsCompanion copyWith({
+    Value<String>? key,
+    Value<String>? value,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return AppSettingsCompanion(
+      key: key ?? this.key,
+      value: value ?? this.value,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (key.present) {
+      map['key'] = Variable<String>(key.value);
+    }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('AppSettingsCompanion(')
+          ..write('key: $key, ')
+          ..write('value: $value, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final SyncOutbox syncOutbox = SyncOutbox(this);
+  late final SyncTombstones syncTombstones = SyncTombstones(this);
+  late final SyncMeta syncMeta = SyncMeta(this);
   late final $ProjectsTable projects = $ProjectsTable(this);
+  late final Trigger syncProjectsInsert = Trigger(
+    'CREATE TRIGGER sync_projects_insert AFTER INSERT ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_projects_insert',
+  );
+  late final Trigger syncProjectsUpdate = Trigger(
+    'CREATE TRIGGER sync_projects_update AFTER UPDATE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'projects\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_projects_update',
+  );
+  late final Trigger syncProjectsDelete = Trigger(
+    'CREATE TRIGGER sync_projects_delete AFTER DELETE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'projects\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'projects\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_projects_delete',
+  );
   late final $TasksTable tasks = $TasksTable(this);
+  late final Trigger syncTasksInsert = Trigger(
+    'CREATE TRIGGER sync_tasks_insert AFTER INSERT ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_tasks_insert',
+  );
+  late final Trigger syncTasksUpdate = Trigger(
+    'CREATE TRIGGER sync_tasks_update AFTER UPDATE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'tasks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_tasks_update',
+  );
+  late final Trigger syncTasksDelete = Trigger(
+    'CREATE TRIGGER sync_tasks_delete AFTER DELETE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'tasks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'tasks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_tasks_delete',
+  );
   late final $TaskChecksTable taskChecks = $TaskChecksTable(this);
+  late final Trigger syncTaskChecksInsert = Trigger(
+    'CREATE TRIGGER sync_task_checks_insert AFTER INSERT ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_task_checks_insert',
+  );
+  late final Trigger syncTaskChecksUpdate = Trigger(
+    'CREATE TRIGGER sync_task_checks_update AFTER UPDATE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'task_checks\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_task_checks_update',
+  );
+  late final Trigger syncTaskChecksDelete = Trigger(
+    'CREATE TRIGGER sync_task_checks_delete AFTER DELETE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'task_checks\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'task_checks\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_task_checks_delete',
+  );
   late final $HabitsTable habits = $HabitsTable(this);
-  late final $HabitCheckInsTable habitCheckIns = $HabitCheckInsTable(this);
+  late final Trigger syncHabitsInsert = Trigger(
+    'CREATE TRIGGER sync_habits_insert AFTER INSERT ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habits_insert',
+  );
+  late final Trigger syncHabitsUpdate = Trigger(
+    'CREATE TRIGGER sync_habits_update AFTER UPDATE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habits\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habits_update',
+  );
+  late final Trigger syncHabitsDelete = Trigger(
+    'CREATE TRIGGER sync_habits_delete AFTER DELETE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habits\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habits\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_habits_delete',
+  );
   late final $EventsTable events = $EventsTable(this);
-  late final $EventExceptionsTable eventExceptions = $EventExceptionsTable(this);
+  late final Trigger syncEventsInsert = Trigger(
+    'CREATE TRIGGER sync_events_insert AFTER INSERT ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_events_insert',
+  );
+  late final Trigger syncEventsUpdate = Trigger(
+    'CREATE TRIGGER sync_events_update AFTER UPDATE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'events\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_events_update',
+  );
+  late final Trigger syncEventsDelete = Trigger(
+    'CREATE TRIGGER sync_events_delete AFTER DELETE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'events\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'events\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_events_delete',
+  );
   late final $RoutinesTable routines = $RoutinesTable(this);
+  late final Trigger syncRoutinesInsert = Trigger(
+    'CREATE TRIGGER sync_routines_insert AFTER INSERT ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routines_insert',
+  );
+  late final Trigger syncRoutinesUpdate = Trigger(
+    'CREATE TRIGGER sync_routines_update AFTER UPDATE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routines\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routines_update',
+  );
+  late final Trigger syncRoutinesDelete = Trigger(
+    'CREATE TRIGGER sync_routines_delete AFTER DELETE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routines\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routines\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_routines_delete',
+  );
   late final $RoutineStepsTable routineSteps = $RoutineStepsTable(this);
+  late final Trigger syncRoutineStepsInsert = Trigger(
+    'CREATE TRIGGER sync_routine_steps_insert AFTER INSERT ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_steps_insert',
+  );
+  late final Trigger syncRoutineStepsUpdate = Trigger(
+    'CREATE TRIGGER sync_routine_steps_update AFTER UPDATE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_steps\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_steps_update',
+  );
+  late final Trigger syncRoutineStepsDelete = Trigger(
+    'CREATE TRIGGER sync_routine_steps_delete AFTER DELETE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_steps\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_steps\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_routine_steps_delete',
+  );
   late final $RoutineRunsTable routineRuns = $RoutineRunsTable(this);
+  late final Trigger syncRoutineRunsInsert = Trigger(
+    'CREATE TRIGGER sync_routine_runs_insert AFTER INSERT ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_runs_insert',
+  );
+  late final Trigger syncRoutineRunsUpdate = Trigger(
+    'CREATE TRIGGER sync_routine_runs_update AFTER UPDATE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'routine_runs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_routine_runs_update',
+  );
+  late final Trigger syncRoutineRunsDelete = Trigger(
+    'CREATE TRIGGER sync_routine_runs_delete AFTER DELETE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'routine_runs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'routine_runs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_routine_runs_delete',
+  );
   late final $WaterLogsTable waterLogs = $WaterLogsTable(this);
+  late final Trigger syncWaterLogsInsert = Trigger(
+    'CREATE TRIGGER sync_water_logs_insert AFTER INSERT ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_water_logs_insert',
+  );
+  late final Trigger syncWaterLogsUpdate = Trigger(
+    'CREATE TRIGGER sync_water_logs_update AFTER UPDATE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'water_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_water_logs_update',
+  );
+  late final Trigger syncWaterLogsDelete = Trigger(
+    'CREATE TRIGGER sync_water_logs_delete AFTER DELETE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'water_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'water_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_water_logs_delete',
+  );
   late final $SleepLogsTable sleepLogs = $SleepLogsTable(this);
+  late final Trigger syncSleepLogsInsert = Trigger(
+    'CREATE TRIGGER sync_sleep_logs_insert AFTER INSERT ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_sleep_logs_insert',
+  );
+  late final Trigger syncSleepLogsUpdate = Trigger(
+    'CREATE TRIGGER sync_sleep_logs_update AFTER UPDATE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'sleep_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_sleep_logs_update',
+  );
+  late final Trigger syncSleepLogsDelete = Trigger(
+    'CREATE TRIGGER sync_sleep_logs_delete AFTER DELETE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'sleep_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'sleep_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_sleep_logs_delete',
+  );
   late final $WorkoutsTable workouts = $WorkoutsTable(this);
+  late final Trigger syncWorkoutsInsert = Trigger(
+    'CREATE TRIGGER sync_workouts_insert AFTER INSERT ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workouts_insert',
+  );
+  late final Trigger syncWorkoutsUpdate = Trigger(
+    'CREATE TRIGGER sync_workouts_update AFTER UPDATE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workouts\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workouts_update',
+  );
+  late final Trigger syncWorkoutsDelete = Trigger(
+    'CREATE TRIGGER sync_workouts_delete AFTER DELETE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workouts\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workouts\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_workouts_delete',
+  );
   late final $WorkoutSetsTable workoutSets = $WorkoutSetsTable(this);
+  late final Trigger syncWorkoutSetsInsert = Trigger(
+    'CREATE TRIGGER sync_workout_sets_insert AFTER INSERT ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_sets_insert',
+  );
+  late final Trigger syncWorkoutSetsUpdate = Trigger(
+    'CREATE TRIGGER sync_workout_sets_update AFTER UPDATE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_sets\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_sets_update',
+  );
+  late final Trigger syncWorkoutSetsDelete = Trigger(
+    'CREATE TRIGGER sync_workout_sets_delete AFTER DELETE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_sets\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_sets\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_workout_sets_delete',
+  );
   late final $WorkoutTemplatesTable workoutTemplates = $WorkoutTemplatesTable(this);
+  late final Trigger syncWorkoutTemplatesInsert = Trigger(
+    'CREATE TRIGGER sync_workout_templates_insert AFTER INSERT ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_templates_insert',
+  );
+  late final Trigger syncWorkoutTemplatesUpdate = Trigger(
+    'CREATE TRIGGER sync_workout_templates_update AFTER UPDATE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'workout_templates\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_workout_templates_update',
+  );
+  late final Trigger syncWorkoutTemplatesDelete = Trigger(
+    'CREATE TRIGGER sync_workout_templates_delete AFTER DELETE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'workout_templates\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'workout_templates\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_workout_templates_delete',
+  );
   late final $FoodsTable foods = $FoodsTable(this);
+  late final Trigger syncFoodsInsert = Trigger(
+    'CREATE TRIGGER sync_foods_insert AFTER INSERT ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_foods_insert',
+  );
+  late final Trigger syncFoodsUpdate = Trigger(
+    'CREATE TRIGGER sync_foods_update AFTER UPDATE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'foods\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_foods_update',
+  );
+  late final Trigger syncFoodsDelete = Trigger(
+    'CREATE TRIGGER sync_foods_delete AFTER DELETE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'foods\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'foods\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_foods_delete',
+  );
   late final $MealEntriesTable mealEntries = $MealEntriesTable(this);
+  late final Trigger syncMealEntriesInsert = Trigger(
+    'CREATE TRIGGER sync_meal_entries_insert AFTER INSERT ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_meal_entries_insert',
+  );
+  late final Trigger syncMealEntriesUpdate = Trigger(
+    'CREATE TRIGGER sync_meal_entries_update AFTER UPDATE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'meal_entries\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_meal_entries_update',
+  );
+  late final Trigger syncMealEntriesDelete = Trigger(
+    'CREATE TRIGGER sync_meal_entries_delete AFTER DELETE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'meal_entries\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'meal_entries\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_meal_entries_delete',
+  );
   late final $CareJobsTable careJobs = $CareJobsTable(this);
+  late final Trigger syncCareJobsInsert = Trigger(
+    'CREATE TRIGGER sync_care_jobs_insert AFTER INSERT ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_jobs_insert',
+  );
+  late final Trigger syncCareJobsUpdate = Trigger(
+    'CREATE TRIGGER sync_care_jobs_update AFTER UPDATE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_jobs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_jobs_update',
+  );
+  late final Trigger syncCareJobsDelete = Trigger(
+    'CREATE TRIGGER sync_care_jobs_delete AFTER DELETE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_jobs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_jobs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_care_jobs_delete',
+  );
   late final $CareLogsTable careLogs = $CareLogsTable(this);
-  late final Index tasksDueDate = Index('tasks_due_date', 'CREATE INDEX tasks_due_date ON tasks (due_date)');
-  late final Index tasksCompletedAt = Index(
-    'tasks_completed_at',
-    'CREATE INDEX tasks_completed_at ON tasks (completed_at)',
+  late final Trigger syncCareLogsInsert = Trigger(
+    'CREATE TRIGGER sync_care_logs_insert AFTER INSERT ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_logs_insert',
   );
-  late final Index tasksDeletedAt = Index(
-    'tasks_deleted_at',
-    'CREATE INDEX tasks_deleted_at ON tasks (deleted_at)',
+  late final Trigger syncCareLogsUpdate = Trigger(
+    'CREATE TRIGGER sync_care_logs_update AFTER UPDATE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'care_logs\', NEW.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_care_logs_update',
   );
-  late final Index taskChecksTask = Index(
-    'task_checks_task',
-    'CREATE INDEX task_checks_task ON task_checks (task_id)',
+  late final Trigger syncCareLogsDelete = Trigger(
+    'CREATE TRIGGER sync_care_logs_delete AFTER DELETE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'care_logs\' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'care_logs\', OLD.uuid, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_care_logs_delete',
   );
-  late final Index habitCheckInsDate = Index(
-    'habit_check_ins_date',
-    'CREATE INDEX habit_check_ins_date ON habit_check_ins (date)',
+  late final $HabitCheckInsTable habitCheckIns = $HabitCheckInsTable(this);
+  late final Trigger syncHabitCheckInsInsert = Trigger(
+    'CREATE TRIGGER sync_habit_check_ins_insert AFTER INSERT ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habit_check_ins_insert',
   );
-  late final Index eventsStartDate = Index(
-    'events_start_date',
-    'CREATE INDEX events_start_date ON events (start_date)',
+  late final Trigger syncHabitCheckInsUpdate = Trigger(
+    'CREATE TRIGGER sync_habit_check_ins_update AFTER UPDATE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'habit_check_ins\', NEW.habit_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_habit_check_ins_update',
   );
-  late final Index routineStepsRoutine = Index(
-    'routine_steps_routine',
-    'CREATE INDEX routine_steps_routine ON routine_steps (routine_id)',
+  late final Trigger syncHabitCheckInsDelete = Trigger(
+    'CREATE TRIGGER sync_habit_check_ins_delete AFTER DELETE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'habit_check_ins\' AND row_key = OLD.habit_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'habit_check_ins\', (SELECT uuid FROM habits WHERE id = OLD.habit_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_habit_check_ins_delete',
   );
-  late final Index routineRunsDate = Index(
-    'routine_runs_date',
-    'CREATE INDEX routine_runs_date ON routine_runs (date)',
+  late final $EventExceptionsTable eventExceptions = $EventExceptionsTable(this);
+  late final Trigger syncEventExceptionsInsert = Trigger(
+    'CREATE TRIGGER sync_event_exceptions_insert AFTER INSERT ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_event_exceptions_insert',
   );
-  late final Index waterLogsDate = Index(
-    'water_logs_date',
-    'CREATE INDEX water_logs_date ON water_logs (date)',
+  late final Trigger syncEventExceptionsUpdate = Trigger(
+    'CREATE TRIGGER sync_event_exceptions_update AFTER UPDATE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'event_exceptions\', NEW.event_id || \'|\' || NEW.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_event_exceptions_update',
+  );
+  late final Trigger syncEventExceptionsDelete = Trigger(
+    'CREATE TRIGGER sync_event_exceptions_delete AFTER DELETE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = \'event_exceptions\' AND row_key = OLD.event_id || \'|\' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'event_exceptions\', (SELECT uuid FROM events WHERE id = OLD.event_id) || \'_\' || OLD.date, strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_event_exceptions_delete',
+  );
+  late final $AppSettingsTable appSettings = $AppSettingsTable(this);
+  late final Trigger syncAppSettingsInsert = Trigger(
+    'CREATE TRIGGER sync_app_settings_insert AFTER INSERT ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_app_settings_insert',
+  );
+  late final Trigger syncAppSettingsUpdate = Trigger(
+    'CREATE TRIGGER sync_app_settings_update AFTER UPDATE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND NEW."key" NOT LIKE \'backup.%\' AND NEW."key" NOT LIKE \'places.%\' AND NEW."key" NOT LIKE \'sync.%\' AND NEW."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES (\'app_settings\', NEW."key", strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END',
+    'sync_app_settings_update',
+  );
+  late final Trigger syncAppSettingsDelete = Trigger(
+    'CREATE TRIGGER sync_app_settings_delete AFTER DELETE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE "key" = \'applying\') AND OLD."key" IS NOT NULL AND OLD."key" NOT LIKE \'backup.%\' AND OLD."key" NOT LIKE \'places.%\' AND OLD."key" NOT LIKE \'sync.%\' AND OLD."key" NOT IN (\'home.fab_position\', \'appearance.dock_launches\', \'homecare.arrival\', \'onboarding.welcome_seen\') BEGIN DELETE FROM sync_outbox WHERE entity = \'app_settings\' AND row_key = OLD."key";INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES (\'app_settings\', OLD."key", strftime(\'%Y-%m-%dT%H:%M:%f\', \'now\')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END',
+    'sync_app_settings_delete',
+  );
+  late final Index careLogsJob = Index('care_logs_job', 'CREATE INDEX care_logs_job ON care_logs (job_id)');
+  late final Index mealEntriesDate = Index(
+    'meal_entries_date',
+    'CREATE INDEX meal_entries_date ON meal_entries (date)',
   );
   late final Index workoutsStarted = Index(
     'workouts_started',
@@ -9525,111 +10386,755 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     'workout_sets_exercise',
     'CREATE INDEX workout_sets_exercise ON workout_sets (exercise_id)',
   );
-  late final Index mealEntriesDate = Index(
-    'meal_entries_date',
-    'CREATE INDEX meal_entries_date ON meal_entries (date)',
+  late final Index waterLogsDate = Index(
+    'water_logs_date',
+    'CREATE INDEX water_logs_date ON water_logs (date)',
   );
-  late final Index careLogsJob = Index('care_logs_job', 'CREATE INDEX care_logs_job ON care_logs (job_id)');
+  late final Index routineStepsRoutine = Index(
+    'routine_steps_routine',
+    'CREATE INDEX routine_steps_routine ON routine_steps (routine_id)',
+  );
+  late final Index routineRunsDate = Index(
+    'routine_runs_date',
+    'CREATE INDEX routine_runs_date ON routine_runs (date)',
+  );
+  late final Index eventsStartDate = Index(
+    'events_start_date',
+    'CREATE INDEX events_start_date ON events (start_date)',
+  );
+  late final Index habitCheckInsDate = Index(
+    'habit_check_ins_date',
+    'CREATE INDEX habit_check_ins_date ON habit_check_ins (date)',
+  );
+  late final Index tasksDueDate = Index('tasks_due_date', 'CREATE INDEX tasks_due_date ON tasks (due_date)');
+  late final Index tasksCompletedAt = Index(
+    'tasks_completed_at',
+    'CREATE INDEX tasks_completed_at ON tasks (completed_at)',
+  );
+  late final Index tasksDeletedAt = Index(
+    'tasks_deleted_at',
+    'CREATE INDEX tasks_deleted_at ON tasks (deleted_at)',
+  );
+  late final Index taskChecksTask = Index(
+    'task_checks_task',
+    'CREATE INDEX task_checks_task ON task_checks (task_id)',
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    appSettings,
+    syncOutbox,
+    syncTombstones,
+    syncMeta,
     projects,
+    syncProjectsInsert,
+    syncProjectsUpdate,
+    syncProjectsDelete,
     tasks,
+    syncTasksInsert,
+    syncTasksUpdate,
+    syncTasksDelete,
     taskChecks,
+    syncTaskChecksInsert,
+    syncTaskChecksUpdate,
+    syncTaskChecksDelete,
     habits,
-    habitCheckIns,
+    syncHabitsInsert,
+    syncHabitsUpdate,
+    syncHabitsDelete,
     events,
-    eventExceptions,
+    syncEventsInsert,
+    syncEventsUpdate,
+    syncEventsDelete,
     routines,
+    syncRoutinesInsert,
+    syncRoutinesUpdate,
+    syncRoutinesDelete,
     routineSteps,
+    syncRoutineStepsInsert,
+    syncRoutineStepsUpdate,
+    syncRoutineStepsDelete,
     routineRuns,
+    syncRoutineRunsInsert,
+    syncRoutineRunsUpdate,
+    syncRoutineRunsDelete,
     waterLogs,
+    syncWaterLogsInsert,
+    syncWaterLogsUpdate,
+    syncWaterLogsDelete,
     sleepLogs,
+    syncSleepLogsInsert,
+    syncSleepLogsUpdate,
+    syncSleepLogsDelete,
     workouts,
+    syncWorkoutsInsert,
+    syncWorkoutsUpdate,
+    syncWorkoutsDelete,
     workoutSets,
+    syncWorkoutSetsInsert,
+    syncWorkoutSetsUpdate,
+    syncWorkoutSetsDelete,
     workoutTemplates,
+    syncWorkoutTemplatesInsert,
+    syncWorkoutTemplatesUpdate,
+    syncWorkoutTemplatesDelete,
     foods,
+    syncFoodsInsert,
+    syncFoodsUpdate,
+    syncFoodsDelete,
     mealEntries,
+    syncMealEntriesInsert,
+    syncMealEntriesUpdate,
+    syncMealEntriesDelete,
     careJobs,
+    syncCareJobsInsert,
+    syncCareJobsUpdate,
+    syncCareJobsDelete,
     careLogs,
+    syncCareLogsInsert,
+    syncCareLogsUpdate,
+    syncCareLogsDelete,
+    habitCheckIns,
+    syncHabitCheckInsInsert,
+    syncHabitCheckInsUpdate,
+    syncHabitCheckInsDelete,
+    eventExceptions,
+    syncEventExceptionsInsert,
+    syncEventExceptionsUpdate,
+    syncEventExceptionsDelete,
+    appSettings,
+    syncAppSettingsInsert,
+    syncAppSettingsUpdate,
+    syncAppSettingsDelete,
+    careLogsJob,
+    mealEntriesDate,
+    workoutsStarted,
+    workoutSetsWorkout,
+    workoutSetsExercise,
+    waterLogsDate,
+    routineStepsRoutine,
+    routineRunsDate,
+    eventsStartDate,
+    habitCheckInsDate,
     tasksDueDate,
     tasksCompletedAt,
     tasksDeletedAt,
     taskChecksTask,
-    habitCheckInsDate,
-    eventsStartDate,
-    routineStepsRoutine,
-    routineRunsDate,
-    waterLogsDate,
-    workoutsStarted,
-    workoutSetsWorkout,
-    workoutSetsExercise,
-    mealEntriesDate,
-    careLogsJob,
   ];
   @override
   StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
     WritePropagation(
+      on: TableUpdateQuery.onTableName('projects', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('projects', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('projects', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
       on: TableUpdateQuery.onTableName('projects', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('tasks', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('tasks', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('tasks', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('tasks', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName('tasks', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('task_checks', kind: UpdateKind.delete)],
     ),
     WritePropagation(
+      on: TableUpdateQuery.onTableName('task_checks', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('task_checks', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('task_checks', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('habits', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('habits', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
       on: TableUpdateQuery.onTableName('habits', limitUpdateKind: UpdateKind.delete),
-      result: [TableUpdate('habit_check_ins', kind: UpdateKind.delete)],
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('events', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('events', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName('events', limitUpdateKind: UpdateKind.delete),
-      result: [TableUpdate('event_exceptions', kind: UpdateKind.delete)],
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routines', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routines', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routines', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName('routines', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('routine_steps', kind: UpdateKind.delete)],
     ),
     WritePropagation(
+      on: TableUpdateQuery.onTableName('routine_steps', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routine_steps', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routine_steps', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
       on: TableUpdateQuery.onTableName('routines', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('routine_runs', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routine_runs', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routine_runs', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('routine_runs', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('water_logs', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('water_logs', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('water_logs', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('sleep_logs', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('sleep_logs', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('sleep_logs', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workouts', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workouts', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workouts', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
     ),
     WritePropagation(
       on: TableUpdateQuery.onTableName('workouts', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('workout_sets', kind: UpdateKind.delete)],
     ),
     WritePropagation(
+      on: TableUpdateQuery.onTableName('workout_sets', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workout_sets', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workout_sets', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workout_templates', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workout_templates', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('workout_templates', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('foods', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('foods', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('foods', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
       on: TableUpdateQuery.onTableName('foods', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('meal_entries', kind: UpdateKind.update)],
     ),
     WritePropagation(
+      on: TableUpdateQuery.onTableName('meal_entries', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('meal_entries', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('meal_entries', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_jobs', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_jobs', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_jobs', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
       on: TableUpdateQuery.onTableName('care_jobs', limitUpdateKind: UpdateKind.delete),
       result: [TableUpdate('care_logs', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_logs', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_logs', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('care_logs', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('habits', limitUpdateKind: UpdateKind.delete),
+      result: [TableUpdate('habit_check_ins', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('habit_check_ins', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('habit_check_ins', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('habit_check_ins', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('events', limitUpdateKind: UpdateKind.delete),
+      result: [TableUpdate('event_exceptions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('event_exceptions', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('event_exceptions', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('event_exceptions', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('app_settings', limitUpdateKind: UpdateKind.insert),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('app_settings', limitUpdateKind: UpdateKind.update),
+      result: [TableUpdate('sync_outbox', kind: UpdateKind.insert)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName('app_settings', limitUpdateKind: UpdateKind.delete),
+      result: [
+        TableUpdate('sync_outbox', kind: UpdateKind.delete),
+        TableUpdate('sync_tombstones', kind: UpdateKind.insert),
+      ],
     ),
   ]);
   @override
   DriftDatabaseOptions get options => const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-typedef $$AppSettingsTableCreateCompanionBuilder =
-    AppSettingsCompanion Function({
-      required String key,
-      required String value,
-      Value<DateTime> updatedAt,
+typedef $SyncOutboxCreateCompanionBuilder =
+    SyncOutboxCompanion Function({
+      required String entity,
+      required String rowKey,
+      required String changedAt,
       Value<int> rowid,
     });
-typedef $$AppSettingsTableUpdateCompanionBuilder =
-    AppSettingsCompanion Function({
-      Value<String> key,
-      Value<String> value,
-      Value<DateTime> updatedAt,
+typedef $SyncOutboxUpdateCompanionBuilder =
+    SyncOutboxCompanion Function({
+      Value<String> entity,
+      Value<String> rowKey,
+      Value<String> changedAt,
       Value<int> rowid,
     });
 
-class $$AppSettingsTableFilterComposer extends Composer<_$AppDatabase, $AppSettingsTable> {
-  $$AppSettingsTableFilterComposer({
+class $SyncOutboxFilterComposer extends Composer<_$AppDatabase, SyncOutbox> {
+  $SyncOutboxFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get rowKey =>
+      $composableBuilder(column: $table.rowKey, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $SyncOutboxOrderingComposer extends Composer<_$AppDatabase, SyncOutbox> {
+  $SyncOutboxOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get rowKey =>
+      $composableBuilder(column: $table.rowKey, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $SyncOutboxAnnotationComposer extends Composer<_$AppDatabase, SyncOutbox> {
+  $SyncOutboxAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => column);
+
+  GeneratedColumn<String> get rowKey =>
+      $composableBuilder(column: $table.rowKey, builder: (column) => column);
+
+  GeneratedColumn<String> get changedAt =>
+      $composableBuilder(column: $table.changedAt, builder: (column) => column);
+}
+
+class $SyncOutboxTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          SyncOutbox,
+          SyncOutboxRow,
+          $SyncOutboxFilterComposer,
+          $SyncOutboxOrderingComposer,
+          $SyncOutboxAnnotationComposer,
+          $SyncOutboxCreateCompanionBuilder,
+          $SyncOutboxUpdateCompanionBuilder,
+          (SyncOutboxRow, BaseReferences<_$AppDatabase, SyncOutbox, SyncOutboxRow>),
+          SyncOutboxRow,
+          PrefetchHooks Function()
+        > {
+  $SyncOutboxTableManager(_$AppDatabase db, SyncOutbox table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $SyncOutboxFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $SyncOutboxOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $SyncOutboxAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> entity = const Value.absent(),
+                Value<String> rowKey = const Value.absent(),
+                Value<String> changedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncOutboxCompanion(entity: entity, rowKey: rowKey, changedAt: changedAt, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String entity,
+                required String rowKey,
+                required String changedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncOutboxCompanion.insert(
+                entity: entity,
+                rowKey: rowKey,
+                changedAt: changedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $SyncOutboxProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      SyncOutbox,
+      SyncOutboxRow,
+      $SyncOutboxFilterComposer,
+      $SyncOutboxOrderingComposer,
+      $SyncOutboxAnnotationComposer,
+      $SyncOutboxCreateCompanionBuilder,
+      $SyncOutboxUpdateCompanionBuilder,
+      (SyncOutboxRow, BaseReferences<_$AppDatabase, SyncOutbox, SyncOutboxRow>),
+      SyncOutboxRow,
+      PrefetchHooks Function()
+    >;
+typedef $SyncTombstonesCreateCompanionBuilder =
+    SyncTombstonesCompanion Function({
+      required String entity,
+      required String docId,
+      required String deletedAt,
+      Value<int> rowid,
+    });
+typedef $SyncTombstonesUpdateCompanionBuilder =
+    SyncTombstonesCompanion Function({
+      Value<String> entity,
+      Value<String> docId,
+      Value<String> deletedAt,
+      Value<int> rowid,
+    });
+
+class $SyncTombstonesFilterComposer extends Composer<_$AppDatabase, SyncTombstones> {
+  $SyncTombstonesFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get docId =>
+      $composableBuilder(column: $table.docId, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $SyncTombstonesOrderingComposer extends Composer<_$AppDatabase, SyncTombstones> {
+  $SyncTombstonesOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get docId =>
+      $composableBuilder(column: $table.docId, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $SyncTombstonesAnnotationComposer extends Composer<_$AppDatabase, SyncTombstones> {
+  $SyncTombstonesAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get entity =>
+      $composableBuilder(column: $table.entity, builder: (column) => column);
+
+  GeneratedColumn<String> get docId => $composableBuilder(column: $table.docId, builder: (column) => column);
+
+  GeneratedColumn<String> get deletedAt =>
+      $composableBuilder(column: $table.deletedAt, builder: (column) => column);
+}
+
+class $SyncTombstonesTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          SyncTombstones,
+          SyncTombstoneRow,
+          $SyncTombstonesFilterComposer,
+          $SyncTombstonesOrderingComposer,
+          $SyncTombstonesAnnotationComposer,
+          $SyncTombstonesCreateCompanionBuilder,
+          $SyncTombstonesUpdateCompanionBuilder,
+          (SyncTombstoneRow, BaseReferences<_$AppDatabase, SyncTombstones, SyncTombstoneRow>),
+          SyncTombstoneRow,
+          PrefetchHooks Function()
+        > {
+  $SyncTombstonesTableManager(_$AppDatabase db, SyncTombstones table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $SyncTombstonesFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $SyncTombstonesOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $SyncTombstonesAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> entity = const Value.absent(),
+                Value<String> docId = const Value.absent(),
+                Value<String> deletedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SyncTombstonesCompanion(entity: entity, docId: docId, deletedAt: deletedAt, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String entity,
+                required String docId,
+                required String deletedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => SyncTombstonesCompanion.insert(
+                entity: entity,
+                docId: docId,
+                deletedAt: deletedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $SyncTombstonesProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      SyncTombstones,
+      SyncTombstoneRow,
+      $SyncTombstonesFilterComposer,
+      $SyncTombstonesOrderingComposer,
+      $SyncTombstonesAnnotationComposer,
+      $SyncTombstonesCreateCompanionBuilder,
+      $SyncTombstonesUpdateCompanionBuilder,
+      (SyncTombstoneRow, BaseReferences<_$AppDatabase, SyncTombstones, SyncTombstoneRow>),
+      SyncTombstoneRow,
+      PrefetchHooks Function()
+    >;
+typedef $SyncMetaCreateCompanionBuilder =
+    SyncMetaCompanion Function({required String key, required String value, Value<int> rowid});
+typedef $SyncMetaUpdateCompanionBuilder =
+    SyncMetaCompanion Function({Value<String> key, Value<String> value, Value<int> rowid});
+
+class $SyncMetaFilterComposer extends Composer<_$AppDatabase, SyncMeta> {
+  $SyncMetaFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -9641,13 +11146,10 @@ class $$AppSettingsTableFilterComposer extends Composer<_$AppDatabase, $AppSetti
 
   ColumnFilters<String> get value =>
       $composableBuilder(column: $table.value, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$AppSettingsTableOrderingComposer extends Composer<_$AppDatabase, $AppSettingsTable> {
-  $$AppSettingsTableOrderingComposer({
+class $SyncMetaOrderingComposer extends Composer<_$AppDatabase, SyncMeta> {
+  $SyncMetaOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -9659,13 +11161,10 @@ class $$AppSettingsTableOrderingComposer extends Composer<_$AppDatabase, $AppSet
 
   ColumnOrderings<String> get value =>
       $composableBuilder(column: $table.value, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$AppSettingsTableAnnotationComposer extends Composer<_$AppDatabase, $AppSettingsTable> {
-  $$AppSettingsTableAnnotationComposer({
+class $SyncMetaAnnotationComposer extends Composer<_$AppDatabase, SyncMeta> {
+  $SyncMetaAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -9675,48 +11174,40 @@ class $$AppSettingsTableAnnotationComposer extends Composer<_$AppDatabase, $AppS
   GeneratedColumn<String> get key => $composableBuilder(column: $table.key, builder: (column) => column);
 
   GeneratedColumn<String> get value => $composableBuilder(column: $table.value, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
 }
 
-class $$AppSettingsTableTableManager
+class $SyncMetaTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $AppSettingsTable,
-          AppSetting,
-          $$AppSettingsTableFilterComposer,
-          $$AppSettingsTableOrderingComposer,
-          $$AppSettingsTableAnnotationComposer,
-          $$AppSettingsTableCreateCompanionBuilder,
-          $$AppSettingsTableUpdateCompanionBuilder,
-          (AppSetting, BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>),
-          AppSetting,
+          SyncMeta,
+          SyncMetaRow,
+          $SyncMetaFilterComposer,
+          $SyncMetaOrderingComposer,
+          $SyncMetaAnnotationComposer,
+          $SyncMetaCreateCompanionBuilder,
+          $SyncMetaUpdateCompanionBuilder,
+          (SyncMetaRow, BaseReferences<_$AppDatabase, SyncMeta, SyncMetaRow>),
+          SyncMetaRow,
           PrefetchHooks Function()
         > {
-  $$AppSettingsTableTableManager(_$AppDatabase db, $AppSettingsTable table)
+  $SyncMetaTableManager(_$AppDatabase db, SyncMeta table)
     : super(
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () => $$AppSettingsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () => $$AppSettingsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () => $$AppSettingsTableAnnotationComposer($db: db, $table: table),
+          createFilteringComposer: () => $SyncMetaFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $SyncMetaOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $SyncMetaAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> key = const Value.absent(),
                 Value<String> value = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => AppSettingsCompanion(key: key, value: value, updatedAt: updatedAt, rowid: rowid),
+              }) => SyncMetaCompanion(key: key, value: value, rowid: rowid),
           createCompanionCallback:
-              ({
-                required String key,
-                required String value,
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => AppSettingsCompanion.insert(key: key, value: value, updatedAt: updatedAt, rowid: rowid),
+              ({required String key, required String value, Value<int> rowid = const Value.absent()}) =>
+                  SyncMetaCompanion.insert(key: key, value: value, rowid: rowid),
           withReferenceMapper: (p0) =>
               p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
@@ -9724,18 +11215,18 @@ class $$AppSettingsTableTableManager
       );
 }
 
-typedef $$AppSettingsTableProcessedTableManager =
+typedef $SyncMetaProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $AppSettingsTable,
-      AppSetting,
-      $$AppSettingsTableFilterComposer,
-      $$AppSettingsTableOrderingComposer,
-      $$AppSettingsTableAnnotationComposer,
-      $$AppSettingsTableCreateCompanionBuilder,
-      $$AppSettingsTableUpdateCompanionBuilder,
-      (AppSetting, BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>),
-      AppSetting,
+      SyncMeta,
+      SyncMetaRow,
+      $SyncMetaFilterComposer,
+      $SyncMetaOrderingComposer,
+      $SyncMetaAnnotationComposer,
+      $SyncMetaCreateCompanionBuilder,
+      $SyncMetaUpdateCompanionBuilder,
+      (SyncMetaRow, BaseReferences<_$AppDatabase, SyncMeta, SyncMetaRow>),
+      SyncMetaRow,
       PrefetchHooks Function()
     >;
 typedef $$ProjectsTableCreateCompanionBuilder =
@@ -11051,255 +12542,6 @@ typedef $$HabitsTableProcessedTableManager =
       HabitRow,
       PrefetchHooks Function({bool habitCheckInsRefs})
     >;
-typedef $$HabitCheckInsTableCreateCompanionBuilder =
-    HabitCheckInsCompanion Function({
-      required int habitId,
-      required String date,
-      required int count,
-      Value<DateTime> updatedAt,
-      Value<int> rowid,
-    });
-typedef $$HabitCheckInsTableUpdateCompanionBuilder =
-    HabitCheckInsCompanion Function({
-      Value<int> habitId,
-      Value<String> date,
-      Value<int> count,
-      Value<DateTime> updatedAt,
-      Value<int> rowid,
-    });
-
-final class $$HabitCheckInsTableReferences
-    extends BaseReferences<_$AppDatabase, $HabitCheckInsTable, HabitCheckInRow> {
-  $$HabitCheckInsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $HabitsTable _habitIdTable(_$AppDatabase db) =>
-      db.habits.createAlias($_aliasNameGenerator(db.habitCheckIns.habitId, db.habits.id));
-
-  $$HabitsTableProcessedTableManager get habitId {
-    final $_column = $_itemColumn<int>('habit_id')!;
-
-    final manager = $$HabitsTableTableManager($_db, $_db.habits).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_habitIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
-  }
-}
-
-class $$HabitCheckInsTableFilterComposer extends Composer<_$AppDatabase, $HabitCheckInsTable> {
-  $$HabitCheckInsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get count =>
-      $composableBuilder(column: $table.count, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
-
-  $$HabitsTableFilterComposer get habitId {
-    final $$HabitsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.habitId,
-      referencedTable: $db.habits,
-      getReferencedColumn: (t) => t.id,
-      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
-          $$HabitsTableFilterComposer(
-            $db: $db,
-            $table: $db.habits,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$HabitCheckInsTableOrderingComposer extends Composer<_$AppDatabase, $HabitCheckInsTable> {
-  $$HabitCheckInsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get count =>
-      $composableBuilder(column: $table.count, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
-
-  $$HabitsTableOrderingComposer get habitId {
-    final $$HabitsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.habitId,
-      referencedTable: $db.habits,
-      getReferencedColumn: (t) => t.id,
-      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
-          $$HabitsTableOrderingComposer(
-            $db: $db,
-            $table: $db.habits,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$HabitCheckInsTableAnnotationComposer extends Composer<_$AppDatabase, $HabitCheckInsTable> {
-  $$HabitCheckInsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get date => $composableBuilder(column: $table.date, builder: (column) => column);
-
-  GeneratedColumn<int> get count => $composableBuilder(column: $table.count, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  $$HabitsTableAnnotationComposer get habitId {
-    final $$HabitsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.habitId,
-      referencedTable: $db.habits,
-      getReferencedColumn: (t) => t.id,
-      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
-          $$HabitsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.habits,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$HabitCheckInsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $HabitCheckInsTable,
-          HabitCheckInRow,
-          $$HabitCheckInsTableFilterComposer,
-          $$HabitCheckInsTableOrderingComposer,
-          $$HabitCheckInsTableAnnotationComposer,
-          $$HabitCheckInsTableCreateCompanionBuilder,
-          $$HabitCheckInsTableUpdateCompanionBuilder,
-          (HabitCheckInRow, $$HabitCheckInsTableReferences),
-          HabitCheckInRow,
-          PrefetchHooks Function({bool habitId})
-        > {
-  $$HabitCheckInsTableTableManager(_$AppDatabase db, $HabitCheckInsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () => $$HabitCheckInsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () => $$HabitCheckInsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () => $$HabitCheckInsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> habitId = const Value.absent(),
-                Value<String> date = const Value.absent(),
-                Value<int> count = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => HabitCheckInsCompanion(
-                habitId: habitId,
-                date: date,
-                count: count,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required int habitId,
-                required String date,
-                required int count,
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => HabitCheckInsCompanion.insert(
-                habitId: habitId,
-                date: date,
-                count: count,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) =>
-              p0.map((e) => (e.readTable(table), $$HabitCheckInsTableReferences(db, table, e))).toList(),
-          prefetchHooksCallback: ({habitId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (habitId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.habitId,
-                                referencedTable: $$HabitCheckInsTableReferences._habitIdTable(db),
-                                referencedColumn: $$HabitCheckInsTableReferences._habitIdTable(db).id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$HabitCheckInsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $HabitCheckInsTable,
-      HabitCheckInRow,
-      $$HabitCheckInsTableFilterComposer,
-      $$HabitCheckInsTableOrderingComposer,
-      $$HabitCheckInsTableAnnotationComposer,
-      $$HabitCheckInsTableCreateCompanionBuilder,
-      $$HabitCheckInsTableUpdateCompanionBuilder,
-      (HabitCheckInRow, $$HabitCheckInsTableReferences),
-      HabitCheckInRow,
-      PrefetchHooks Function({bool habitId})
-    >;
 typedef $$EventsTableCreateCompanionBuilder =
     EventsCompanion Function({
       Value<int> id,
@@ -11654,301 +12896,6 @@ typedef $$EventsTableProcessedTableManager =
       (EventRow, $$EventsTableReferences),
       EventRow,
       PrefetchHooks Function({bool eventExceptionsRefs})
-    >;
-typedef $$EventExceptionsTableCreateCompanionBuilder =
-    EventExceptionsCompanion Function({
-      required int eventId,
-      required String date,
-      Value<bool> skipped,
-      Value<DateTime?> doneAt,
-      Value<String?> movedDate,
-      Value<int?> movedMinute,
-      Value<DateTime> updatedAt,
-      Value<int> rowid,
-    });
-typedef $$EventExceptionsTableUpdateCompanionBuilder =
-    EventExceptionsCompanion Function({
-      Value<int> eventId,
-      Value<String> date,
-      Value<bool> skipped,
-      Value<DateTime?> doneAt,
-      Value<String?> movedDate,
-      Value<int?> movedMinute,
-      Value<DateTime> updatedAt,
-      Value<int> rowid,
-    });
-
-final class $$EventExceptionsTableReferences
-    extends BaseReferences<_$AppDatabase, $EventExceptionsTable, EventExceptionRow> {
-  $$EventExceptionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $EventsTable _eventIdTable(_$AppDatabase db) =>
-      db.events.createAlias($_aliasNameGenerator(db.eventExceptions.eventId, db.events.id));
-
-  $$EventsTableProcessedTableManager get eventId {
-    final $_column = $_itemColumn<int>('event_id')!;
-
-    final manager = $$EventsTableTableManager($_db, $_db.events).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
-  }
-}
-
-class $$EventExceptionsTableFilterComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
-  $$EventExceptionsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<String> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<bool> get skipped =>
-      $composableBuilder(column: $table.skipped, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get doneAt =>
-      $composableBuilder(column: $table.doneAt, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get movedDate =>
-      $composableBuilder(column: $table.movedDate, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get movedMinute =>
-      $composableBuilder(column: $table.movedMinute, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
-
-  $$EventsTableFilterComposer get eventId {
-    final $$EventsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.eventId,
-      referencedTable: $db.events,
-      getReferencedColumn: (t) => t.id,
-      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
-          $$EventsTableFilterComposer(
-            $db: $db,
-            $table: $db.events,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$EventExceptionsTableOrderingComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
-  $$EventExceptionsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<String> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<bool> get skipped =>
-      $composableBuilder(column: $table.skipped, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get doneAt =>
-      $composableBuilder(column: $table.doneAt, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get movedDate =>
-      $composableBuilder(column: $table.movedDate, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get movedMinute =>
-      $composableBuilder(column: $table.movedMinute, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
-
-  $$EventsTableOrderingComposer get eventId {
-    final $$EventsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.eventId,
-      referencedTable: $db.events,
-      getReferencedColumn: (t) => t.id,
-      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
-          $$EventsTableOrderingComposer(
-            $db: $db,
-            $table: $db.events,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$EventExceptionsTableAnnotationComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
-  $$EventExceptionsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<String> get date => $composableBuilder(column: $table.date, builder: (column) => column);
-
-  GeneratedColumn<bool> get skipped =>
-      $composableBuilder(column: $table.skipped, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get doneAt =>
-      $composableBuilder(column: $table.doneAt, builder: (column) => column);
-
-  GeneratedColumn<String> get movedDate =>
-      $composableBuilder(column: $table.movedDate, builder: (column) => column);
-
-  GeneratedColumn<int> get movedMinute =>
-      $composableBuilder(column: $table.movedMinute, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get updatedAt =>
-      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
-
-  $$EventsTableAnnotationComposer get eventId {
-    final $$EventsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.eventId,
-      referencedTable: $db.events,
-      getReferencedColumn: (t) => t.id,
-      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
-          $$EventsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.events,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$EventExceptionsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $EventExceptionsTable,
-          EventExceptionRow,
-          $$EventExceptionsTableFilterComposer,
-          $$EventExceptionsTableOrderingComposer,
-          $$EventExceptionsTableAnnotationComposer,
-          $$EventExceptionsTableCreateCompanionBuilder,
-          $$EventExceptionsTableUpdateCompanionBuilder,
-          (EventExceptionRow, $$EventExceptionsTableReferences),
-          EventExceptionRow,
-          PrefetchHooks Function({bool eventId})
-        > {
-  $$EventExceptionsTableTableManager(_$AppDatabase db, $EventExceptionsTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () => $$EventExceptionsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () => $$EventExceptionsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () => $$EventExceptionsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> eventId = const Value.absent(),
-                Value<String> date = const Value.absent(),
-                Value<bool> skipped = const Value.absent(),
-                Value<DateTime?> doneAt = const Value.absent(),
-                Value<String?> movedDate = const Value.absent(),
-                Value<int?> movedMinute = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => EventExceptionsCompanion(
-                eventId: eventId,
-                date: date,
-                skipped: skipped,
-                doneAt: doneAt,
-                movedDate: movedDate,
-                movedMinute: movedMinute,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          createCompanionCallback:
-              ({
-                required int eventId,
-                required String date,
-                Value<bool> skipped = const Value.absent(),
-                Value<DateTime?> doneAt = const Value.absent(),
-                Value<String?> movedDate = const Value.absent(),
-                Value<int?> movedMinute = const Value.absent(),
-                Value<DateTime> updatedAt = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => EventExceptionsCompanion.insert(
-                eventId: eventId,
-                date: date,
-                skipped: skipped,
-                doneAt: doneAt,
-                movedDate: movedDate,
-                movedMinute: movedMinute,
-                updatedAt: updatedAt,
-                rowid: rowid,
-              ),
-          withReferenceMapper: (p0) =>
-              p0.map((e) => (e.readTable(table), $$EventExceptionsTableReferences(db, table, e))).toList(),
-          prefetchHooksCallback: ({eventId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (eventId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.eventId,
-                                referencedTable: $$EventExceptionsTableReferences._eventIdTable(db),
-                                referencedColumn: $$EventExceptionsTableReferences._eventIdTable(db).id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$EventExceptionsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $EventExceptionsTable,
-      EventExceptionRow,
-      $$EventExceptionsTableFilterComposer,
-      $$EventExceptionsTableOrderingComposer,
-      $$EventExceptionsTableAnnotationComposer,
-      $$EventExceptionsTableCreateCompanionBuilder,
-      $$EventExceptionsTableUpdateCompanionBuilder,
-      (EventExceptionRow, $$EventExceptionsTableReferences),
-      EventExceptionRow,
-      PrefetchHooks Function({bool eventId})
     >;
 typedef $$RoutinesTableCreateCompanionBuilder =
     RoutinesCompanion Function({
@@ -15486,20 +16433,687 @@ typedef $$CareLogsTableProcessedTableManager =
       CareLogRow,
       PrefetchHooks Function({bool jobId})
     >;
+typedef $$HabitCheckInsTableCreateCompanionBuilder =
+    HabitCheckInsCompanion Function({
+      required int habitId,
+      required String date,
+      required int count,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$HabitCheckInsTableUpdateCompanionBuilder =
+    HabitCheckInsCompanion Function({
+      Value<int> habitId,
+      Value<String> date,
+      Value<int> count,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$HabitCheckInsTableReferences
+    extends BaseReferences<_$AppDatabase, $HabitCheckInsTable, HabitCheckInRow> {
+  $$HabitCheckInsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $HabitsTable _habitIdTable(_$AppDatabase db) =>
+      db.habits.createAlias($_aliasNameGenerator(db.habitCheckIns.habitId, db.habits.id));
+
+  $$HabitsTableProcessedTableManager get habitId {
+    final $_column = $_itemColumn<int>('habit_id')!;
+
+    final manager = $$HabitsTableTableManager($_db, $_db.habits).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_habitIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$HabitCheckInsTableFilterComposer extends Composer<_$AppDatabase, $HabitCheckInsTable> {
+  $$HabitCheckInsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get count =>
+      $composableBuilder(column: $table.count, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$HabitsTableFilterComposer get habitId {
+    final $$HabitsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.habitId,
+      referencedTable: $db.habits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$HabitsTableFilterComposer(
+            $db: $db,
+            $table: $db.habits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$HabitCheckInsTableOrderingComposer extends Composer<_$AppDatabase, $HabitCheckInsTable> {
+  $$HabitCheckInsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get count =>
+      $composableBuilder(column: $table.count, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$HabitsTableOrderingComposer get habitId {
+    final $$HabitsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.habitId,
+      referencedTable: $db.habits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$HabitsTableOrderingComposer(
+            $db: $db,
+            $table: $db.habits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$HabitCheckInsTableAnnotationComposer extends Composer<_$AppDatabase, $HabitCheckInsTable> {
+  $$HabitCheckInsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date => $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get count => $composableBuilder(column: $table.count, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$HabitsTableAnnotationComposer get habitId {
+    final $$HabitsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.habitId,
+      referencedTable: $db.habits,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$HabitsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.habits,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$HabitCheckInsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $HabitCheckInsTable,
+          HabitCheckInRow,
+          $$HabitCheckInsTableFilterComposer,
+          $$HabitCheckInsTableOrderingComposer,
+          $$HabitCheckInsTableAnnotationComposer,
+          $$HabitCheckInsTableCreateCompanionBuilder,
+          $$HabitCheckInsTableUpdateCompanionBuilder,
+          (HabitCheckInRow, $$HabitCheckInsTableReferences),
+          HabitCheckInRow,
+          PrefetchHooks Function({bool habitId})
+        > {
+  $$HabitCheckInsTableTableManager(_$AppDatabase db, $HabitCheckInsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$HabitCheckInsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$HabitCheckInsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$HabitCheckInsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> habitId = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<int> count = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HabitCheckInsCompanion(
+                habitId: habitId,
+                date: date,
+                count: count,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int habitId,
+                required String date,
+                required int count,
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => HabitCheckInsCompanion.insert(
+                habitId: habitId,
+                date: date,
+                count: count,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$HabitCheckInsTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({habitId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (habitId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.habitId,
+                                referencedTable: $$HabitCheckInsTableReferences._habitIdTable(db),
+                                referencedColumn: $$HabitCheckInsTableReferences._habitIdTable(db).id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$HabitCheckInsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $HabitCheckInsTable,
+      HabitCheckInRow,
+      $$HabitCheckInsTableFilterComposer,
+      $$HabitCheckInsTableOrderingComposer,
+      $$HabitCheckInsTableAnnotationComposer,
+      $$HabitCheckInsTableCreateCompanionBuilder,
+      $$HabitCheckInsTableUpdateCompanionBuilder,
+      (HabitCheckInRow, $$HabitCheckInsTableReferences),
+      HabitCheckInRow,
+      PrefetchHooks Function({bool habitId})
+    >;
+typedef $$EventExceptionsTableCreateCompanionBuilder =
+    EventExceptionsCompanion Function({
+      required int eventId,
+      required String date,
+      Value<bool> skipped,
+      Value<DateTime?> doneAt,
+      Value<String?> movedDate,
+      Value<int?> movedMinute,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$EventExceptionsTableUpdateCompanionBuilder =
+    EventExceptionsCompanion Function({
+      Value<int> eventId,
+      Value<String> date,
+      Value<bool> skipped,
+      Value<DateTime?> doneAt,
+      Value<String?> movedDate,
+      Value<int?> movedMinute,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+final class $$EventExceptionsTableReferences
+    extends BaseReferences<_$AppDatabase, $EventExceptionsTable, EventExceptionRow> {
+  $$EventExceptionsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $EventsTable _eventIdTable(_$AppDatabase db) =>
+      db.events.createAlias($_aliasNameGenerator(db.eventExceptions.eventId, db.events.id));
+
+  $$EventsTableProcessedTableManager get eventId {
+    final $_column = $_itemColumn<int>('event_id')!;
+
+    final manager = $$EventsTableTableManager($_db, $_db.events).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(manager.$state.copyWith(prefetchedData: [item]));
+  }
+}
+
+class $$EventExceptionsTableFilterComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
+  $$EventExceptionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get doneAt =>
+      $composableBuilder(column: $table.doneAt, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get movedDate =>
+      $composableBuilder(column: $table.movedDate, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get movedMinute =>
+      $composableBuilder(column: $table.movedMinute, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+
+  $$EventsTableFilterComposer get eventId {
+    final $$EventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventsTableFilterComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventExceptionsTableOrderingComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
+  $$EventExceptionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get doneAt =>
+      $composableBuilder(column: $table.doneAt, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get movedDate =>
+      $composableBuilder(column: $table.movedDate, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<int> get movedMinute =>
+      $composableBuilder(column: $table.movedMinute, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+
+  $$EventsTableOrderingComposer get eventId {
+    final $$EventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventExceptionsTableAnnotationComposer extends Composer<_$AppDatabase, $EventExceptionsTable> {
+  $$EventExceptionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get date => $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<bool> get skipped =>
+      $composableBuilder(column: $table.skipped, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get doneAt =>
+      $composableBuilder(column: $table.doneAt, builder: (column) => column);
+
+  GeneratedColumn<String> get movedDate =>
+      $composableBuilder(column: $table.movedDate, builder: (column) => column);
+
+  GeneratedColumn<int> get movedMinute =>
+      $composableBuilder(column: $table.movedMinute, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  $$EventsTableAnnotationComposer get eventId {
+    final $$EventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.events,
+      getReferencedColumn: (t) => t.id,
+      builder: (joinBuilder, {$addJoinBuilderToRootComposer, $removeJoinBuilderFromRootComposer}) =>
+          $$EventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.events,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer: $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$EventExceptionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $EventExceptionsTable,
+          EventExceptionRow,
+          $$EventExceptionsTableFilterComposer,
+          $$EventExceptionsTableOrderingComposer,
+          $$EventExceptionsTableAnnotationComposer,
+          $$EventExceptionsTableCreateCompanionBuilder,
+          $$EventExceptionsTableUpdateCompanionBuilder,
+          (EventExceptionRow, $$EventExceptionsTableReferences),
+          EventExceptionRow,
+          PrefetchHooks Function({bool eventId})
+        > {
+  $$EventExceptionsTableTableManager(_$AppDatabase db, $EventExceptionsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$EventExceptionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$EventExceptionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$EventExceptionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> eventId = const Value.absent(),
+                Value<String> date = const Value.absent(),
+                Value<bool> skipped = const Value.absent(),
+                Value<DateTime?> doneAt = const Value.absent(),
+                Value<String?> movedDate = const Value.absent(),
+                Value<int?> movedMinute = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventExceptionsCompanion(
+                eventId: eventId,
+                date: date,
+                skipped: skipped,
+                doneAt: doneAt,
+                movedDate: movedDate,
+                movedMinute: movedMinute,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required int eventId,
+                required String date,
+                Value<bool> skipped = const Value.absent(),
+                Value<DateTime?> doneAt = const Value.absent(),
+                Value<String?> movedDate = const Value.absent(),
+                Value<int?> movedMinute = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => EventExceptionsCompanion.insert(
+                eventId: eventId,
+                date: date,
+                skipped: skipped,
+                doneAt: doneAt,
+                movedDate: movedDate,
+                movedMinute: movedMinute,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), $$EventExceptionsTableReferences(db, table, e))).toList(),
+          prefetchHooksCallback: ({eventId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (eventId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.eventId,
+                                referencedTable: $$EventExceptionsTableReferences._eventIdTable(db),
+                                referencedColumn: $$EventExceptionsTableReferences._eventIdTable(db).id,
+                              )
+                              as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$EventExceptionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $EventExceptionsTable,
+      EventExceptionRow,
+      $$EventExceptionsTableFilterComposer,
+      $$EventExceptionsTableOrderingComposer,
+      $$EventExceptionsTableAnnotationComposer,
+      $$EventExceptionsTableCreateCompanionBuilder,
+      $$EventExceptionsTableUpdateCompanionBuilder,
+      (EventExceptionRow, $$EventExceptionsTableReferences),
+      EventExceptionRow,
+      PrefetchHooks Function({bool eventId})
+    >;
+typedef $$AppSettingsTableCreateCompanionBuilder =
+    AppSettingsCompanion Function({
+      required String key,
+      required String value,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+typedef $$AppSettingsTableUpdateCompanionBuilder =
+    AppSettingsCompanion Function({
+      Value<String> key,
+      Value<String> value,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$AppSettingsTableFilterComposer extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
+}
+
+class $$AppSettingsTableOrderingComposer extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get key =>
+      $composableBuilder(column: $table.key, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
+}
+
+class $$AppSettingsTableAnnotationComposer extends Composer<_$AppDatabase, $AppSettingsTable> {
+  $$AppSettingsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get key => $composableBuilder(column: $table.key, builder: (column) => column);
+
+  GeneratedColumn<String> get value => $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$AppSettingsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $AppSettingsTable,
+          AppSetting,
+          $$AppSettingsTableFilterComposer,
+          $$AppSettingsTableOrderingComposer,
+          $$AppSettingsTableAnnotationComposer,
+          $$AppSettingsTableCreateCompanionBuilder,
+          $$AppSettingsTableUpdateCompanionBuilder,
+          (AppSetting, BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>),
+          AppSetting,
+          PrefetchHooks Function()
+        > {
+  $$AppSettingsTableTableManager(_$AppDatabase db, $AppSettingsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () => $$AppSettingsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$AppSettingsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () => $$AppSettingsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> key = const Value.absent(),
+                Value<String> value = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion(key: key, value: value, updatedAt: updatedAt, rowid: rowid),
+          createCompanionCallback:
+              ({
+                required String key,
+                required String value,
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => AppSettingsCompanion.insert(key: key, value: value, updatedAt: updatedAt, rowid: rowid),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$AppSettingsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $AppSettingsTable,
+      AppSetting,
+      $$AppSettingsTableFilterComposer,
+      $$AppSettingsTableOrderingComposer,
+      $$AppSettingsTableAnnotationComposer,
+      $$AppSettingsTableCreateCompanionBuilder,
+      $$AppSettingsTableUpdateCompanionBuilder,
+      (AppSetting, BaseReferences<_$AppDatabase, $AppSettingsTable, AppSetting>),
+      AppSetting,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$AppSettingsTableTableManager get appSettings => $$AppSettingsTableTableManager(_db, _db.appSettings);
+  $SyncOutboxTableManager get syncOutbox => $SyncOutboxTableManager(_db, _db.syncOutbox);
+  $SyncTombstonesTableManager get syncTombstones => $SyncTombstonesTableManager(_db, _db.syncTombstones);
+  $SyncMetaTableManager get syncMeta => $SyncMetaTableManager(_db, _db.syncMeta);
   $$ProjectsTableTableManager get projects => $$ProjectsTableTableManager(_db, _db.projects);
   $$TasksTableTableManager get tasks => $$TasksTableTableManager(_db, _db.tasks);
   $$TaskChecksTableTableManager get taskChecks => $$TaskChecksTableTableManager(_db, _db.taskChecks);
   $$HabitsTableTableManager get habits => $$HabitsTableTableManager(_db, _db.habits);
-  $$HabitCheckInsTableTableManager get habitCheckIns =>
-      $$HabitCheckInsTableTableManager(_db, _db.habitCheckIns);
   $$EventsTableTableManager get events => $$EventsTableTableManager(_db, _db.events);
-  $$EventExceptionsTableTableManager get eventExceptions =>
-      $$EventExceptionsTableTableManager(_db, _db.eventExceptions);
   $$RoutinesTableTableManager get routines => $$RoutinesTableTableManager(_db, _db.routines);
   $$RoutineStepsTableTableManager get routineSteps => $$RoutineStepsTableTableManager(_db, _db.routineSteps);
   $$RoutineRunsTableTableManager get routineRuns => $$RoutineRunsTableTableManager(_db, _db.routineRuns);
@@ -15513,4 +17127,9 @@ class $AppDatabaseManager {
   $$MealEntriesTableTableManager get mealEntries => $$MealEntriesTableTableManager(_db, _db.mealEntries);
   $$CareJobsTableTableManager get careJobs => $$CareJobsTableTableManager(_db, _db.careJobs);
   $$CareLogsTableTableManager get careLogs => $$CareLogsTableTableManager(_db, _db.careLogs);
+  $$HabitCheckInsTableTableManager get habitCheckIns =>
+      $$HabitCheckInsTableTableManager(_db, _db.habitCheckIns);
+  $$EventExceptionsTableTableManager get eventExceptions =>
+      $$EventExceptionsTableTableManager(_db, _db.eventExceptions);
+  $$AppSettingsTableTableManager get appSettings => $$AppSettingsTableTableManager(_db, _db.appSettings);
 }

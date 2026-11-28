@@ -77,6 +77,10 @@ report a stage as done unless all three pass. Record results in `HANDOFF.md`.
   runs `dart run drift_dev make-migrations`, and adds a `fromXToY` step (see
   ARCHITECTURE.md › Persistence). Never edit a shipped step or a file in
   `drift_schemas/`. `flutter test test/drift` must pass.
+- **Cloud sync tracking:** every synced table has change triggers. A new table
+  (or a renamed key column) goes into `tool/sync/generate_sync_triggers.py`; re-run
+  it, then build_runner and a schema step. Device-only settings stay out of sync
+  (`DEVICE_ONLY` there).
 - **Dates:** due dates and other "calendar days" use `CalendarDate`; times of
   day use `ClockTime`. Get "now" from `clockProvider` and "today" from
   `todayProvider` — never call `DateTime.now()` in feature code.

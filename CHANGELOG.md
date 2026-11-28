@@ -51,6 +51,8 @@ versions follow `pubspec.yaml`.
   builds, so scheduling failed ("invalid_icon").
 
 ### Changed
+- Groundwork for optional cloud sync: Knightly now notes which records changed or were deleted
+  (local only; nothing leaves the phone yet).
 - Riverpod 3.5 (state management); no visible change.
 - Built with Flutter 3.50.1 / Dart 3.14 (Gradle 9.5, Android Gradle Plugin 9.3.1, Kotlin 2.4.20).
 - Dock styles redrawn closer to the reference: a metal frame with a recessed panel, glowing rails, a

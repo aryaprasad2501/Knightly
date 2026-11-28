@@ -1,0 +1,5005 @@
+{
+  "_meta": {
+    "description": "This file contains a serialized version of schema entities for drift.",
+    "version": "1.3.0"
+  },
+  "options": {
+    "store_date_time_values_as_text": true
+  },
+  "entities": [
+    {
+      "id": 0,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_outbox",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "entity",
+            "getter_name": "entity",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "row_key",
+            "getter_name": "rowKey",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "changed_at",
+            "getter_name": "changedAt",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(entity, row_key)"
+        ],
+        "explicit_pk": [
+          "entity",
+          "row_key"
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_tombstones",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "entity",
+            "getter_name": "entity",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "doc_id",
+            "getter_name": "docId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [
+          "PRIMARY KEY(entity, doc_id)"
+        ],
+        "explicit_pk": [
+          "entity",
+          "doc_id"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sync_meta",
+        "was_declared_in_moor": true,
+        "columns": [
+          {
+            "name": "key",
+            "getter_name": "key",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL PRIMARY KEY",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "primary-key"
+            ]
+          },
+          {
+            "name": "value",
+            "getter_name": "value",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": "NOT NULL",
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 3,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "projects",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 60
+                }
+              }
+            ]
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 4,
+      "references": [
+        3,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 3,
+        "references_in_body": [
+          3,
+          2,
+          0
+        ],
+        "name": "sync_projects_insert",
+        "sql": "CREATE TRIGGER sync_projects_insert AFTER INSERT ON projects\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('projects', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 5,
+      "references": [
+        3,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 3,
+        "references_in_body": [
+          3,
+          2,
+          0
+        ],
+        "name": "sync_projects_update",
+        "sql": "CREATE TRIGGER sync_projects_update AFTER UPDATE ON projects\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('projects', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 6,
+      "references": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 3,
+        "references_in_body": [
+          3,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_projects_delete",
+        "sql": "CREATE TRIGGER sync_projects_delete AFTER DELETE ON projects\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'projects' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('projects', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 7,
+      "references": [
+        3
+      ],
+      "type": "table",
+      "data": {
+        "name": "tasks",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "title",
+            "getter_name": "title",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 200
+                }
+              }
+            ]
+          },
+          {
+            "name": "notes",
+            "getter_name": "notes",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "priority",
+            "getter_name": "priority",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "project_id",
+            "getter_name": "projectId",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES projects (id) ON DELETE SET NULL",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES projects (id) ON DELETE SET NULL"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "projects",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "setNull"
+                }
+              }
+            ]
+          },
+          {
+            "name": "due_date",
+            "getter_name": "dueDate",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "due_minute",
+            "getter_name": "dueMinute",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recurrence",
+            "getter_name": "recurrence",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "next_task_id",
+            "getter_name": "nextTaskId",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "completed_at",
+            "getter_name": "completedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 8,
+      "references": [
+        7,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 7,
+        "references_in_body": [
+          7,
+          2,
+          0
+        ],
+        "name": "sync_tasks_insert",
+        "sql": "CREATE TRIGGER sync_tasks_insert AFTER INSERT ON tasks\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('tasks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 9,
+      "references": [
+        7,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 7,
+        "references_in_body": [
+          7,
+          2,
+          0
+        ],
+        "name": "sync_tasks_update",
+        "sql": "CREATE TRIGGER sync_tasks_update AFTER UPDATE ON tasks\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('tasks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 10,
+      "references": [
+        7,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 7,
+        "references_in_body": [
+          7,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_tasks_delete",
+        "sql": "CREATE TRIGGER sync_tasks_delete AFTER DELETE ON tasks\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'tasks' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('tasks', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 11,
+      "references": [
+        7
+      ],
+      "type": "table",
+      "data": {
+        "name": "task_checks",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "task_id",
+            "getter_name": "taskId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES tasks (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES tasks (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "tasks",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "title",
+            "getter_name": "title",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 120
+                }
+              }
+            ]
+          },
+          {
+            "name": "done",
+            "getter_name": "done",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"done\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"done\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 12,
+      "references": [
+        11,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 11,
+        "references_in_body": [
+          11,
+          2,
+          0
+        ],
+        "name": "sync_task_checks_insert",
+        "sql": "CREATE TRIGGER sync_task_checks_insert AFTER INSERT ON task_checks\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('task_checks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 13,
+      "references": [
+        11,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 11,
+        "references_in_body": [
+          11,
+          2,
+          0
+        ],
+        "name": "sync_task_checks_update",
+        "sql": "CREATE TRIGGER sync_task_checks_update AFTER UPDATE ON task_checks\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('task_checks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 14,
+      "references": [
+        11,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 11,
+        "references_in_body": [
+          11,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_task_checks_delete",
+        "sql": "CREATE TRIGGER sync_task_checks_delete AFTER DELETE ON task_checks\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'task_checks' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('task_checks', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 15,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "habits",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 60
+                }
+              }
+            ]
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "schedule",
+            "getter_name": "schedule",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "target",
+            "getter_name": "target",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('1')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "start_date",
+            "getter_name": "startDate",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "archived_at",
+            "getter_name": "archivedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 16,
+      "references": [
+        15,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 15,
+        "references_in_body": [
+          15,
+          2,
+          0
+        ],
+        "name": "sync_habits_insert",
+        "sql": "CREATE TRIGGER sync_habits_insert AFTER INSERT ON habits\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habits', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 17,
+      "references": [
+        15,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 15,
+        "references_in_body": [
+          15,
+          2,
+          0
+        ],
+        "name": "sync_habits_update",
+        "sql": "CREATE TRIGGER sync_habits_update AFTER UPDATE ON habits\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habits', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 18,
+      "references": [
+        15,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 15,
+        "references_in_body": [
+          15,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_habits_delete",
+        "sql": "CREATE TRIGGER sync_habits_delete AFTER DELETE ON habits\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'habits' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('habits', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 19,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "events",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "title",
+            "getter_name": "title",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 200
+                }
+              }
+            ]
+          },
+          {
+            "name": "notes",
+            "getter_name": "notes",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kind",
+            "getter_name": "kind",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "start_date",
+            "getter_name": "startDate",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "start_minute",
+            "getter_name": "startMinute",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "duration_minutes",
+            "getter_name": "durationMinutes",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "recurrence",
+            "getter_name": "recurrence",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_minutes",
+            "getter_name": "reminderMinutes",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 20,
+      "references": [
+        19,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 19,
+        "references_in_body": [
+          19,
+          2,
+          0
+        ],
+        "name": "sync_events_insert",
+        "sql": "CREATE TRIGGER sync_events_insert AFTER INSERT ON events\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('events', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 21,
+      "references": [
+        19,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 19,
+        "references_in_body": [
+          19,
+          2,
+          0
+        ],
+        "name": "sync_events_update",
+        "sql": "CREATE TRIGGER sync_events_update AFTER UPDATE ON events\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('events', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 22,
+      "references": [
+        19,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 19,
+        "references_in_body": [
+          19,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_events_delete",
+        "sql": "CREATE TRIGGER sync_events_delete AFTER DELETE ON events\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'events' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('events', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 23,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "routines",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 60
+                }
+              }
+            ]
+          },
+          {
+            "name": "time_of_day",
+            "getter_name": "timeOfDay",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "schedule",
+            "getter_name": "schedule",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "start_minute",
+            "getter_name": "startMinute",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reminder_minutes",
+            "getter_name": "reminderMinutes",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 24,
+      "references": [
+        23,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 23,
+        "references_in_body": [
+          23,
+          2,
+          0
+        ],
+        "name": "sync_routines_insert",
+        "sql": "CREATE TRIGGER sync_routines_insert AFTER INSERT ON routines\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routines', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 25,
+      "references": [
+        23,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 23,
+        "references_in_body": [
+          23,
+          2,
+          0
+        ],
+        "name": "sync_routines_update",
+        "sql": "CREATE TRIGGER sync_routines_update AFTER UPDATE ON routines\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routines', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 26,
+      "references": [
+        23,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 23,
+        "references_in_body": [
+          23,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_routines_delete",
+        "sql": "CREATE TRIGGER sync_routines_delete AFTER DELETE ON routines\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'routines' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('routines', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 27,
+      "references": [
+        23
+      ],
+      "type": "table",
+      "data": {
+        "name": "routine_steps",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "routine_id",
+            "getter_name": "routineId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES routines (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES routines (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "routines",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "position",
+            "getter_name": "position",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "title",
+            "getter_name": "title",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 80
+                }
+              }
+            ]
+          },
+          {
+            "name": "duration_seconds",
+            "getter_name": "durationSeconds",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 28,
+      "references": [
+        27,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 27,
+        "references_in_body": [
+          27,
+          2,
+          0
+        ],
+        "name": "sync_routine_steps_insert",
+        "sql": "CREATE TRIGGER sync_routine_steps_insert AFTER INSERT ON routine_steps\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_steps', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 29,
+      "references": [
+        27,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 27,
+        "references_in_body": [
+          27,
+          2,
+          0
+        ],
+        "name": "sync_routine_steps_update",
+        "sql": "CREATE TRIGGER sync_routine_steps_update AFTER UPDATE ON routine_steps\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_steps', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 30,
+      "references": [
+        27,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 27,
+        "references_in_body": [
+          27,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_routine_steps_delete",
+        "sql": "CREATE TRIGGER sync_routine_steps_delete AFTER DELETE ON routine_steps\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'routine_steps' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('routine_steps', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 31,
+      "references": [
+        23
+      ],
+      "type": "table",
+      "data": {
+        "name": "routine_runs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "routine_id",
+            "getter_name": "routineId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES routines (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES routines (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "routines",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "started_at",
+            "getter_name": "startedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "finished_at",
+            "getter_name": "finishedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "steps_done",
+            "getter_name": "stepsDone",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "steps_total",
+            "getter_name": "stepsTotal",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 32,
+      "references": [
+        31,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 31,
+        "references_in_body": [
+          31,
+          2,
+          0
+        ],
+        "name": "sync_routine_runs_insert",
+        "sql": "CREATE TRIGGER sync_routine_runs_insert AFTER INSERT ON routine_runs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_runs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 33,
+      "references": [
+        31,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 31,
+        "references_in_body": [
+          31,
+          2,
+          0
+        ],
+        "name": "sync_routine_runs_update",
+        "sql": "CREATE TRIGGER sync_routine_runs_update AFTER UPDATE ON routine_runs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_runs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 34,
+      "references": [
+        31,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 31,
+        "references_in_body": [
+          31,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_routine_runs_delete",
+        "sql": "CREATE TRIGGER sync_routine_runs_delete AFTER DELETE ON routine_runs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'routine_runs' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('routine_runs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 35,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "water_logs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "logged_at",
+            "getter_name": "loggedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "amount_ml",
+            "getter_name": "amountMl",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 36,
+      "references": [
+        35,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 35,
+        "references_in_body": [
+          35,
+          2,
+          0
+        ],
+        "name": "sync_water_logs_insert",
+        "sql": "CREATE TRIGGER sync_water_logs_insert AFTER INSERT ON water_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('water_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 37,
+      "references": [
+        35,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 35,
+        "references_in_body": [
+          35,
+          2,
+          0
+        ],
+        "name": "sync_water_logs_update",
+        "sql": "CREATE TRIGGER sync_water_logs_update AFTER UPDATE ON water_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('water_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 38,
+      "references": [
+        35,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 35,
+        "references_in_body": [
+          35,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_water_logs_delete",
+        "sql": "CREATE TRIGGER sync_water_logs_delete AFTER DELETE ON water_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'water_logs' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('water_logs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 39,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "sleep_logs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "bedtime",
+            "getter_name": "bedtime",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "wake_time",
+            "getter_name": "wakeTime",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "quality",
+            "getter_name": "quality",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 40,
+      "references": [
+        39,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 39,
+        "references_in_body": [
+          39,
+          2,
+          0
+        ],
+        "name": "sync_sleep_logs_insert",
+        "sql": "CREATE TRIGGER sync_sleep_logs_insert AFTER INSERT ON sleep_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('sleep_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 41,
+      "references": [
+        39,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 39,
+        "references_in_body": [
+          39,
+          2,
+          0
+        ],
+        "name": "sync_sleep_logs_update",
+        "sql": "CREATE TRIGGER sync_sleep_logs_update AFTER UPDATE ON sleep_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('sleep_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 42,
+      "references": [
+        39,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 39,
+        "references_in_body": [
+          39,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_sleep_logs_delete",
+        "sql": "CREATE TRIGGER sync_sleep_logs_delete AFTER DELETE ON sleep_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'sleep_logs' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('sleep_logs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 43,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "workouts",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 60
+                }
+              }
+            ]
+          },
+          {
+            "name": "started_at",
+            "getter_name": "startedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "finished_at",
+            "getter_name": "finishedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "notes",
+            "getter_name": "notes",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('\\'\\'')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 44,
+      "references": [
+        43,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 43,
+        "references_in_body": [
+          43,
+          2,
+          0
+        ],
+        "name": "sync_workouts_insert",
+        "sql": "CREATE TRIGGER sync_workouts_insert AFTER INSERT ON workouts\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workouts', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 45,
+      "references": [
+        43,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 43,
+        "references_in_body": [
+          43,
+          2,
+          0
+        ],
+        "name": "sync_workouts_update",
+        "sql": "CREATE TRIGGER sync_workouts_update AFTER UPDATE ON workouts\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workouts', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 46,
+      "references": [
+        43,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 43,
+        "references_in_body": [
+          43,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_workouts_delete",
+        "sql": "CREATE TRIGGER sync_workouts_delete AFTER DELETE ON workouts\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'workouts' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('workouts', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 47,
+      "references": [
+        43
+      ],
+      "type": "table",
+      "data": {
+        "name": "workout_sets",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "workout_id",
+            "getter_name": "workoutId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES workouts (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES workouts (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "workouts",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "exercise_id",
+            "getter_name": "exerciseId",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "exercise_name",
+            "getter_name": "exerciseName",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "exercise_order",
+            "getter_name": "exerciseOrder",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "set_order",
+            "getter_name": "setOrder",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "reps",
+            "getter_name": "reps",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "weight_kg",
+            "getter_name": "weightKg",
+            "moor_type": "double",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "duration_seconds",
+            "getter_name": "durationSeconds",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "done",
+            "getter_name": "done",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"done\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"done\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 48,
+      "references": [
+        47,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 47,
+        "references_in_body": [
+          47,
+          2,
+          0
+        ],
+        "name": "sync_workout_sets_insert",
+        "sql": "CREATE TRIGGER sync_workout_sets_insert AFTER INSERT ON workout_sets\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_sets', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 49,
+      "references": [
+        47,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 47,
+        "references_in_body": [
+          47,
+          2,
+          0
+        ],
+        "name": "sync_workout_sets_update",
+        "sql": "CREATE TRIGGER sync_workout_sets_update AFTER UPDATE ON workout_sets\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_sets', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 50,
+      "references": [
+        47,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 47,
+        "references_in_body": [
+          47,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_workout_sets_delete",
+        "sql": "CREATE TRIGGER sync_workout_sets_delete AFTER DELETE ON workout_sets\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'workout_sets' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('workout_sets', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 51,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "workout_templates",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 60
+                }
+              }
+            ]
+          },
+          {
+            "name": "plan",
+            "getter_name": "plan",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 52,
+      "references": [
+        51,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 51,
+        "references_in_body": [
+          51,
+          2,
+          0
+        ],
+        "name": "sync_workout_templates_insert",
+        "sql": "CREATE TRIGGER sync_workout_templates_insert AFTER INSERT ON workout_templates\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_templates', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 53,
+      "references": [
+        51,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 51,
+        "references_in_body": [
+          51,
+          2,
+          0
+        ],
+        "name": "sync_workout_templates_update",
+        "sql": "CREATE TRIGGER sync_workout_templates_update AFTER UPDATE ON workout_templates\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_templates', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 54,
+      "references": [
+        51,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 51,
+        "references_in_body": [
+          51,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_workout_templates_delete",
+        "sql": "CREATE TRIGGER sync_workout_templates_delete AFTER DELETE ON workout_templates\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'workout_templates' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('workout_templates', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 55,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "foods",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 80
+                }
+              }
+            ]
+          },
+          {
+            "name": "serving",
+            "getter_name": "serving",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 40
+                }
+              }
+            ]
+          },
+          {
+            "name": "kcal",
+            "getter_name": "kcal",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "protein",
+            "getter_name": "protein",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "carbs",
+            "getter_name": "carbs",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fat",
+            "getter_name": "fat",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 56,
+      "references": [
+        55,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 55,
+        "references_in_body": [
+          55,
+          2,
+          0
+        ],
+        "name": "sync_foods_insert",
+        "sql": "CREATE TRIGGER sync_foods_insert AFTER INSERT ON foods\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('foods', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 57,
+      "references": [
+        55,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 55,
+        "references_in_body": [
+          55,
+          2,
+          0
+        ],
+        "name": "sync_foods_update",
+        "sql": "CREATE TRIGGER sync_foods_update AFTER UPDATE ON foods\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('foods', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 58,
+      "references": [
+        55,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 55,
+        "references_in_body": [
+          55,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_foods_delete",
+        "sql": "CREATE TRIGGER sync_foods_delete AFTER DELETE ON foods\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'foods' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('foods', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 59,
+      "references": [
+        55
+      ],
+      "type": "table",
+      "data": {
+        "name": "meal_entries",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "meal",
+            "getter_name": "meal",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "logged_at",
+            "getter_name": "loggedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "food_id",
+            "getter_name": "foodId",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES foods (id) ON DELETE SET NULL",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES foods (id) ON DELETE SET NULL"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "foods",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "setNull"
+                }
+              }
+            ]
+          },
+          {
+            "name": "library_id",
+            "getter_name": "libraryId",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "portion",
+            "getter_name": "portion",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "quantity",
+            "getter_name": "quantity",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('1.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "kcal",
+            "getter_name": "kcal",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "protein",
+            "getter_name": "protein",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "carbs",
+            "getter_name": "carbs",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "fat",
+            "getter_name": "fat",
+            "moor_type": "double",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('0.0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 60,
+      "references": [
+        59,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 59,
+        "references_in_body": [
+          59,
+          2,
+          0
+        ],
+        "name": "sync_meal_entries_insert",
+        "sql": "CREATE TRIGGER sync_meal_entries_insert AFTER INSERT ON meal_entries\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('meal_entries', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 61,
+      "references": [
+        59,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 59,
+        "references_in_body": [
+          59,
+          2,
+          0
+        ],
+        "name": "sync_meal_entries_update",
+        "sql": "CREATE TRIGGER sync_meal_entries_update AFTER UPDATE ON meal_entries\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('meal_entries', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 62,
+      "references": [
+        59,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 59,
+        "references_in_body": [
+          59,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_meal_entries_delete",
+        "sql": "CREATE TRIGGER sync_meal_entries_delete AFTER DELETE ON meal_entries\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'meal_entries' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('meal_entries', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 63,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "care_jobs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "name",
+            "getter_name": "name",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "allowed-lengths": {
+                  "min": 1,
+                  "max": 80
+                }
+              }
+            ]
+          },
+          {
+            "name": "area",
+            "getter_name": "area",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "category",
+            "getter_name": "category",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "subject",
+            "getter_name": "subject",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "schedule",
+            "getter_name": "schedule",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "start_date",
+            "getter_name": "startDate",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "notes",
+            "getter_name": "notes",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "created_at",
+            "getter_name": "createdAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "deleted_at",
+            "getter_name": "deletedAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 64,
+      "references": [
+        63,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 63,
+        "references_in_body": [
+          63,
+          2,
+          0
+        ],
+        "name": "sync_care_jobs_insert",
+        "sql": "CREATE TRIGGER sync_care_jobs_insert AFTER INSERT ON care_jobs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_jobs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 65,
+      "references": [
+        63,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 63,
+        "references_in_body": [
+          63,
+          2,
+          0
+        ],
+        "name": "sync_care_jobs_update",
+        "sql": "CREATE TRIGGER sync_care_jobs_update AFTER UPDATE ON care_jobs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_jobs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 66,
+      "references": [
+        63,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 63,
+        "references_in_body": [
+          63,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_care_jobs_delete",
+        "sql": "CREATE TRIGGER sync_care_jobs_delete AFTER DELETE ON care_jobs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'care_jobs' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('care_jobs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 67,
+      "references": [
+        63
+      ],
+      "type": "table",
+      "data": {
+        "name": "care_logs",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "id",
+            "getter_name": "id",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "PRIMARY KEY AUTOINCREMENT",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "PRIMARY KEY AUTOINCREMENT"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              "auto-increment"
+            ]
+          },
+          {
+            "name": "uuid",
+            "getter_name": "uuid",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "UNIQUE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "UNIQUE"
+            },
+            "default_dart": null,
+            "default_client_dart": "newUuid",
+            "dsl_features": [
+              "unique"
+            ]
+          },
+          {
+            "name": "job_id",
+            "getter_name": "jobId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES care_jobs (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES care_jobs (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "care_jobs",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "due_date",
+            "getter_name": "dueDate",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "skipped",
+            "getter_name": "skipped",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"skipped\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"skipped\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "note",
+            "getter_name": "note",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "logged_at",
+            "getter_name": "loggedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": []
+      }
+    },
+    {
+      "id": 68,
+      "references": [
+        67,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 67,
+        "references_in_body": [
+          67,
+          2,
+          0
+        ],
+        "name": "sync_care_logs_insert",
+        "sql": "CREATE TRIGGER sync_care_logs_insert AFTER INSERT ON care_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 69,
+      "references": [
+        67,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 67,
+        "references_in_body": [
+          67,
+          2,
+          0
+        ],
+        "name": "sync_care_logs_update",
+        "sql": "CREATE TRIGGER sync_care_logs_update AFTER UPDATE ON care_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 70,
+      "references": [
+        67,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 67,
+        "references_in_body": [
+          67,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_care_logs_delete",
+        "sql": "CREATE TRIGGER sync_care_logs_delete AFTER DELETE ON care_logs\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'care_logs' AND row_key = OLD.uuid;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('care_logs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 71,
+      "references": [
+        15
+      ],
+      "type": "table",
+      "data": {
+        "name": "habit_check_ins",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "habit_id",
+            "getter_name": "habitId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES habits (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES habits (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "habits",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "count",
+            "getter_name": "count",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "habit_id",
+          "date"
+        ]
+      }
+    },
+    {
+      "id": 72,
+      "references": [
+        71,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 71,
+        "references_in_body": [
+          71,
+          2,
+          0
+        ],
+        "name": "sync_habit_check_ins_insert",
+        "sql": "CREATE TRIGGER sync_habit_check_ins_insert AFTER INSERT ON habit_check_ins\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habit_check_ins', NEW.habit_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 73,
+      "references": [
+        71,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 71,
+        "references_in_body": [
+          71,
+          2,
+          0
+        ],
+        "name": "sync_habit_check_ins_update",
+        "sql": "CREATE TRIGGER sync_habit_check_ins_update AFTER UPDATE ON habit_check_ins\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habit_check_ins', NEW.habit_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 74,
+      "references": [
+        71,
+        2,
+        15,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 71,
+        "references_in_body": [
+          71,
+          2,
+          15,
+          0,
+          1
+        ],
+        "name": "sync_habit_check_ins_delete",
+        "sql": "CREATE TRIGGER sync_habit_check_ins_delete AFTER DELETE ON habit_check_ins\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND (SELECT uuid FROM habits WHERE id = OLD.habit_id) || '_' || OLD.date IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'habit_check_ins' AND row_key = OLD.habit_id || '|' || OLD.date;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('habit_check_ins', (SELECT uuid FROM habits WHERE id = OLD.habit_id) || '_' || OLD.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 75,
+      "references": [
+        19
+      ],
+      "type": "table",
+      "data": {
+        "name": "event_exceptions",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "event_id",
+            "getter_name": "eventId",
+            "moor_type": "int",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "REFERENCES events (id) ON DELETE CASCADE",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "REFERENCES events (id) ON DELETE CASCADE"
+            },
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": [
+              {
+                "foreign_key": {
+                  "to": {
+                    "table": "events",
+                    "column": "id"
+                  },
+                  "initially_deferred": false,
+                  "on_update": null,
+                  "on_delete": "cascade"
+                }
+              }
+            ]
+          },
+          {
+            "name": "date",
+            "getter_name": "date",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "skipped",
+            "getter_name": "skipped",
+            "moor_type": "bool",
+            "nullable": false,
+            "customConstraints": null,
+            "defaultConstraints": "CHECK (\"skipped\" IN (0, 1))",
+            "dialectAwareDefaultConstraints": {
+              "sqlite": "CHECK (\"skipped\" IN (0, 1))"
+            },
+            "default_dart": "const CustomExpression('0')",
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "done_at",
+            "getter_name": "doneAt",
+            "moor_type": "dateTime",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "moved_date",
+            "getter_name": "movedDate",
+            "moor_type": "string",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "moved_minute",
+            "getter_name": "movedMinute",
+            "moor_type": "int",
+            "nullable": true,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "event_id",
+          "date"
+        ]
+      }
+    },
+    {
+      "id": 76,
+      "references": [
+        75,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 75,
+        "references_in_body": [
+          75,
+          2,
+          0
+        ],
+        "name": "sync_event_exceptions_insert",
+        "sql": "CREATE TRIGGER sync_event_exceptions_insert AFTER INSERT ON event_exceptions\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('event_exceptions', NEW.event_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 77,
+      "references": [
+        75,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 75,
+        "references_in_body": [
+          75,
+          2,
+          0
+        ],
+        "name": "sync_event_exceptions_update",
+        "sql": "CREATE TRIGGER sync_event_exceptions_update AFTER UPDATE ON event_exceptions\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('event_exceptions', NEW.event_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 78,
+      "references": [
+        75,
+        2,
+        19,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 75,
+        "references_in_body": [
+          75,
+          2,
+          19,
+          0,
+          1
+        ],
+        "name": "sync_event_exceptions_delete",
+        "sql": "CREATE TRIGGER sync_event_exceptions_delete AFTER DELETE ON event_exceptions\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND (SELECT uuid FROM events WHERE id = OLD.event_id) || '_' || OLD.date IS NOT NULL\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'event_exceptions' AND row_key = OLD.event_id || '|' || OLD.date;\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('event_exceptions', (SELECT uuid FROM events WHERE id = OLD.event_id) || '_' || OLD.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 79,
+      "references": [],
+      "type": "table",
+      "data": {
+        "name": "app_settings",
+        "was_declared_in_moor": false,
+        "columns": [
+          {
+            "name": "key",
+            "getter_name": "key",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "value",
+            "getter_name": "value",
+            "moor_type": "string",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": null,
+            "default_client_dart": null,
+            "dsl_features": []
+          },
+          {
+            "name": "updated_at",
+            "getter_name": "updatedAt",
+            "moor_type": "dateTime",
+            "nullable": false,
+            "customConstraints": null,
+            "default_dart": "const CustomExpression('CURRENT_TIMESTAMP')",
+            "default_client_dart": null,
+            "dsl_features": []
+          }
+        ],
+        "is_virtual": false,
+        "without_rowid": false,
+        "constraints": [],
+        "explicit_pk": [
+          "key"
+        ]
+      }
+    },
+    {
+      "id": 80,
+      "references": [
+        79,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 79,
+        "references_in_body": [
+          79,
+          2,
+          0
+        ],
+        "name": "sync_app_settings_insert",
+        "sql": "CREATE TRIGGER sync_app_settings_insert AFTER INSERT ON app_settings\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND NEW.\"key\" NOT LIKE 'backup.%' AND NEW.\"key\" NOT LIKE 'places.%' AND NEW.\"key\" NOT LIKE 'sync.%' AND NEW.\"key\" NOT IN ('home.fab_position', 'appearance.dock_launches', 'homecare.arrival', 'onboarding.welcome_seen')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('app_settings', NEW.\"key\", strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 81,
+      "references": [
+        79,
+        2,
+        0
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 79,
+        "references_in_body": [
+          79,
+          2,
+          0
+        ],
+        "name": "sync_app_settings_update",
+        "sql": "CREATE TRIGGER sync_app_settings_update AFTER UPDATE ON app_settings\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND NEW.\"key\" NOT LIKE 'backup.%' AND NEW.\"key\" NOT LIKE 'places.%' AND NEW.\"key\" NOT LIKE 'sync.%' AND NEW.\"key\" NOT IN ('home.fab_position', 'appearance.dock_launches', 'homecare.arrival', 'onboarding.welcome_seen')\nBEGIN\n  INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('app_settings', NEW.\"key\", strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;\nEND;"
+      }
+    },
+    {
+      "id": 82,
+      "references": [
+        79,
+        2,
+        0,
+        1
+      ],
+      "type": "trigger",
+      "data": {
+        "on": 79,
+        "references_in_body": [
+          79,
+          2,
+          0,
+          1
+        ],
+        "name": "sync_app_settings_delete",
+        "sql": "CREATE TRIGGER sync_app_settings_delete AFTER DELETE ON app_settings\nWHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.\"key\" IS NOT NULL AND OLD.\"key\" NOT LIKE 'backup.%' AND OLD.\"key\" NOT LIKE 'places.%' AND OLD.\"key\" NOT LIKE 'sync.%' AND OLD.\"key\" NOT IN ('home.fab_position', 'appearance.dock_launches', 'homecare.arrival', 'onboarding.welcome_seen')\nBEGIN\n  DELETE FROM sync_outbox WHERE entity = 'app_settings' AND row_key = OLD.\"key\";\n  INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('app_settings', OLD.\"key\", strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;\nEND;"
+      }
+    },
+    {
+      "id": 83,
+      "references": [
+        67
+      ],
+      "type": "index",
+      "data": {
+        "on": 67,
+        "name": "care_logs_job",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "job_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 84,
+      "references": [
+        59
+      ],
+      "type": "index",
+      "data": {
+        "on": 59,
+        "name": "meal_entries_date",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "date",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 85,
+      "references": [
+        43
+      ],
+      "type": "index",
+      "data": {
+        "on": 43,
+        "name": "workouts_started",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "started_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 86,
+      "references": [
+        47
+      ],
+      "type": "index",
+      "data": {
+        "on": 47,
+        "name": "workout_sets_workout",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "workout_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 87,
+      "references": [
+        47
+      ],
+      "type": "index",
+      "data": {
+        "on": 47,
+        "name": "workout_sets_exercise",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "exercise_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 88,
+      "references": [
+        35
+      ],
+      "type": "index",
+      "data": {
+        "on": 35,
+        "name": "water_logs_date",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "date",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 89,
+      "references": [
+        27
+      ],
+      "type": "index",
+      "data": {
+        "on": 27,
+        "name": "routine_steps_routine",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "routine_id",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 90,
+      "references": [
+        31
+      ],
+      "type": "index",
+      "data": {
+        "on": 31,
+        "name": "routine_runs_date",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "date",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 91,
+      "references": [
+        19
+      ],
+      "type": "index",
+      "data": {
+        "on": 19,
+        "name": "events_start_date",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "start_date",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 92,
+      "references": [
+        71
+      ],
+      "type": "index",
+      "data": {
+        "on": 71,
+        "name": "habit_check_ins_date",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "date",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 93,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "tasks_due_date",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "due_date",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 94,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "tasks_completed_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "completed_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 95,
+      "references": [
+        7
+      ],
+      "type": "index",
+      "data": {
+        "on": 7,
+        "name": "tasks_deleted_at",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "deleted_at",
+            "order_by": null
+          }
+        ]
+      }
+    },
+    {
+      "id": 96,
+      "references": [
+        11
+      ],
+      "type": "index",
+      "data": {
+        "on": 11,
+        "name": "task_checks_task",
+        "sql": null,
+        "unique": false,
+        "columns": [
+          {
+            "column": "task_id",
+            "order_by": null
+          }
+        ]
+      }
+    }
+  ],
+  "fixed_sql": [
+    {
+      "name": "sync_outbox",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_outbox\" (\"entity\" TEXT NOT NULL, \"row_key\" TEXT NOT NULL, \"changed_at\" TEXT NOT NULL, PRIMARY KEY(entity, row_key));"
+        }
+      ]
+    },
+    {
+      "name": "sync_tombstones",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_tombstones\" (\"entity\" TEXT NOT NULL, \"doc_id\" TEXT NOT NULL, \"deleted_at\" TEXT NOT NULL, PRIMARY KEY(entity, doc_id));"
+        }
+      ]
+    },
+    {
+      "name": "sync_meta",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sync_meta\" (\"key\" TEXT NOT NULL PRIMARY KEY, \"value\" TEXT NOT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "projects",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"projects\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_projects_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_projects_insert AFTER INSERT ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('projects', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_projects_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_projects_update AFTER UPDATE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('projects', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_projects_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_projects_delete AFTER DELETE ON projects WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'projects' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('projects', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "tasks",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"tasks\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"title\" TEXT NOT NULL, \"notes\" TEXT NOT NULL DEFAULT '', \"priority\" INTEGER NOT NULL DEFAULT 0, \"project_id\" INTEGER NULL REFERENCES projects (id) ON DELETE SET NULL, \"due_date\" TEXT NULL, \"due_minute\" INTEGER NULL, \"recurrence\" TEXT NULL, \"next_task_id\" INTEGER NULL, \"completed_at\" TEXT NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_tasks_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_tasks_insert AFTER INSERT ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('tasks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_tasks_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_tasks_update AFTER UPDATE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('tasks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_tasks_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_tasks_delete AFTER DELETE ON tasks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'tasks' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('tasks', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "task_checks",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"task_checks\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"task_id\" INTEGER NOT NULL REFERENCES tasks (id) ON DELETE CASCADE, \"position\" INTEGER NOT NULL, \"title\" TEXT NOT NULL, \"done\" INTEGER NOT NULL DEFAULT 0 CHECK (\"done\" IN (0, 1)), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_task_checks_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_task_checks_insert AFTER INSERT ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('task_checks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_task_checks_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_task_checks_update AFTER UPDATE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('task_checks', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_task_checks_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_task_checks_delete AFTER DELETE ON task_checks WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'task_checks' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('task_checks', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "habits",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"habits\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"kind\" INTEGER NOT NULL DEFAULT 0, \"schedule\" TEXT NOT NULL, \"target\" INTEGER NOT NULL DEFAULT 1, \"start_date\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"archived_at\" TEXT NULL, \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_habits_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_habits_insert AFTER INSERT ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habits', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_habits_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_habits_update AFTER UPDATE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habits', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_habits_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_habits_delete AFTER DELETE ON habits WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'habits' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('habits', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "events",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"events\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"title\" TEXT NOT NULL, \"notes\" TEXT NOT NULL DEFAULT '', \"kind\" INTEGER NOT NULL DEFAULT 0, \"start_date\" TEXT NOT NULL, \"start_minute\" INTEGER NULL, \"duration_minutes\" INTEGER NULL, \"recurrence\" TEXT NULL, \"reminder_minutes\" INTEGER NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_events_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_events_insert AFTER INSERT ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('events', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_events_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_events_update AFTER UPDATE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('events', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_events_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_events_delete AFTER DELETE ON events WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'events' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('events', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "routines",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"routines\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"time_of_day\" INTEGER NOT NULL DEFAULT 0, \"schedule\" TEXT NOT NULL, \"start_minute\" INTEGER NULL, \"reminder_minutes\" INTEGER NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_routines_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routines_insert AFTER INSERT ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routines', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_routines_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routines_update AFTER UPDATE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routines', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_routines_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routines_delete AFTER DELETE ON routines WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'routines' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('routines', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "routine_steps",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"routine_steps\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"routine_id\" INTEGER NOT NULL REFERENCES routines (id) ON DELETE CASCADE, \"position\" INTEGER NOT NULL, \"title\" TEXT NOT NULL, \"duration_seconds\" INTEGER NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_routine_steps_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routine_steps_insert AFTER INSERT ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_steps', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_routine_steps_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routine_steps_update AFTER UPDATE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_steps', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_routine_steps_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routine_steps_delete AFTER DELETE ON routine_steps WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'routine_steps' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('routine_steps', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "routine_runs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"routine_runs\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"routine_id\" INTEGER NOT NULL REFERENCES routines (id) ON DELETE CASCADE, \"date\" TEXT NOT NULL, \"started_at\" TEXT NOT NULL, \"finished_at\" TEXT NULL, \"steps_done\" INTEGER NOT NULL DEFAULT 0, \"steps_total\" INTEGER NOT NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_routine_runs_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routine_runs_insert AFTER INSERT ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_runs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_routine_runs_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routine_runs_update AFTER UPDATE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('routine_runs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_routine_runs_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_routine_runs_delete AFTER DELETE ON routine_runs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'routine_runs' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('routine_runs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "water_logs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"water_logs\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"date\" TEXT NOT NULL, \"logged_at\" TEXT NOT NULL, \"amount_ml\" INTEGER NOT NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_water_logs_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_water_logs_insert AFTER INSERT ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('water_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_water_logs_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_water_logs_update AFTER UPDATE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('water_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_water_logs_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_water_logs_delete AFTER DELETE ON water_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'water_logs' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('water_logs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sleep_logs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"sleep_logs\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"date\" TEXT NOT NULL UNIQUE, \"bedtime\" TEXT NOT NULL, \"wake_time\" TEXT NOT NULL, \"quality\" INTEGER NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_sleep_logs_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_sleep_logs_insert AFTER INSERT ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('sleep_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_sleep_logs_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_sleep_logs_update AFTER UPDATE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('sleep_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_sleep_logs_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_sleep_logs_delete AFTER DELETE ON sleep_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'sleep_logs' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('sleep_logs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "workouts",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"workouts\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"started_at\" TEXT NOT NULL, \"finished_at\" TEXT NULL, \"notes\" TEXT NOT NULL DEFAULT '', \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_workouts_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workouts_insert AFTER INSERT ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workouts', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_workouts_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workouts_update AFTER UPDATE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workouts', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_workouts_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workouts_delete AFTER DELETE ON workouts WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'workouts' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('workouts', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "workout_sets",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"workout_sets\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"workout_id\" INTEGER NOT NULL REFERENCES workouts (id) ON DELETE CASCADE, \"exercise_id\" TEXT NOT NULL, \"exercise_name\" TEXT NOT NULL, \"exercise_order\" INTEGER NOT NULL, \"set_order\" INTEGER NOT NULL, \"reps\" INTEGER NULL, \"weight_kg\" REAL NULL, \"duration_seconds\" INTEGER NULL, \"done\" INTEGER NOT NULL DEFAULT 0 CHECK (\"done\" IN (0, 1)), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_workout_sets_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workout_sets_insert AFTER INSERT ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_sets', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_workout_sets_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workout_sets_update AFTER UPDATE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_sets', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_workout_sets_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workout_sets_delete AFTER DELETE ON workout_sets WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'workout_sets' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('workout_sets', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "workout_templates",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"workout_templates\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"plan\" TEXT NOT NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_workout_templates_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workout_templates_insert AFTER INSERT ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_templates', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_workout_templates_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workout_templates_update AFTER UPDATE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('workout_templates', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_workout_templates_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_workout_templates_delete AFTER DELETE ON workout_templates WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'workout_templates' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('workout_templates', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "foods",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"foods\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"serving\" TEXT NOT NULL, \"kcal\" REAL NOT NULL, \"protein\" REAL NOT NULL DEFAULT 0.0, \"carbs\" REAL NOT NULL DEFAULT 0.0, \"fat\" REAL NOT NULL DEFAULT 0.0, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_foods_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_foods_insert AFTER INSERT ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('foods', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_foods_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_foods_update AFTER UPDATE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('foods', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_foods_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_foods_delete AFTER DELETE ON foods WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'foods' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('foods', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "meal_entries",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"meal_entries\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"date\" TEXT NOT NULL, \"meal\" INTEGER NOT NULL, \"logged_at\" TEXT NOT NULL, \"name\" TEXT NOT NULL, \"food_id\" INTEGER NULL REFERENCES foods (id) ON DELETE SET NULL, \"library_id\" INTEGER NULL, \"portion\" TEXT NULL, \"quantity\" REAL NOT NULL DEFAULT 1.0, \"kcal\" REAL NOT NULL, \"protein\" REAL NOT NULL DEFAULT 0.0, \"carbs\" REAL NOT NULL DEFAULT 0.0, \"fat\" REAL NOT NULL DEFAULT 0.0, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_meal_entries_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_meal_entries_insert AFTER INSERT ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('meal_entries', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_meal_entries_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_meal_entries_update AFTER UPDATE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('meal_entries', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_meal_entries_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_meal_entries_delete AFTER DELETE ON meal_entries WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'meal_entries' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('meal_entries', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "care_jobs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"care_jobs\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"name\" TEXT NOT NULL, \"area\" INTEGER NOT NULL, \"category\" TEXT NULL, \"subject\" TEXT NULL, \"schedule\" TEXT NOT NULL, \"start_date\" TEXT NOT NULL, \"notes\" TEXT NULL, \"created_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), \"deleted_at\" TEXT NULL);"
+        }
+      ]
+    },
+    {
+      "name": "sync_care_jobs_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_care_jobs_insert AFTER INSERT ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_jobs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_care_jobs_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_care_jobs_update AFTER UPDATE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_jobs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_care_jobs_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_care_jobs_delete AFTER DELETE ON care_jobs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'care_jobs' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('care_jobs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "care_logs",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"care_logs\" (\"id\" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \"uuid\" TEXT NOT NULL UNIQUE, \"job_id\" INTEGER NOT NULL REFERENCES care_jobs (id) ON DELETE CASCADE, \"date\" TEXT NOT NULL, \"due_date\" TEXT NOT NULL, \"skipped\" INTEGER NOT NULL DEFAULT 0 CHECK (\"skipped\" IN (0, 1)), \"note\" TEXT NULL, \"logged_at\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP));"
+        }
+      ]
+    },
+    {
+      "name": "sync_care_logs_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_care_logs_insert AFTER INSERT ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_care_logs_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_care_logs_update AFTER UPDATE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('care_logs', NEW.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_care_logs_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_care_logs_delete AFTER DELETE ON care_logs WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.uuid IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'care_logs' AND row_key = OLD.uuid;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('care_logs', OLD.uuid, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "habit_check_ins",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"habit_check_ins\" (\"habit_id\" INTEGER NOT NULL REFERENCES habits (id) ON DELETE CASCADE, \"date\" TEXT NOT NULL, \"count\" INTEGER NOT NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), PRIMARY KEY (\"habit_id\", \"date\"));"
+        }
+      ]
+    },
+    {
+      "name": "sync_habit_check_ins_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_habit_check_ins_insert AFTER INSERT ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habit_check_ins', NEW.habit_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_habit_check_ins_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_habit_check_ins_update AFTER UPDATE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('habit_check_ins', NEW.habit_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_habit_check_ins_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_habit_check_ins_delete AFTER DELETE ON habit_check_ins WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND (SELECT uuid FROM habits WHERE id = OLD.habit_id) || '_' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'habit_check_ins' AND row_key = OLD.habit_id || '|' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('habit_check_ins', (SELECT uuid FROM habits WHERE id = OLD.habit_id) || '_' || OLD.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "event_exceptions",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"event_exceptions\" (\"event_id\" INTEGER NOT NULL REFERENCES events (id) ON DELETE CASCADE, \"date\" TEXT NOT NULL, \"skipped\" INTEGER NOT NULL DEFAULT 0 CHECK (\"skipped\" IN (0, 1)), \"done_at\" TEXT NULL, \"moved_date\" TEXT NULL, \"moved_minute\" INTEGER NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), PRIMARY KEY (\"event_id\", \"date\"));"
+        }
+      ]
+    },
+    {
+      "name": "sync_event_exceptions_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_event_exceptions_insert AFTER INSERT ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('event_exceptions', NEW.event_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_event_exceptions_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_event_exceptions_update AFTER UPDATE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('event_exceptions', NEW.event_id || '|' || NEW.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_event_exceptions_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_event_exceptions_delete AFTER DELETE ON event_exceptions WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND (SELECT uuid FROM events WHERE id = OLD.event_id) || '_' || OLD.date IS NOT NULL BEGIN DELETE FROM sync_outbox WHERE entity = 'event_exceptions' AND row_key = OLD.event_id || '|' || OLD.date;INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('event_exceptions', (SELECT uuid FROM events WHERE id = OLD.event_id) || '_' || OLD.date, strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "app_settings",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TABLE IF NOT EXISTS \"app_settings\" (\"key\" TEXT NOT NULL, \"value\" TEXT NOT NULL, \"updated_at\" TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP), PRIMARY KEY (\"key\"));"
+        }
+      ]
+    },
+    {
+      "name": "sync_app_settings_insert",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_app_settings_insert AFTER INSERT ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND NEW.\"key\" NOT LIKE 'backup.%' AND NEW.\"key\" NOT LIKE 'places.%' AND NEW.\"key\" NOT LIKE 'sync.%' AND NEW.\"key\" NOT IN ('home.fab_position', 'appearance.dock_launches', 'homecare.arrival', 'onboarding.welcome_seen') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('app_settings', NEW.\"key\", strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_app_settings_update",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_app_settings_update AFTER UPDATE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND NEW.\"key\" NOT LIKE 'backup.%' AND NEW.\"key\" NOT LIKE 'places.%' AND NEW.\"key\" NOT LIKE 'sync.%' AND NEW.\"key\" NOT IN ('home.fab_position', 'appearance.dock_launches', 'homecare.arrival', 'onboarding.welcome_seen') BEGIN INSERT INTO sync_outbox (entity, row_key, changed_at) VALUES ('app_settings', NEW.\"key\", strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, row_key) DO UPDATE SET changed_at = excluded.changed_at;END"
+        }
+      ]
+    },
+    {
+      "name": "sync_app_settings_delete",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE TRIGGER sync_app_settings_delete AFTER DELETE ON app_settings WHEN NOT EXISTS (SELECT 1 FROM sync_meta WHERE \"key\" = 'applying') AND OLD.\"key\" IS NOT NULL AND OLD.\"key\" NOT LIKE 'backup.%' AND OLD.\"key\" NOT LIKE 'places.%' AND OLD.\"key\" NOT LIKE 'sync.%' AND OLD.\"key\" NOT IN ('home.fab_position', 'appearance.dock_launches', 'homecare.arrival', 'onboarding.welcome_seen') BEGIN DELETE FROM sync_outbox WHERE entity = 'app_settings' AND row_key = OLD.\"key\";INSERT INTO sync_tombstones (entity, doc_id, deleted_at) VALUES ('app_settings', OLD.\"key\", strftime('%Y-%m-%dT%H:%M:%f', 'now')) ON CONFLICT (entity, doc_id) DO UPDATE SET deleted_at = excluded.deleted_at;END"
+        }
+      ]
+    },
+    {
+      "name": "care_logs_job",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX care_logs_job ON care_logs (job_id)"
+        }
+      ]
+    },
+    {
+      "name": "meal_entries_date",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX meal_entries_date ON meal_entries (date)"
+        }
+      ]
+    },
+    {
+      "name": "workouts_started",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX workouts_started ON workouts (started_at)"
+        }
+      ]
+    },
+    {
+      "name": "workout_sets_workout",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX workout_sets_workout ON workout_sets (workout_id)"
+        }
+      ]
+    },
+    {
+      "name": "workout_sets_exercise",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX workout_sets_exercise ON workout_sets (exercise_id)"
+        }
+      ]
+    },
+    {
+      "name": "water_logs_date",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX water_logs_date ON water_logs (date)"
+        }
+      ]
+    },
+    {
+      "name": "routine_steps_routine",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX routine_steps_routine ON routine_steps (routine_id)"
+        }
+      ]
+    },
+    {
+      "name": "routine_runs_date",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX routine_runs_date ON routine_runs (date)"
+        }
+      ]
+    },
+    {
+      "name": "events_start_date",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX events_start_date ON events (start_date)"
+        }
+      ]
+    },
+    {
+      "name": "habit_check_ins_date",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX habit_check_ins_date ON habit_check_ins (date)"
+        }
+      ]
+    },
+    {
+      "name": "tasks_due_date",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX tasks_due_date ON tasks (due_date)"
+        }
+      ]
+    },
+    {
+      "name": "tasks_completed_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX tasks_completed_at ON tasks (completed_at)"
+        }
+      ]
+    },
+    {
+      "name": "tasks_deleted_at",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX tasks_deleted_at ON tasks (deleted_at)"
+        }
+      ]
+    },
+    {
+      "name": "task_checks_task",
+      "sql": [
+        {
+          "dialect": "sqlite",
+          "sql": "CREATE INDEX task_checks_task ON task_checks (task_id)"
+        }
+      ]
+    }
+  ]
+}

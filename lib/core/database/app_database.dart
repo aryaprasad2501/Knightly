@@ -41,8 +41,9 @@ class AppSettings extends Table {
 /// v4 uuid / updatedAt / deletedAt on projects, tasks and habits (sync-ready
 /// ids, Recycle Bin) · v5 Calendar: events + event_exceptions · v6 routines, routine_steps,
 /// routine_runs · v7 water_logs · v8 sleep_logs · v9 workouts, workout_sets · v10 foods,
-/// meal_entries · v11 care_jobs, care_logs · v12 care_jobs.category · v13 task_checks · v14 workout_templates.
+/// meal_entries · v11 care_jobs, care_logs · v12 care_jobs.category · v13 task_checks · v14 workout_templates · v15 sync_outbox, sync_tombstones, sync_meta + change triggers.
 @DriftDatabase(
+  include: {'sync_tracking.drift'},
   tables: [
     AppSettings,
     Projects,
@@ -70,7 +71,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor]) : super(executor ?? _openDefault());
 
   @override
-  int get schemaVersion => 14;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -187,6 +188,74 @@ class AppDatabase extends _$AppDatabase {
     // Workout templates: one new table; nothing existing changes.
     from13To14: (m, schema) async {
       await m.createTable(schema.workoutTemplates);
+    },
+    // Cloud sync bookkeeping: three new tables and the triggers that record
+    // local changes. Existing rows are not marked: the first sign-in uploads
+    // everything anyway (docs/CLOUD_SYNC_PLAN.md).
+    from14To15: (m, schema) async {
+      await m.createTable(schema.syncOutbox);
+      await m.createTable(schema.syncTombstones);
+      await m.createTable(schema.syncMeta);
+      await m.createTrigger(schema.syncProjectsInsert);
+      await m.createTrigger(schema.syncProjectsUpdate);
+      await m.createTrigger(schema.syncProjectsDelete);
+      await m.createTrigger(schema.syncTasksInsert);
+      await m.createTrigger(schema.syncTasksUpdate);
+      await m.createTrigger(schema.syncTasksDelete);
+      await m.createTrigger(schema.syncTaskChecksInsert);
+      await m.createTrigger(schema.syncTaskChecksUpdate);
+      await m.createTrigger(schema.syncTaskChecksDelete);
+      await m.createTrigger(schema.syncHabitsInsert);
+      await m.createTrigger(schema.syncHabitsUpdate);
+      await m.createTrigger(schema.syncHabitsDelete);
+      await m.createTrigger(schema.syncEventsInsert);
+      await m.createTrigger(schema.syncEventsUpdate);
+      await m.createTrigger(schema.syncEventsDelete);
+      await m.createTrigger(schema.syncRoutinesInsert);
+      await m.createTrigger(schema.syncRoutinesUpdate);
+      await m.createTrigger(schema.syncRoutinesDelete);
+      await m.createTrigger(schema.syncRoutineStepsInsert);
+      await m.createTrigger(schema.syncRoutineStepsUpdate);
+      await m.createTrigger(schema.syncRoutineStepsDelete);
+      await m.createTrigger(schema.syncRoutineRunsInsert);
+      await m.createTrigger(schema.syncRoutineRunsUpdate);
+      await m.createTrigger(schema.syncRoutineRunsDelete);
+      await m.createTrigger(schema.syncWaterLogsInsert);
+      await m.createTrigger(schema.syncWaterLogsUpdate);
+      await m.createTrigger(schema.syncWaterLogsDelete);
+      await m.createTrigger(schema.syncSleepLogsInsert);
+      await m.createTrigger(schema.syncSleepLogsUpdate);
+      await m.createTrigger(schema.syncSleepLogsDelete);
+      await m.createTrigger(schema.syncWorkoutsInsert);
+      await m.createTrigger(schema.syncWorkoutsUpdate);
+      await m.createTrigger(schema.syncWorkoutsDelete);
+      await m.createTrigger(schema.syncWorkoutSetsInsert);
+      await m.createTrigger(schema.syncWorkoutSetsUpdate);
+      await m.createTrigger(schema.syncWorkoutSetsDelete);
+      await m.createTrigger(schema.syncWorkoutTemplatesInsert);
+      await m.createTrigger(schema.syncWorkoutTemplatesUpdate);
+      await m.createTrigger(schema.syncWorkoutTemplatesDelete);
+      await m.createTrigger(schema.syncFoodsInsert);
+      await m.createTrigger(schema.syncFoodsUpdate);
+      await m.createTrigger(schema.syncFoodsDelete);
+      await m.createTrigger(schema.syncMealEntriesInsert);
+      await m.createTrigger(schema.syncMealEntriesUpdate);
+      await m.createTrigger(schema.syncMealEntriesDelete);
+      await m.createTrigger(schema.syncCareJobsInsert);
+      await m.createTrigger(schema.syncCareJobsUpdate);
+      await m.createTrigger(schema.syncCareJobsDelete);
+      await m.createTrigger(schema.syncCareLogsInsert);
+      await m.createTrigger(schema.syncCareLogsUpdate);
+      await m.createTrigger(schema.syncCareLogsDelete);
+      await m.createTrigger(schema.syncHabitCheckInsInsert);
+      await m.createTrigger(schema.syncHabitCheckInsUpdate);
+      await m.createTrigger(schema.syncHabitCheckInsDelete);
+      await m.createTrigger(schema.syncEventExceptionsInsert);
+      await m.createTrigger(schema.syncEventExceptionsUpdate);
+      await m.createTrigger(schema.syncEventExceptionsDelete);
+      await m.createTrigger(schema.syncAppSettingsInsert);
+      await m.createTrigger(schema.syncAppSettingsUpdate);
+      await m.createTrigger(schema.syncAppSettingsDelete);
     },
   );
 
